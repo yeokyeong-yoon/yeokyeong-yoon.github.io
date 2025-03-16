@@ -47,12 +47,13 @@ permalink: /blog/
   
   .post-card h2 {
     margin: 0 0 15px;
-    font-size: 20px;
+    font-size: 22px;
     line-height: 1.4;
+    font-weight: 700;
   }
   
   .post-card h2 a {
-    color: rgba(0, 0, 0, 0.8);
+    color: rgba(0, 0, 0, 0.9);
     text-decoration: none;
     border-bottom: none;
   }
@@ -118,8 +119,8 @@ permalink: /blog/
     <article class="post-card" style="padding: 25px; background: rgba(255, 255, 255, 0.5); border-radius: 10px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); transition: transform 0.2s ease, box-shadow 0.2s ease;">
       <span class="post-date" style="display: block; font-size: 14px; color: rgba(0, 0, 0, 0.5); margin-bottom: 10px;">{{ post.date | date: "%B %-d, %Y" }}</span>
       
-      <h2 style="margin: 0 0 15px; font-size: 20px; line-height: 1.4;">
-        <a href="{{ post.url | relative_url }}" style="color: rgba(0, 0, 0, 0.8); text-decoration: none; border-bottom: none;">{{ post.title | escape }}</a>
+      <h2 style="margin: 0 0 15px; font-size: 22px; line-height: 1.4; font-weight: 700;">
+        <a href="{{ post.url | relative_url }}" style="color: rgba(0, 0, 0, 0.9); text-decoration: none; border-bottom: none;">{{ post.title | escape }}</a>
       </h2>
       
       {% if post.categories.size > 0 %}
