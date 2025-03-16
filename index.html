@@ -12,162 +12,128 @@ title: Home
     background-color: #fff;
   }
   
-  .about-page {
+  .home-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 120px 24px;
+    padding: 0;
   }
   
-  .intro {
-    margin-bottom: 100px;
-    max-width: 800px;
+  .hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 85vh;
+    padding: 0 24px;
+    position: relative;
   }
   
-  .page-heading {
-    font-size: 7em;
+  .hero-title {
+    font-size: 9vw;
     font-weight: 800;
     letter-spacing: -0.05em;
     line-height: 0.9;
     margin: 0 0 40px;
     color: #000;
+    max-width: 1000px;
   }
   
-  .intro-text {
-    font-size: 2.2em;
-    line-height: 1.3;
+  .hero-subtitle {
+    font-size: 2.5rem;
+    line-height: 1.2;
     color: rgba(0, 0, 0, 0.7);
     margin-bottom: 60px;
-    max-width: 640px;
+    max-width: 700px;
     font-weight: 400;
+  }
+  
+  .contact-container {
+    margin-top: 60px;
   }
   
   .contact-links {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
-    margin-top: 60px;
+    gap: 30px;
+    margin-bottom: 20px;
   }
   
   .contact-link {
-    display: inline-block;
-    padding: 12px 24px;
-    color: rgba(0, 0, 0, 0.6);
+    color: rgba(0, 0, 0, 0.8);
     text-decoration: none;
     transition: all 0.2s ease;
-    font-size: 18px;
-    font-weight: 400;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 99px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    position: relative;
   }
   
   .contact-link:hover {
-    background: rgba(0, 0, 0, 0.03);
-    color: rgba(0, 0, 0, 0.8);
+    color: #000;
   }
   
-  .contact-link.primary {
-    background: #000;
-    color: white;
-    border: none;
+  .contact-link:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: -4px;
+    left: 0;
+    background-color: #000;
+    transform-origin: bottom right;
+    transition: transform 0.3s ease-out;
   }
   
-  .contact-link.primary:hover {
-    background: #333;
+  .contact-link:hover:after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
+  
+  .section {
+    padding: 120px 24px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
   }
   
   .section-heading {
-    font-size: 3em;
-    margin: 100px 0 50px;
+    font-size: 3.5rem;
+    margin: 0 0 80px;
     font-weight: 700;
     letter-spacing: -0.03em;
     color: #000;
   }
   
-  .content-section {
-    font-size: 1.3em;
-    line-height: 1.6;
-    color: rgba(0, 0, 0, 0.8);
-    margin-bottom: 80px;
-    max-width: 740px;
-  }
-  
-  .content-section h3 {
-    font-size: 2em;
-    margin: 60px 0 30px;
-    font-weight: 700;
-    color: #000;
-    letter-spacing: -0.02em;
-  }
-  
-  .content-section p {
-    margin-bottom: 30px;
-  }
-  
-  .post-list-item {
-    margin-bottom: 25px;
-  }
-  
-  .post-list-item a {
-    color: #000;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 1.2em;
-    transition: color 0.2s ease;
-  }
-  
-  .post-list-item a:hover {
-    color: rgba(0, 0, 0, 0.6);
-  }
-  
-  .post-date {
-    color: rgba(0, 0, 0, 0.54);
-    font-size: 0.9em;
-    display: block;
-    margin-top: 5px;
-  }
-  
-  .view-all {
-    display: inline-block;
-    margin-top: 20px;
-    color: #000;
-    font-weight: 500;
-    text-decoration: none;
-    font-size: 1.1em;
-    transition: color 0.2s ease;
-  }
-  
-  .view-all:hover {
-    color: rgba(0, 0, 0, 0.6);
-  }
-  
   .portfolio-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 30px;
-    margin-top: 40px;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 40px;
   }
   
   .portfolio-item {
     background: rgba(0, 0, 0, 0.03);
     border-radius: 12px;
-    padding: 30px;
+    padding: 40px;
     transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
   }
   
   .portfolio-item:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   }
   
   .portfolio-title {
-    font-size: 1.5em;
+    font-size: 2rem;
     font-weight: 700;
-    margin: 0 0 15px;
+    margin: 0 0 20px;
+    letter-spacing: -0.02em;
   }
   
   .portfolio-desc {
     color: rgba(0, 0, 0, 0.7);
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    font-size: 1.2rem;
+    line-height: 1.5;
+    flex-grow: 1;
   }
   
   .portfolio-link {
@@ -175,80 +141,200 @@ title: Home
     color: #000;
     font-weight: 500;
     text-decoration: none;
+    font-size: 1.1rem;
+    margin-top: auto;
   }
   
   .portfolio-link:hover {
     text-decoration: underline;
   }
   
+  .posts-section {
+    background-color: #fafafa;
+  }
+  
+  .post-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .post-item {
+    margin-bottom: 60px;
+    padding-bottom: 60px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  .post-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+  
+  .post-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 20px;
+    letter-spacing: -0.02em;
+  }
+  
+  .post-title a {
+    color: #000;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .post-title a:hover {
+    color: rgba(0, 0, 0, 0.6);
+  }
+  
+  .post-date {
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 1rem;
+    display: block;
+    margin-bottom: 20px;
+  }
+  
+  .post-excerpt {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: rgba(0, 0, 0, 0.7);
+    margin-bottom: 30px;
+  }
+  
+  .read-more {
+    display: inline-block;
+    color: #000;
+    font-weight: 500;
+    text-decoration: none;
+    font-size: 1.1rem;
+  }
+  
+  .read-more:hover {
+    text-decoration: underline;
+  }
+  
+  .view-all {
+    display: inline-block;
+    margin-top: 60px;
+    color: #000;
+    font-weight: 500;
+    text-decoration: none;
+    font-size: 1.2rem;
+    padding: 12px 24px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 99px;
+    transition: all 0.2s ease;
+  }
+  
+  .view-all:hover {
+    background: rgba(0, 0, 0, 0.03);
+  }
+  
   @media (max-width: 768px) {
-    .page-heading {
-      font-size: 5em;
+    .hero-title {
+      font-size: 14vw;
     }
     
-    .intro-text {
-      font-size: 1.8em;
+    .hero-subtitle {
+      font-size: 1.8rem;
     }
     
-    .about-page {
+    .section {
       padding: 80px 24px;
+    }
+    
+    .section-heading {
+      font-size: 2.5rem;
+      margin-bottom: 50px;
     }
     
     .portfolio-grid {
       grid-template-columns: 1fr;
     }
+    
+    .portfolio-item {
+      padding: 30px;
+    }
+    
+    .portfolio-title {
+      font-size: 1.8rem;
+    }
+    
+    .post-title {
+      font-size: 2rem;
+    }
+    
+    .contact-links {
+      flex-direction: column;
+      gap: 15px;
+    }
   }
 </style>
 
-<div class="about-page">
-  <section class="intro">
-    <h1 class="page-heading">yeokyeong.yoon</h1>
-    <p class="intro-text">Backend Developer</p>
+<div class="home-container">
+  <section class="hero">
+    <h1 class="hero-title">yeokyeong.yoon</h1>
+    <p class="hero-subtitle">Software Engineer solving complex problems with whatever tools the job requires</p>
     
-    <div class="contact-links">
-      <a href="https://polished-chicken-aca.notion.site/Yeokyeong-Yoon-19a67bf8bfe280519aaaf36d8d299044" class="contact-link primary" target="_blank">Portfolio</a>
-      <a href="https://www.linkedin.com/in/yeokyeong-yoon/" class="contact-link" target="_blank">LinkedIn</a>
-      <a href="https://github.com/yeokyeong-yoon" class="contact-link" target="_blank">GitHub</a>
-      <a href="mailto:yeokyeong.yoon@gmail.com" class="contact-link" target="_blank">Email</a>
-      <a href="{{ site.baseurl }}/blog" class="contact-link">Blog</a>
-      <a href="{{ site.baseurl }}/tags" class="contact-link">Tags</a>
+    <div class="contact-container">
+      <div class="contact-links">
+        <a href="https://polished-chicken-aca.notion.site/Yeokyeong-Yoon-19a67bf8bfe280519aaaf36d8d299044" class="contact-link" target="_blank">Portfolio</a>
+        <a href="https://www.linkedin.com/in/yeokyeong-yoon/" class="contact-link" target="_blank">LinkedIn</a>
+        <a href="https://github.com/yeokyeong-yoon" class="contact-link" target="_blank">GitHub</a>
+        <a href="mailto:yeokyeong.yoon@gmail.com" class="contact-link" target="_blank">Email</a>
+        <a href="{{ site.baseurl }}/blog" class="contact-link">Blog</a>
+        <a href="{{ site.baseurl }}/tags" class="contact-link">Tags</a>
+      </div>
     </div>
   </section>
 
-  <section class="content-section">
+  <section class="section">
     <h2 class="section-heading">Featured Projects</h2>
     
     <div class="portfolio-grid">
       <div class="portfolio-item">
         <h3 class="portfolio-title">Feature Flag System</h3>
-        <p class="portfolio-desc">Designed and implemented a scalable feature flag system for controlled feature rollouts.</p>
+        <p class="portfolio-desc">Designed and implemented a scalable feature flag system that enables controlled feature rollouts, A/B testing, and targeted releases to specific user segments.</p>
         <a href="{{ site.baseurl }}/posts/feature-flag/" class="portfolio-link">View Case Study →</a>
       </div>
       
       <div class="portfolio-item">
         <h3 class="portfolio-title">Event-Driven Architecture</h3>
-        <p class="portfolio-desc">Built a resilient event-driven system for high-throughput data processing.</p>
+        <p class="portfolio-desc">Built a resilient event-driven system for high-throughput data processing, enabling real-time analytics and seamless service communication.</p>
         <a href="https://github.com/yeokyeong-yoon" class="portfolio-link">View on GitHub →</a>
       </div>
       
       <div class="portfolio-item">
         <h3 class="portfolio-title">Microservice Migration</h3>
-        <p class="portfolio-desc">Led the migration from monolith to microservices for improved scalability.</p>
+        <p class="portfolio-desc">Led the migration from monolith to microservices for improved scalability, resulting in 40% faster deployment cycles and enhanced system resilience.</p>
         <a href="https://polished-chicken-aca.notion.site/Yeokyeong-Yoon-19a67bf8bfe280519aaaf36d8d299044" class="portfolio-link">View in Portfolio →</a>
       </div>
     </div>
   </section>
 
-  <section class="content-section">
-    <h2 class="section-heading">Latest Posts</h2>
-    <ul style="list-style-type: none; padding: 0;">
+  <section class="section posts-section">
+    <h2 class="section-heading">Latest Writing</h2>
+    
+    <ul class="post-list">
       {% for post in site.posts limit:3 %}
-        <li class="post-list-item">
-          <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-          <span class="post-date">{{ post.date | date: "%Y년 %m월 %d일" }}</span>
+        <li class="post-item">
+          <h3 class="post-title">
+            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+          </h3>
+          <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y년 %m월 %d일" }}</time>
+          
+          {% if post.excerpt %}
+          <div class="post-excerpt">
+            {{ post.excerpt | strip_html | truncatewords: 50 }}
+          </div>
+          {% endif %}
+          
+          <a href="{{ post.url | relative_url }}" class="read-more">Read full article →</a>
         </li>
       {% endfor %}
     </ul>
-    <a href="{{ site.baseurl }}/blog" class="view-all">View all posts →</a>
+    
+    <a href="{{ site.baseurl }}/blog" class="view-all">View all articles</a>
   </section>
 </div> 
