@@ -33,4 +33,98 @@ a {
   a {
     margin-right: 15px;
   }
+}
+
+// Projects styling
+.project-card {
+  margin-bottom: 30px;
+  padding: 20px;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  transition: transform 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2 {
+    margin-top: 0;
+  }
+}
+
+.project-meta {
+  color: #777;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.technologies {
+  margin: 15px 0;
+}
+
+.tech-tag {
+  display: inline-block;
+  background-color: #f1f8ff;
+  border: 1px solid #c8e1ff;
+  border-radius: 3px;
+  padding: 3px 10px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+}
+
+.project-links {
+  margin-top: 20px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #0366d6;
+  color: white;
+  border-radius: 4px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  
+  &:hover {
+    background-color: #0056b3;
+    text-decoration: none;
+    color: white;
+  }
+}
+
+// Blog post styling
+.post-preview {
+  margin-bottom: 30px;
+}
+
+.post-categories, .post-tags {
+  margin: 8px 0;
+}
+
+.category-tag {
+  display: inline-block;
+  background-color: #e6f6e6;
+  border: 1px solid #c3e6cb;
+  border-radius: 3px;
+  padding: 2px 8px;
+  margin-right: 5px;
+  font-size: 0.85rem;
+}
+
+.tag {
+  display: inline-block;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 3px;
+  padding: 2px 8px;
+  margin-right: 5px;
+  font-size: 0.85rem;
+}
+
+.read-more-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-weight: 500;
 } 
