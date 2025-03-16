@@ -22,10 +22,13 @@ layout: default
     {% endif %}
     
     {% if page.tags.size > 0 %}
-    <div class="post-tags">
-      {% for tag in page.tags %}
-      <span class="tag">{{ tag }}</span>
-      {% endfor %}
+    <div class="post-tags-container">
+      <h4 class="tags-label">Tags:</h4>
+      <div class="post-tags">
+        {% for tag in page.tags %}
+        <a href="{{ site.baseurl }}/tags#{{ tag | slugify }}" class="tag">#{{ tag }}</a>
+        {% endfor %}
+      </div>
     </div>
     {% endif %}
   </header>
