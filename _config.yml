@@ -9,6 +9,19 @@ url: "https://yeokyeong-yoon.github.io" # the base hostname & protocol for your 
 
 # Build settings
 markdown: kramdown
+# Available themes for GitHub Pages:
+# - minima (current)
+# - architect
+# - cayman
+# - dinky
+# - hacker
+# - leap-day
+# - merlot
+# - midnight
+# - minimal
+# - slate
+# - tactile
+# - time-machine
 theme: minima
 remote_theme: jekyll/minima@v2.5.1
 plugins:

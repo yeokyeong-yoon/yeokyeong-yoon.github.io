@@ -1,0 +1,110 @@
+// Dark Mode Theme Variables
+$background-color: #1a1a1a;
+$text-color: #f5f5f5;
+$brand-color: #6c5ce7;
+$link-color: #a29bfe;
+$grey-color: #828282;
+$grey-color-light: lighten($grey-color, 40%);
+$grey-color-dark: darken($grey-color, 25%);
+$table-text-align: left;
+$spacing-unit: 30px;
+$content-width: 800px;
+$on-palm: 600px;
+$on-laptop: 800px;
+
+@import "minima";
+
+// Dark Mode Overrides
+body {
+  background-color: $background-color;
+  color: $text-color;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: $link-color;
+  
+  &:visited {
+    color: darken($link-color, 10%);
+  }
+  
+  &:hover {
+    color: lighten($link-color, 10%);
+    text-decoration: underline;
+  }
+}
+
+.site-header {
+  border-bottom: 1px solid $grey-color-dark;
+  background-color: darken($background-color,
+ 5%);
+}
+
+.site-title, .site-title:visited {
+  color: $brand-color;
+}
+
+.site-nav {
+  .page-link {
+    color: $text-color;
+  }
+}
+
+.site-footer {
+  border-top: 1px solid $grey-color-dark;
+  background-color: darken($background-color, 5%);
+}
+
+.post-meta {
+  color: darken($text-color, 25%);
+}
+
+// Project Cards
+.project-card {
+  background-color: darken($background-color, 3%);
+  border: 1px solid $grey-color-dark;
+  
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.tech-tag {
+  background-color: #2d3436;
+  border: 1px solid #636e72;
+  color: #dfe6e9;
+}
+
+.btn {
+  background-color: $brand-color;
+  
+  &:hover {
+    background-color: darken($brand-color, 10%);
+  }
+}
+
+// Blog Elements
+.category-tag {
+  background-color: #2d3748;
+  border: 1px solid #4a5568;
+  color: #e2e8f0;
+}
+
+.tag {
+  background-color: #1a202c;
+  border: 1px solid #4a5568;
+  color: #e2e8f0;
+}
+
+// Code blocks
+pre, code {
+  background-color: #2d3436;
+  border: 1px solid #4a5568;
+}
+
+blockquote {
+  border-left: 4px solid $grey-color;
+  color: darken($text-color, 15%);
+  background-color: darken($background-color, 3%);
+  padding: 15px;
+} 
