@@ -389,11 +389,14 @@ a {
 // 메타 정보 컨테이너 (카테고리 및 태그를 함께 표시)
 .post-meta-container {
   background: rgba($color-1, 0.1);
-  padding: $spacing-md;
+  padding: $spacing-md $spacing-lg;
   border-radius: $radius-lg;
   margin: $spacing-lg 0;
   border: 1px solid rgba($color-4, 0.2);
   box-shadow: $shadow-sm;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
 }
 
 // 메타 레이블 공통 스타일
@@ -401,62 +404,53 @@ a {
   font-size: 0.9rem;
   font-weight: 600;
   color: $color-9;
-  margin-right: $spacing-xs;
+  margin-right: $spacing-sm;
   font-family: 'Nunito', $font-family;
+  display: inline-block;
 }
 
-// 카테고리 스타일 개선
-.post-categories-container {
-  margin: 0;
-  display: inline-flex;
+// 카테고리 컨테이너
+.post-categories-container, .post-tags-container {
+  display: flex;
   align-items: center;
   flex-wrap: wrap;
+  gap: $spacing-xs;
 }
 
-.post-categories {
-  display: inline-flex; 
+// 카테고리와 태그 공통 스타일
+.post-categories, .post-tags {
+  display: inline-flex;
   flex-wrap: wrap;
   gap: $spacing-xs;
+  margin: 0;
+}
+
+// 카테고리 태그 스타일
+.category-tag {
+  display: inline-flex;
+  align-items: center;
+  background-color: rgba($category-color, 0.1);
+  color: $category-color;
+  border-radius: 15px;
+  padding: 0.2rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border-bottom: none;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  font-family: 'Nunito', $font-family;
+  letter-spacing: 0.01em;
   
-  .category-tag {
-    display: inline-flex;
-    align-items: center;
-    background-color: rgba($category-color, 0.1);
-    color: $category-color;
-    border-radius: 15px;
-    padding: 0.2rem 0.8rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: all 0.2s ease;
+  &:hover {
+    background-color: rgba($category-color, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+    text-decoration: none;
     border-bottom: none;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    font-family: 'Nunito', $font-family;
-    letter-spacing: 0.01em;
-    
-    &:hover {
-      background-color: rgba($category-color, 0.2);
-      transform: translateY(-2px);
-      box-shadow: 0 3px 5px rgba(0,0,0,0.1);
-      text-decoration: none;
-      border-bottom: none;
-    }
   }
 }
 
-// 태그 스타일 개선
-.post-tags-container {
-  margin: 0;
-  display: inline-flex;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.post-tags {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: $spacing-xs;
-}
-
+// 태그 스타일
 .tag {
   display: inline-flex;
   align-items: center;
