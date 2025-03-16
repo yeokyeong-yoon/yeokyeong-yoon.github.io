@@ -37,6 +37,10 @@ title: Home
     max-width: 1000px;
   }
   
+  .hero-title .short-name {
+    display: none;
+  }
+  
   .hero-subtitle {
     font-size: 2.5rem;
     line-height: 1.2;
@@ -288,11 +292,34 @@ title: Home
       gap: 15px;
     }
   }
+  
+  @media (max-width: 480px) {
+    .hero-title {
+      font-size: 12vw;
+      word-break: break-word;
+      hyphens: auto;
+    }
+    
+    .hero-title .full-name {
+      display: none;
+    }
+    
+    .hero-title .short-name {
+      display: inline;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.5rem;
+    }
+  }
 </style>
 
 <div class="home-container">
   <section class="hero">
-    <h1 class="hero-title">yeokyeong.yoon</h1>
+    <h1 class="hero-title">
+      <span class="full-name">yeokyeong.yoon</span>
+      <span class="short-name">y.yoon</span>
+    </h1>
     <p class="hero-subtitle">Software Engineer embracing diverse challenges across domains — tools and languages are just vehicles for solving interesting problems</p>
     
     <div class="contact-container">

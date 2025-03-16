@@ -159,6 +159,24 @@ a {
     font-weight: 700;
     color: $color-9;
     letter-spacing: -0.02em;
+    
+    .short-name {
+      display: none;
+    }
+  }
+  
+  @media screen and (max-width: 480px) {
+    .site-title {
+      font-size: 1em;
+      
+      .full-name {
+        display: none;
+      }
+      
+      .short-name {
+        display: inline;
+      }
+    }
   }
 
   .site-nav {
