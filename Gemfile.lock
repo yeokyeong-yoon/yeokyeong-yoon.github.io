@@ -259,6 +259,7 @@ PLATFORMS
 DEPENDENCIES
   github-pages
   jekyll-feed (~> 0.12)
+  jekyll-remote-theme
   jekyll-seo-tag (~> 2.7)
   jekyll-sitemap (~> 1.4)
   minima (~> 2.5)

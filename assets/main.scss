@@ -1,13 +1,6 @@
-// Define the minima theme variables that might be missing
-$grey-color: #828282 !default;
-$grey-color-light: lighten($grey-color, 40%) !default;
-$grey-color-dark: darken($grey-color, 25%) !default;
-
 @import "minima";
 
-/* Custom styles for the GitHub blog */
-
-/* General styles */
+// Custom styles
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   line-height: 1.6;
@@ -17,13 +10,13 @@ body {
 a {
   color: #0366d6;
   text-decoration: none;
+  
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
-a:hover {
-  text-decoration: underline;
-}
-
-/* Header and navigation */
+// Header and navigation
 .site-header {
   border-bottom: 1px solid #e8e8e8;
   padding: 15px 0;
@@ -36,106 +29,8 @@ a:hover {
 
 .site-nav {
   margin-top: 10px;
-}
-
-.site-nav a {
-  margin-right: 15px;
-}
-
-/* Post listings */
-.post-preview {
-  margin-bottom: 30px;
-}
-
-.post-preview h2 {
-  margin-bottom: 10px;
-}
-
-.post-meta {
-  color: #777;
-  font-size: 0.9rem;
-  margin-bottom: 15px;
-}
-
-/* Project cards */
-.project-card {
-  border: 1px solid #e1e4e8;
-  border-radius: 6px;
-  padding: 20px;
-  margin-bottom: 20px;
-  transition: transform 0.2s ease-in-out;
-}
-
-.project-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.project-card h3 {
-  margin-top: 0;
-}
-
-/* Project details */
-.project-header {
-  margin-bottom: 30px;
-}
-
-.project-meta {
-  color: #777;
-  margin-bottom: 20px;
-}
-
-.tech-tag {
-  display: inline-block;
-  background-color: #f1f8ff;
-  border: 1px solid #c8e1ff;
-  border-radius: 3px;
-  padding: 0 10px;
-  margin-right: 5px;
-  font-size: 0.85rem;
-}
-
-.project-links {
-  margin: 30px 0;
-}
-
-.btn {
-  display: inline-block;
-  padding: 8px 16px;
-  background-color: #0366d6;
-  color: white;
-  border-radius: 4px;
-  margin-right: 10px;
-}
-
-.btn:hover {
-  background-color: #0056b3;
-  text-decoration: none;
-}
-
-.project-navigation {
-  display: flex;
-  justify-content: space-between;
-  margin: 30px 0;
-  border-top: 1px solid #e8e8e8;
-  padding-top: 20px;
-}
-
-/* Footer */
-.site-footer {
-  border-top: 1px solid #e8e8e8;
-  padding: 30px 0;
-  margin-top: 60px;
-  text-align: center;
-  color: #777;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .project-navigation {
-    flex-direction: column;
-  }
-  .next-project {
-    margin-top: 10px;
+  
+  a {
+    margin-right: 15px;
   }
 } 

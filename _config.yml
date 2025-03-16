@@ -10,7 +10,7 @@ url: "https://yeokyeong-yoon.github.io" # the base hostname & protocol for your 
 # Build settings
 markdown: kramdown
 theme: minima
-remote_theme: jekyll/minima
+remote_theme: jekyll/minima@v2.5.1
 plugins:
   - jekyll-feed
   - jekyll-seo-tag

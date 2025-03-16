@@ -1,9 +1,0 @@
-// Define the minima theme variables that might be missing
-$grey-color: #828282 !default;
-$grey-color-light: lighten($grey-color, 40%) !default;
-$grey-color-dark: darken($grey-color, 25%) !default;
-
-@import "minima";
-
-// This file intentionally imports the theme and doesn't add any additional styling.
-// Custom styles are in assets/main.scss 
