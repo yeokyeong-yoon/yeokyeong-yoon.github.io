@@ -209,40 +209,44 @@ a {
   
   // 인라인 코드
   code {
-    background: $code-background;
-    padding: 0.15em 0.4em;
+    background: rgba($color-1, 0.2);
+    color: $color-8;
+    padding: 0.2em 0.4em;
     border-radius: $radius-sm;
     font-size: 0.9em;
     font-family: $monospace-font;
-    color: $code-color;
-    border: 1px solid $code-border;
+    border: 1px solid rgba($color-4, 0.2);
   }
   
   // 코드 블록
   pre {
-    background: $light-bg;
-    color: $text-color;
+    background: rgba($color-1, 0.1);
+    color: $color-10;
     padding: $spacing-lg;
-    border-radius: $radius-sm;
+    border-radius: $radius-lg;
     overflow-x: auto;
     margin: $spacing-lg 0;
-    border: 1px solid $gray1;
+    border: 1px solid rgba($color-4, 0.3);
     box-shadow: $shadow-sm;
     
     code {
       background: transparent;
-      color: $text-color;
+      color: $color-10;
       padding: 0;
       border: none;
-      font-size: 0.85em;
+      font-size: 0.9em;
       line-height: 1.6;
+      font-family: $monospace-font;
     }
   }
   
   // 제목 여백
-  h2, h3, h4 {
+  h2 {
+    color: $color-9;
+    font-size: 1.5em;
     margin-top: $spacing-xxl;
-    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-sm;
+    border-bottom: 2px solid rgba($color-4, 0.3);
   }
   
   // 리스트
@@ -255,7 +259,11 @@ a {
       padding-left: $spacing-xs;
       
       &::marker {
-        color: $accent;
+        color: $color-6;
+      }
+
+      p {
+        margin-bottom: $spacing-sm;
       }
     }
   }
@@ -294,12 +302,12 @@ a {
 // 다이어그램 스타일 개선
 .mermaid {
   background: $light-bg;
-  padding: $spacing-lg;
-  border-radius: $radius-sm;
+  padding: $spacing-xl;
+  border-radius: $radius-lg;
   margin: $spacing-xl 0;
   border: 1px solid $gray2;
   text-align: center;
-  box-shadow: $shadow-sm;
+  box-shadow: $shadow-md;
   overflow: auto;
   
   svg {
@@ -307,26 +315,48 @@ a {
     height: auto !important;
     
     .actor {
-      fill: #f5f5f7 !important;
-      stroke: $gray3 !important;
-    }
-    
-    .messageLine0, .messageLine1 {
-      stroke: $accent !important;
+      fill: rgba($color-1, 0.3) !important;
+      stroke: $color-6 !important;
+      stroke-width: 1.5px !important;
     }
     
     .messageText {
-      fill: $text-color !important;
+      fill: $color-9 !important;
+      font-size: 12px !important;
+      font-family: $monospace-font !important;
+    }
+    
+    .messageLine0, .messageLine1 {
+      stroke: $color-7 !important;
+      stroke-width: 1.5px !important;
     }
     
     .loopText, .loopLine {
-      fill: $text-color !important;
-      stroke: $gray3 !important;
+      fill: $color-8 !important;
+      stroke: $color-6 !important;
     }
     
-    .clusters rect {
-      fill: #f5f5f7 !important;
-      stroke: $gray3 !important;
+    .note {
+      fill: rgba($color-2, 0.3) !important;
+      stroke: $color-6 !important;
+    }
+    
+    .cluster rect {
+      fill: rgba($color-1, 0.1) !important;
+      stroke: $color-6 !important;
+      stroke-width: 1.5px !important;
+    }
+
+    .actor-line {
+      stroke: $color-4 !important;
+      stroke-width: 1px !important;
+    }
+
+    text.actor {
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      font-family: $heading-font !important;
+      fill: $color-9 !important;
     }
   }
 }
@@ -340,29 +370,30 @@ a {
   }
   
   .post-title {
-    font-size: 1.9em; // 크기 축소
-    margin-bottom: $spacing-sm;
+    font-size: 2em !important;
+    color: $color-10;
+    margin-bottom: $spacing-lg;
     line-height: 1.3;
+    font-weight: 700;
     letter-spacing: -0.03em;
-    word-break: keep-all;
-    color: $heading-color;
   }
   
   .post-meta {
-    color: $muted-text-color;
-    font-size: 0.9rem;
-    margin-bottom: $spacing-lg;
+    color: $color-7;
+    font-size: 0.95em;
+    margin-bottom: $spacing-md;
+    font-family: $heading-font;
   }
 }
 
 // 메타 정보 컨테이너 (카테고리 및 태그를 함께 표시)
 .post-meta-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $spacing-md;
-  margin: $spacing-md 0;
-  align-items: center;
-  line-height: 1.7;
+  background: rgba($color-1, 0.1);
+  padding: $spacing-md;
+  border-radius: $radius-lg;
+  margin: $spacing-lg 0;
+  border: 1px solid rgba($color-4, 0.2);
+  box-shadow: $shadow-sm;
 }
 
 // 메타 레이블 공통 스타일
