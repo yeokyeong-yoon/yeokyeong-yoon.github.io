@@ -293,7 +293,7 @@ title: Home
 <div class="home-container">
   <section class="hero">
     <h1 class="hero-title">yeokyeong.yoon</h1>
-    <p class="hero-subtitle">Crafting elegant solutions at the intersection of technology and human experience — where code meets creativity</p>
+    <p class="hero-subtitle">Software Engineer embracing diverse challenges across domains — tools and languages are just vehicles for solving interesting problems</p>
     
     <div class="contact-container">
       <div class="contact-links">
@@ -302,15 +302,10 @@ title: Home
           <span class="contact-value">yeokyeongy@gmail.com</span>
         </a>
         
-        <a href="https://www.linkedin.com/in/yeokyeong-yoon/" class="contact-link" target="_blank">
+        <a href="https://www.linkedin.com/in/yeokyeongyoon" class="contact-link" target="_blank">
           <span class="contact-label">LinkedIn</span>
           <span class="contact-value">yeokyeong-yoon</span>
           <span class="contact-note">(English)</span>
-        </a>
-        
-        <a href="https://github.com/yeokyeong-yoon" class="contact-link" target="_blank">
-          <span class="contact-label">GitHub</span>
-          <span class="contact-value">yeokyeong-yoon</span>
         </a>
         
         <a href="https://polished-chicken-aca.notion.site/Yeokyeong-Yoon-19a67bf8bfe280519aaaf36d8d299044" class="contact-link" target="_blank">
@@ -318,62 +313,31 @@ title: Home
           <span class="contact-value">Notion Portfolio</span>
           <span class="contact-note">(Korean)</span>
         </a>
+
+        <a href="https://github.com/yeokyeong-yoon" class="contact-link" target="_blank">
+          <span class="contact-label">GitHub</span>
+          <span class="contact-value">yeokyeong-yoon</span>
+        </a>
         
-        <div class="contact-link">
-          <span class="contact-label">Blog</span>
-          <a href="{{ site.baseurl }}/blog" class="contact-value">Articles</a>
-          <span class="contact-note">|</span>
-          <a href="{{ site.baseurl }}/tags" class="contact-value" style="margin-left: 10px;">Categories & Tags</a>
-        </div>
       </div>
     </div>
   </section>
 
   <section class="section">
-    <h2 class="section-heading">Featured Projects</h2>
-    
-    <div class="portfolio-grid">
-      <div class="portfolio-item">
-        <h3 class="portfolio-title">Feature Flag System</h3>
-        <p class="portfolio-desc">Designed and implemented a scalable feature flag system that enables controlled feature rollouts, A/B testing, and targeted releases to specific user segments.</p>
-        <a href="{{ site.baseurl }}/posts/feature-flag/" class="portfolio-link">View Case Study →</a>
-      </div>
-      
-      <div class="portfolio-item">
-        <h3 class="portfolio-title">Event-Driven Architecture</h3>
-        <p class="portfolio-desc">Built a resilient event-driven system for high-throughput data processing, enabling real-time analytics and seamless service communication.</p>
-        <a href="https://github.com/yeokyeong-yoon" class="portfolio-link">View on GitHub →</a>
-      </div>
-      
-      <div class="portfolio-item">
-        <h3 class="portfolio-title">Microservice Migration</h3>
-        <p class="portfolio-desc">Led the migration from monolith to microservices for improved scalability, resulting in 40% faster deployment cycles and enhanced system resilience.</p>
-        <a href="https://polished-chicken-aca.notion.site/Yeokyeong-Yoon-19a67bf8bfe280519aaaf36d8d299044" class="portfolio-link">View in Portfolio →</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="section posts-section">
     <h2 class="section-heading">Latest Writing</h2>
     
-    <ul class="post-list">
+    <div class="portfolio-grid">
       {% for post in site.posts limit:3 %}
-        <li class="post-item">
-          <h3 class="post-title">
-            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-          </h3>
-          <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y년 %m월 %d일" }}</time>
-          
-          {% if post.excerpt %}
-          <div class="post-excerpt">
-            {{ post.excerpt | strip_html | truncatewords: 50 }}
-          </div>
-          {% endif %}
-          
-          <a href="{{ post.url | relative_url }}" class="read-more">Read full article →</a>
-        </li>
+      <div class="portfolio-item">
+        <h3 class="portfolio-title">{{ post.title }}</h3>
+        <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y년 %m월 %d일" }}</time>
+        {% if post.excerpt %}
+        <p class="portfolio-desc">{{ post.excerpt | strip_html | truncatewords: 30 }}</p>
+        {% endif %}
+        <a href="{{ post.url | relative_url }}" class="portfolio-link">Read full article →</a>
+      </div>
       {% endfor %}
-    </ul>
+    </div>
     
     <a href="{{ site.baseurl }}/blog" class="view-all">View all articles</a>
   </section>
