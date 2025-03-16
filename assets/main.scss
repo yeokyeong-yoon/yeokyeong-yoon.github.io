@@ -520,39 +520,63 @@ a {
   }
 }
 
-// 태그 페이지
+// Tags page styling
 .tags-page {
-  .filter-intro {
-    text-align: center;
-    margin-bottom: $spacing-xxl;
-    
-    p {
-      font-size: 1.2em;
-      color: $color-7;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-  }
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 $spacing-unit;
 
   .filter-section {
-    background: white;
-    padding: $spacing-xl;
-    border-radius: $radius-lg;
-    margin-bottom: $spacing-xl;
-    border: 1px solid rgba($color-4, 0.1);
-    box-shadow: $shadow-sm;
+    margin-bottom: $spacing-xxl;
 
     h2 {
+      font-size: 1.8em;
       color: $color-9;
-      font-size: 1.6em;
       margin-bottom: $spacing-lg;
       font-weight: 700;
+      letter-spacing: -0.02em;
     }
 
     .filter-list {
       display: flex;
       flex-wrap: wrap;
       gap: $spacing-sm;
+    }
+
+    .category-tag, .tag {
+      font-size: 1em;
+      padding: $spacing-sm $spacing-lg;
+      border-radius: 20px;
+      color: $color-8;
+      background: white;
+      border: 2px solid rgba($color-4, 0.2);
+      transition: all 0.2s ease;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba($color-4, 0.1);
+      
+      &:hover {
+        transform: translateY(-2px) scale(1.05);
+        border-color: $color-8;
+        box-shadow: 0 4px 8px rgba($color-4, 0.2);
+      }
+    }
+
+    .category-tag {
+      background: linear-gradient(135deg, rgba($color-1, 0.5), rgba($color-3, 0.5));
+      border-color: rgba($color-4, 0.3);
+      
+      &:hover {
+        background: linear-gradient(135deg, rgba($color-1, 0.7), rgba($color-3, 0.7));
+      }
+    }
+
+    .tag {
+      background: linear-gradient(135deg, rgba($color-5, 0.5), rgba($color-7, 0.5));
+      border-color: rgba($color-8, 0.3);
+      
+      &:hover {
+        background: linear-gradient(135deg, rgba($color-5, 0.7), rgba($color-7, 0.7));
+      }
     }
   }
 
@@ -570,14 +594,19 @@ a {
     }
 
     .filter-title {
-      color: $color-9;
       font-size: 1.4em;
+      color: $color-8;
       margin-bottom: $spacing-lg;
       padding-bottom: $spacing-sm;
       border-bottom: 2px solid rgba($color-4, 0.1);
+      font-weight: 700;
     }
 
     .post-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
       li {
         display: flex;
         justify-content: space-between;
@@ -589,9 +618,10 @@ a {
         }
 
         a {
-          color: $color-8;
+          color: $color-9;
           font-weight: 500;
           transition: all 0.2s ease;
+          border-bottom: none;
           
           &:hover {
             color: $color-6;
@@ -602,6 +632,7 @@ a {
         .post-date {
           color: $color-7;
           font-size: 0.9em;
+          font-family: $heading-font;
         }
       }
     }
@@ -625,8 +656,8 @@ a {
     transition: all 0.2s ease;
     
     &:hover {
-      color: $accent;
-      background-color: rgba($accent, 0.05);
+      color: $accent-color;
+      background-color: rgba($accent-color, 0.05);
     }
   }
 }
@@ -1185,6 +1216,35 @@ a {
 
     .post-content {
       font-size: 1.1em;
+    }
+  }
+
+  .tags-page {
+    padding: 0 $spacing-md;
+
+    .filter-section {
+      .category-tag, .tag {
+        font-size: 0.9em;
+        padding: $spacing-xs $spacing-md;
+      }
+    }
+
+    .filter-group {
+      padding: $spacing-lg;
+
+      .filter-title {
+        font-size: 1.2em;
+      }
+
+      .post-list li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: $spacing-xs;
+
+        .post-date {
+          font-size: 0.85em;
+        }
+      }
     }
   }
 } 
