@@ -6,7 +6,7 @@ layout: default
     <h1 class="post-title">{{ page.title | escape }}</h1>
     <div class="post-meta">
       <time datetime="{{ page.date | date_to_xmlschema }}">
-        {{ page.date | date: "%B %-d, %Y" }}
+        {{ page.date | date: "%Y년 %m월 %d일" }}
       </time>
       {% if page.author %}
         • <span>{{ page.author }}</span>
@@ -14,10 +14,13 @@ layout: default
     </div>
     
     {% if page.categories.size > 0 %}
-    <div class="post-categories">
-      {% for category in page.categories %}
-      <span class="category-tag">{{ category }}</span>
-      {% endfor %}
+    <div class="post-categories-container">
+      <h4 class="categories-label">Categories:</h4>
+      <div class="post-categories">
+        {% for category in page.categories %}
+        <span class="category-tag">{{ category }}</span>
+        {% endfor %}
+      </div>
     </div>
     {% endif %}
     
