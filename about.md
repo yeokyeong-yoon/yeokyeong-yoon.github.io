@@ -20,7 +20,7 @@ permalink: /about/
   }
   
   .intro {
-    margin-bottom: 120px;
+    margin-bottom: 100px;
     max-width: 800px;
   }
   
@@ -42,14 +42,14 @@ permalink: /about/
     font-weight: 400;
   }
   
-  .quick-links {
+  .contact-links {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
     margin-top: 60px;
   }
   
-  .quick-link {
+  .contact-link {
     display: inline-block;
     padding: 12px 24px;
     color: rgba(0, 0, 0, 0.6);
@@ -61,18 +61,18 @@ permalink: /about/
     border-radius: 99px;
   }
   
-  .quick-link:hover {
+  .contact-link:hover {
     background: rgba(0, 0, 0, 0.03);
     color: rgba(0, 0, 0, 0.8);
   }
   
-  .quick-link.notion-link {
+  .contact-link.primary {
     background: #000;
     color: white;
     border: none;
   }
   
-  .quick-link.notion-link:hover {
+  .contact-link.primary:hover {
     background: #333;
   }
   
@@ -102,15 +102,6 @@ permalink: /about/
   
   .content-section p {
     margin-bottom: 30px;
-  }
-  
-  .content-section ul {
-    padding-left: 20px;
-    margin-bottom: 30px;
-  }
-  
-  .content-section li {
-    margin-bottom: 15px;
   }
   
   .post-list-item {
@@ -150,6 +141,47 @@ permalink: /about/
     color: rgba(0, 0, 0, 0.6);
   }
   
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+  }
+  
+  .portfolio-item {
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 12px;
+    padding: 30px;
+    transition: all 0.3s ease;
+  }
+  
+  .portfolio-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  }
+  
+  .portfolio-title {
+    font-size: 1.5em;
+    font-weight: 700;
+    margin: 0 0 15px;
+  }
+  
+  .portfolio-desc {
+    color: rgba(0, 0, 0, 0.7);
+    margin-bottom: 20px;
+  }
+  
+  .portfolio-link {
+    display: inline-block;
+    color: #000;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  
+  .portfolio-link:hover {
+    text-decoration: underline;
+  }
+  
   @media (max-width: 768px) {
     .page-heading {
       font-size: 5em;
@@ -162,38 +194,50 @@ permalink: /about/
     .about-page {
       padding: 80px 24px;
     }
+    
+    .portfolio-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 
 <div class="about-page">
   <section class="intro">
     <h1 class="page-heading">yeokyeong.yoon</h1>
-    <p class="intro-text">Software developer sharing insights about system design and development experiences</p>
-    <div class="quick-links">
-      <a href="{{ site.baseurl }}/blog" class="quick-link">Blog</a>
-      <a href="{{ site.baseurl }}/tags" class="quick-link">Tags</a>
-      <a href="https://polished-chicken-aca.notion.site/Yeokyeong-Yoon-19a67bf8bfe280519aaaf36d8d299044" class="quick-link notion-link" target="_blank">Portfolio</a>
+    <p class="intro-text">Backend Developer</p>
+    
+    <div class="contact-links">
+      <a href="https://polished-chicken-aca.notion.site/Yeokyeong-Yoon-19a67bf8bfe280519aaaf36d8d299044" class="contact-link primary" target="_blank">Portfolio</a>
+      <a href="https://www.linkedin.com/in/yeokyeong-yoon/" class="contact-link" target="_blank">LinkedIn</a>
+      <a href="https://github.com/yeokyeong-yoon" class="contact-link" target="_blank">GitHub</a>
+      <a href="mailto:yeokyeong.yoon@gmail.com" class="contact-link" target="_blank">Email</a>
+      <a href="{{ site.baseurl }}/blog" class="contact-link">Blog</a>
+      <a href="{{ site.baseurl }}/tags" class="contact-link">Tags</a>
     </div>
   </section>
 
   <section class="content-section">
-    <h2 class="section-heading">About Me</h2>
+    <h2 class="section-heading">Featured Projects</h2>
     
-    <p>I'm a software developer with a passion for building elegant, efficient systems. My expertise lies in backend development, system design, and creating scalable solutions for complex problems.</p>
-    
-    <h3>Experience</h3>
-    <p>I've worked on various projects ranging from e-commerce platforms to content management systems. My focus has been on creating robust architectures that can handle high traffic and complex business logic.</p>
-    
-    <h3>Skills</h3>
-    <ul>
-      <li>Backend Development: Java, Spring Framework, Node.js</li>
-      <li>System Design: Microservices, Event-driven architecture</li>
-      <li>Database: SQL, NoSQL, Data modeling</li>
-      <li>DevOps: CI/CD, Docker, Kubernetes</li>
-    </ul>
-    
-    <h3>Current Focus</h3>
-    <p>I'm currently exploring distributed systems and how to design resilient applications that can scale effectively. I'm also interested in performance optimization and how to make systems more efficient.</p>
+    <div class="portfolio-grid">
+      <div class="portfolio-item">
+        <h3 class="portfolio-title">Feature Flag System</h3>
+        <p class="portfolio-desc">Designed and implemented a scalable feature flag system for controlled feature rollouts.</p>
+        <a href="{{ site.baseurl }}/posts/feature-flag/" class="portfolio-link">View Case Study →</a>
+      </div>
+      
+      <div class="portfolio-item">
+        <h3 class="portfolio-title">Event-Driven Architecture</h3>
+        <p class="portfolio-desc">Built a resilient event-driven system for high-throughput data processing.</p>
+        <a href="https://github.com/yeokyeong-yoon" class="portfolio-link">View on GitHub →</a>
+      </div>
+      
+      <div class="portfolio-item">
+        <h3 class="portfolio-title">Microservice Migration</h3>
+        <p class="portfolio-desc">Led the migration from monolith to microservices for improved scalability.</p>
+        <a href="https://polished-chicken-aca.notion.site/Yeokyeong-Yoon-19a67bf8bfe280519aaaf36d8d299044" class="portfolio-link">View in Portfolio →</a>
+      </div>
+    </div>
   </section>
 
   <section class="content-section">
