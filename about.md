@@ -4,7 +4,11 @@ title: About
 permalink: /about/
 ---
 
-## Hi, I'm Yoon
+# 윤여경 (Yeokyeong Yoon)
+
+<div class="location">Seoul, South Korea</div>
+
+## About Me
 
 Welcome to my blog! I'm a software developer with a passion for building elegant, efficient, and user-friendly applications.
 
@@ -19,8 +23,19 @@ I have experience in:
 
 ### Portfolio & Resume
 
-You can find my detailed portfolio, project experiences, and resume on my [Notion Portfolio](https://polished-chicken-aca.notion.site/Yeokyeong-Yoon-19a67bf8bfe280519aaaf36d8d299044). I keep it regularly updated with my latest work and achievements.
+<div class="portfolio-section">
+Check out my detailed portfolio and resume:
 
-### Get in touch
+* [📌 Portfolio on Notion](https://polished-chicken-aca.notion.site/Yeokyeong-Yoon-19a67bf8bfe280519aaaf36d8d299044)
+* [📎 Resume](https://docs.google.com/document/d/e/2PACX-1vQ89-o6Af_Pc1VAHxXySZPjQIoBZXhrqwISkzdC1gQ_ErF7smHgtld-qOSzdEfX40zHSxBC27uSvUSl/pub)
 
-Feel free to reach out to me on GitHub or via email at yeokyeongy@gmail.com. 
+> This portfolio is created in Notion and is best viewed online for an optimized experience.
+</div>
+
+### Contact
+
+<div class="contact-links">
+* **Email:** [yeokyeongy@gmail.com](mailto:yeokyeongy@gmail.com)
+* **LinkedIn:** [linkedin.com/in/yeokyeongyoon](https://www.linkedin.com/in/yeokyeongyoon/)
+* **GitHub:** [github.com/yeokyeong-yoon](https://github.com/yeokyeong-yoon)
+</div> 

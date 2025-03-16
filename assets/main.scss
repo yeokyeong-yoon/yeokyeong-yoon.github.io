@@ -861,4 +861,135 @@ a {
       grid-template-columns: repeat(2, 1fr);
     }
   }
+}
+
+// Notion link styling
+.notion-link {
+  &.quick-link {
+    background: linear-gradient(135deg, #2E3437, #37352F);
+    color: white !important;
+    border: none;
+    
+    &:hover {
+      background: #37352F;
+      transform: translateY(-2px);
+    }
+  }
+  
+  &:not(.quick-link) {
+    color: #37352F;
+    font-weight: 600;
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    background: rgba(55, 53, 47, 0.08);
+    transition: all 0.2s ease;
+    text-decoration: none;
+    
+    &:hover {
+      background: rgba(55, 53, 47, 0.16);
+    }
+  }
+}
+
+// Portfolio section styling
+.portfolio-section {
+  background: rgba($color-1, 0.05);
+  padding: $spacing-lg;
+  border-radius: $radius-lg;
+  border: 1px solid rgba($color-4, 0.1);
+  margin: $spacing-md 0;
+  
+  ul {
+    margin: $spacing-md 0 $spacing-lg;
+    padding-left: $spacing-lg;
+    
+    li {
+      margin-bottom: $spacing-xs;
+      color: $color-8;
+      
+      &::marker {
+        color: $color-6;
+      }
+      
+      a {
+        display: inline-flex;
+        align-items: center;
+        gap: $spacing-xs;
+        color: $color-8;
+        font-weight: 600;
+        padding: $spacing-xs $spacing-sm;
+        border-radius: $radius-sm;
+        background: rgba($color-1, 0.3);
+        transition: all 0.2s ease;
+        border-bottom: none;
+        
+        &:hover {
+          background: rgba($color-1, 0.5);
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+  
+  blockquote {
+    margin: $spacing-md 0 0;
+    padding: $spacing-md;
+    background: rgba($color-1, 0.2);
+    border-left: 3px solid $color-4;
+    border-radius: $radius-sm;
+    font-style: italic;
+    color: $color-8;
+  }
+}
+
+// Contact links styling
+.contact-links {
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: $spacing-md 0;
+    
+    li {
+      margin-bottom: $spacing-sm;
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      
+      strong {
+        color: $color-9;
+        min-width: 80px;
+      }
+      
+      a {
+        color: $color-7;
+        text-decoration: none;
+        padding: $spacing-xs $spacing-sm;
+        border-radius: $radius-sm;
+        background: rgba($color-1, 0.2);
+        transition: all 0.2s ease;
+        border-bottom: none;
+        
+        &:hover {
+          background: rgba($color-1, 0.4);
+          color: $color-8;
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+}
+
+// Location styling
+.location {
+  color: $color-7;
+  font-size: 1.1em;
+  margin: $spacing-md 0 $spacing-xl;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  
+  &::before {
+    content: "📍";
+    font-size: 1.2em;
+  }
 } 
