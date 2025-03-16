@@ -162,14 +162,23 @@ a {
   margin-top: 0;
   
   .page-link {
-    color: $muted-text-color;
+    background: rgba($color-1, 0.1);
+    padding: $spacing-xs $spacing-md;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    margin-left: $spacing-md;
     font-weight: 500;
-    font-size: 0.95rem;
-    margin-left: $spacing-lg;
     border-bottom: none;
-    
-    &:hover {
-      color: $accent;
+    color: $color-8;
+
+    &:hover, &.active {
+      background: rgba($color-6, 0.1);
+      transform: translateY(-1px);
+      color: $color-6;
+    }
+
+    &:first-child {
+      margin-left: 0;
     }
   }
 }
@@ -847,36 +856,34 @@ a {
   }
 }
 
-// 네비게이션 개선
-.site-nav {
-  .page-link {
-    background: rgba($color-1, 0.1);
-    padding: $spacing-xs $spacing-md;
-    border-radius: 20px;
+// Quick links improvement
+.quick-links {
+  .quick-link {
+    padding: $spacing-sm $spacing-lg;
+    border-radius: 25px;
+    font-weight: 600;
+    color: $color-8;
+    background: white;
+    border: 1px solid rgba($color-4, 0.2);
     transition: all 0.3s ease;
+    box-shadow: $shadow-sm;
 
     &:hover {
-      background: rgba($color-6, 0.1);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      background: $color-8;
+      color: white;
+      box-shadow: $shadow-md;
     }
-  }
-}
 
-// 포스트 카드 개선
-.post-card {
-  .post-card-content {
-    padding: $spacing-xl;
-  }
-
-  .post-link a {
-    font-size: 1.5em;
-    margin-bottom: $spacing-md;
-  }
-
-  .post-excerpt {
-    font-size: 1em;
-    line-height: 1.7;
-    color: $color-8;
+    &.notion-link {
+      background: linear-gradient(135deg, #2E3437, #37352F);
+      color: white !important;
+      border: none;
+      
+      &:hover {
+        background: #37352F;
+      }
+    }
   }
 }
 
