@@ -538,31 +538,42 @@ a {
   }
 }
 
+// Reset button styles completely
+button {
+  all: unset;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
 // Tags page styling
 .tags-page {
-  max-width: 1000px;
+  max-width: 800px;
   margin: 0 auto;
-  padding: $spacing-xl $spacing-lg;
+  padding: 40px 20px;
 
   .filter-bar {
     position: sticky;
     top: 0;
     background: rgba(255, 255, 255, 0.98);
-    padding: $spacing-xl 0;
-    margin-bottom: $spacing-xxl;
+    padding: 20px;
+    margin-bottom: 60px;
     backdrop-filter: blur(10px);
     z-index: 100;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    text-align: center;
     
     .search-input {
       width: 100%;
-      padding: $spacing-md $spacing-lg;
-      font-size: 1em;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 12px 20px;
+      font-size: 16px;
       border: none;
-      border-radius: 25px;
+      border-radius: 20px;
       background: rgba(0, 0, 0, 0.05);
       color: rgba(0, 0, 0, 0.8);
       transition: all 0.2s ease;
+      display: inline-block;
       
       &:focus {
         outline: none;
@@ -577,59 +588,40 @@ a {
     .active-filters {
       display: flex;
       flex-wrap: wrap;
-      gap: $spacing-sm;
-      margin-top: $spacing-lg;
-
-      .active-filter {
-        display: inline-flex;
-        align-items: center;
-        padding: $spacing-xs $spacing-md;
-        background: rgba(0, 0, 0, 0.05);
-        color: rgba(0, 0, 0, 0.6);
-        border-radius: 20px;
-        font-size: 0.9em;
-        font-weight: 400;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        
-        &:hover {
-          background: rgba(0, 0, 0, 0.1);
-        }
-
-        &::after {
-          content: "×";
-          margin-left: $spacing-xs;
-          font-size: 1.2em;
-          opacity: 0.6;
-        }
-      }
+      gap: 8px;
+      margin-top: 15px;
+      justify-content: center;
     }
   }
 
   .filter-section {
     background: white;
-    padding: $spacing-xl 0 $spacing-xxl;
-    margin-bottom: $spacing-xxl;
+    padding: 20px;
+    margin-bottom: 60px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
 
     .filter-list {
       display: flex;
       flex-wrap: wrap;
-      gap: $spacing-sm;
+      gap: 10px;
+      justify-content: center;
     }
 
     .filter-btn {
-      font-size: 0.9em;
-      padding: $spacing-xs $spacing-md;
+      display: inline-flex;
+      align-items: center;
+      font-size: 14px;
+      padding: 6px 12px;
       border-radius: 20px;
-      border: none;
       background: rgba(0, 0, 0, 0.05);
+      color: rgba(0, 0, 0, 0.6);
       cursor: pointer;
       transition: all 0.2s ease;
-      font-weight: 400;
-      color: rgba(0, 0, 0, 0.6);
-      outline: none;
-      box-shadow: none;
+      user-select: none;
       
       &:hover {
         background: rgba(0, 0, 0, 0.08);
@@ -639,35 +631,31 @@ a {
         background: rgba(0, 0, 0, 0.1);
         color: rgba(0, 0, 0, 0.8);
       }
-
-      &.category-tag, &.tag {
-        border: none;
-        outline: none;
-        box-shadow: none;
-      }
     }
   }
 
   .posts-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
     .post-item {
-      background: white;
-      padding: $spacing-xl 0;
-      border-radius: 0;
-      margin-bottom: $spacing-xl;
-      border: none;
+      padding: 20px 0;
+      margin-bottom: 30px;
       border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-      transition: all 0.2s ease;
 
       .post-title {
-        margin: 0 0 $spacing-md;
+        margin: 0 0 15px;
         
         a {
           color: rgba(0, 0, 0, 0.8);
-          font-size: 1.15em;
-          font-weight: 600;
-          line-height: 1.3;
+          font-size: 16px !important;
+          font-weight: 500;
+          line-height: 1.4;
           border-bottom: none;
-          transition: color 0.2s ease;
           
           &:hover {
             color: rgba(0, 0, 0, 1);
@@ -678,71 +666,35 @@ a {
       .post-meta {
         display: flex;
         flex-wrap: wrap;
-        gap: $spacing-md;
+        gap: 15px;
         align-items: center;
 
         .post-date {
           color: rgba(0, 0, 0, 0.5);
-          font-size: 0.9em;
-          font-weight: 400;
+          font-size: 14px;
         }
 
         .post-filters {
           display: flex;
           flex-wrap: wrap;
-          gap: $spacing-sm;
+          gap: 8px;
 
           .category-tag, .tag {
-            border: none;
-            outline: none;
-            box-shadow: none;
+            display: inline-flex;
+            align-items: center;
+            font-size: 14px;
+            padding: 4px 10px;
+            border-radius: 15px;
             background: rgba(0, 0, 0, 0.05);
             color: rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
             
             &:hover {
               background: rgba(0, 0, 0, 0.08);
             }
           }
-        }
-      }
-    }
-  }
-}
-
-@media screen and (max-width: $on-palm) {
-  .tags-page {
-    padding: $spacing-md;
-
-    .filter-bar {
-      padding: $spacing-lg 0;
-      
-      .search-input {
-        font-size: 0.95em;
-        padding: $spacing-sm $spacing-md;
-      }
-    }
-
-    .filter-section {
-      padding: $spacing-lg 0;
-
-      .filter-btn {
-        font-size: 0.85em;
-        padding: $spacing-xs $spacing-sm;
-      }
-    }
-
-    .posts-container {
-      .post-item {
-        padding: $spacing-lg 0;
-
-        .post-title a {
-          font-size: 1.1em;
-        }
-
-        .post-meta {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: $spacing-sm;
         }
       }
     }
