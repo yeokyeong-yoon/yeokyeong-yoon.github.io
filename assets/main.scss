@@ -693,129 +693,163 @@ a {
   }
 }
 
-// 홈페이지 스타일
+// 홈페이지 스타일 개선
 .home {
   .intro {
     text-align: center;
     margin: $spacing-xxl 0;
-    padding: $spacing-xl 0;
-    border-bottom: 1px solid rgba($color-4, 0.2);
+    padding: $spacing-xl;
+    border-radius: $radius-lg;
+    background: linear-gradient(135deg, rgba($color-1, 0.3), rgba($color-3, 0.2));
+    border: 1px solid rgba($color-4, 0.2);
+    box-shadow: $shadow-md;
     
     .page-heading {
-      font-size: 2.5em;
+      font-size: 2.8em;
       color: $color-9;
       margin-bottom: $spacing-md;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: -0.03em;
     }
     
     .intro-text {
       color: $color-7;
-      font-size: 1.1em;
+      font-size: 1.2em;
       max-width: 600px;
-      margin: 0 auto;
+      margin: 0 auto $spacing-lg;
       line-height: 1.6;
     }
+
+    .quick-links {
+      display: flex;
+      gap: $spacing-md;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: $spacing-lg;
+    }
+
+    .quick-link {
+      background: white;
+      color: $color-8;
+      padding: $spacing-sm $spacing-lg;
+      border-radius: 25px;
+      font-weight: 600;
+      border: 1px solid rgba($color-4, 0.3);
+      transition: all 0.3s ease;
+      box-shadow: $shadow-sm;
+
+      &:hover {
+        transform: translateY(-2px);
+        background: $color-8;
+        color: white;
+        box-shadow: $shadow-md;
+      }
+    }
   }
-  
-  .posts {
-    margin-top: $spacing-xl;
+
+  .section-heading {
+    font-size: 1.8em;
+    color: $color-9;
+    margin-bottom: $spacing-xl;
+    text-align: center;
+    font-weight: 700;
   }
-  
-  .post-list {
-    display: grid;
-    gap: $spacing-xl;
-    grid-template-columns: 1fr;
+}
+
+// 태그 페이지 개선
+.tags-page {
+  .tags-list {
+    background: white;
+    padding: $spacing-lg;
+    border-radius: $radius-lg;
+    border: 1px solid rgba($color-4, 0.2);
+    box-shadow: $shadow-sm;
+  }
+
+  .tag-group {
+    background: white;
+    padding: $spacing-lg;
+    border-radius: $radius-lg;
+    border: 1px solid rgba($color-4, 0.2);
+    box-shadow: $shadow-sm;
+    margin-bottom: $spacing-lg;
+
+    .tag-title {
+      color: $color-9;
+      font-size: 1.5em;
+      padding-bottom: $spacing-sm;
+      border-bottom: 2px solid rgba($color-4, 0.2);
+    }
+  }
+}
+
+// 네비게이션 개선
+.site-nav {
+  .page-link {
+    background: rgba($color-1, 0.1);
+    padding: $spacing-xs $spacing-md;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: rgba($color-6, 0.1);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// 포스트 카드 개선
+.post-card {
+  .post-card-content {
+    padding: $spacing-xl;
+  }
+
+  .post-link a {
+    font-size: 1.5em;
+    margin-bottom: $spacing-md;
+  }
+
+  .post-excerpt {
+    font-size: 1em;
+    line-height: 1.7;
+    color: $color-8;
+  }
+}
+
+// 푸터 개선
+.site-footer {
+  background: linear-gradient(135deg, rgba($color-1, 0.2), rgba($color-3, 0.1));
+  padding: $spacing-xxl 0;
+  margin-top: $spacing-xxl * 2;
+
+  .footer-content {
+    text-align: center;
+    
+    @media (min-width: 768px) {
+      text-align: left;
+    }
+  }
+}
+
+// 반응형 디자인 개선
+@media (max-width: 768px) {
+  .home {
+    .intro {
+      padding: $spacing-lg;
+      
+      .page-heading {
+        font-size: 2.2em;
+      }
+      
+      .intro-text {
+        font-size: 1.1em;
+      }
+    }
   }
   
   .post-card {
-    background: white;
-    border-radius: $radius-lg;
-    border: 1px solid rgba($color-4, 0.2);
-    transition: all 0.3s ease;
-    box-shadow: $shadow-sm;
-    overflow: hidden;
-    
-    &:hover {
-      transform: translateY(-4px);
-      box-shadow: $shadow-md;
-      border-color: rgba($color-6, 0.3);
-    }
-    
     .post-card-content {
       padding: $spacing-lg;
-    }
-    
-    .post-card-header {
-      margin-bottom: $spacing-md;
-    }
-    
-    .post-date {
-      display: block;
-      color: $color-7;
-      font-size: 0.9em;
-      margin-bottom: $spacing-sm;
-      font-family: $heading-font;
-    }
-    
-    .post-link {
-      margin: 0;
-      padding: 0;
-      border: none;
-      
-      a {
-        color: $color-9;
-        font-size: 1.4em;
-        font-weight: 600;
-        line-height: 1.3;
-        margin-bottom: $spacing-sm;
-        display: block;
-        border-bottom: none;
-        transition: color 0.2s ease;
-        
-        &:hover {
-          color: $color-6;
-        }
-      }
-    }
-    
-    .post-meta-preview {
-      margin-top: $spacing-md;
-      padding-top: $spacing-md;
-      border-top: 1px solid rgba($color-4, 0.1);
-      
-      .categories-preview, .tags-preview {
-        display: flex;
-        flex-wrap: wrap;
-        gap: $spacing-xs;
-        margin-bottom: $spacing-sm;
-      }
-    }
-    
-    .post-excerpt {
-      color: $color-8;
-      font-size: 0.95em;
-      line-height: 1.6;
-      margin: $spacing-md 0;
-      
-      p {
-        margin: 0;
-      }
-    }
-    
-    .read-more {
-      display: inline-block;
-      color: $color-6;
-      font-size: 0.9em;
-      font-weight: 600;
-      margin-top: $spacing-sm;
-      border-bottom: none;
-      transition: all 0.2s ease;
-      
-      &:hover {
-        color: $color-7;
-        transform: translateX(4px);
-      }
     }
   }
 }
