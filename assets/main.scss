@@ -254,127 +254,142 @@ a {
 }
 
 // 본문 스타일
-.post-content {
-  margin-bottom: $spacing-xxl;
-  
-  // 이미지
-  img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: $spacing-xl auto;
-    border-radius: $radius-sm;
-    border: 1px solid $gray1;
-    box-shadow: $shadow-sm;
-  }
-  
-  // 인용구
-  blockquote {
-    margin: $spacing-lg 0;
-    padding: $spacing-sm $spacing-lg;
-    background: $blockquote-bg;
-    border-left: 3px solid $blockquote-border;
-    border-radius: $radius-sm;
-    font-style: normal;
-    color: $muted-text-color;
+.post {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 $spacing-unit;
+
+  .post-header {
+    margin-bottom: $spacing-xxl;
     
+    .post-title {
+      font-size: 2.5em;
+      line-height: 1.3;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: $spacing-lg;
+      color: $color-9;
+    }
+
+    .post-meta {
+      font-size: 1.1em;
+      color: $color-7;
+    }
+  }
+
+  .post-content {
+    font-size: 1.2em;
+    line-height: 1.8;
+    color: $color-9;
+    margin-bottom: $spacing-xxl;
+
+    h2 {
+      font-size: 1.8em;
+      font-weight: 700;
+      margin: $spacing-xxl 0 $spacing-lg;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+    }
+
+    h3 {
+      font-size: 1.4em;
+      font-weight: 700;
+      margin: $spacing-xl 0 $spacing-md;
+      letter-spacing: -0.02em;
+    }
+
     p {
-      margin-bottom: $spacing-sm;
+      margin-bottom: $spacing-lg;
+    }
+
+    pre {
+      margin: $spacing-lg 0;
+      padding: $spacing-lg;
+      border-radius: $radius-lg;
+      background: rgba($color-4, 0.05);
+      overflow-x: auto;
+      font-size: 0.9em;
+      line-height: 1.6;
+    }
+
+    code {
+      font-family: $monospace-font;
+      background: rgba($color-4, 0.05);
+      padding: 0.2em 0.4em;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    img, svg {
+      max-width: 100%;
+      height: auto;
+      margin: $spacing-xl auto;
+      display: block;
+    }
+
+    // Sequence diagram specific styles
+    .sequence-diagram {
+      width: 100%;
+      overflow-x: auto;
+      margin: $spacing-xl 0;
+      padding: $spacing-lg 0;
+
+      svg {
+        min-width: min-content;
+        margin: 0;
+      }
+    }
+
+    ul, ol {
+      margin: $spacing-lg 0 $spacing-xl $spacing-xl;
       
-      &:last-child {
+      li {
+        margin-bottom: $spacing-sm;
+      }
+    }
+
+    blockquote {
+      margin: $spacing-xl 0;
+      padding: $spacing-lg $spacing-xl;
+      border-left: 4px solid $color-6;
+      background: rgba($color-4, 0.05);
+      font-style: italic;
+      
+      p:last-child {
         margin-bottom: 0;
       }
     }
   }
-  
-  // 인라인 코드
-  code {
-    background: rgba($color-1, 0.2);
-    color: $color-8;
-    padding: 0.2em 0.4em;
-    border-radius: $radius-sm;
-    font-size: 0.9em;
-    font-family: $monospace-font;
-    border: 1px solid rgba($color-4, 0.2);
-  }
-  
-  // 코드 블록
-  pre {
-    background: rgba($color-1, 0.1);
-    color: $color-10;
-    padding: $spacing-lg;
-    border-radius: $radius-lg;
-    overflow-x: auto;
-    margin: $spacing-lg 0;
-    border: 1px solid rgba($color-4, 0.3);
-    box-shadow: $shadow-sm;
-    
-    code {
-      background: transparent;
-      color: $color-10;
-      padding: 0;
-      border: none;
-      font-size: 0.9em;
-      line-height: 1.6;
-      font-family: $monospace-font;
-    }
-  }
-  
-  // 제목 여백
-  h2 {
-    color: $color-9;
-    font-size: 1.5em;
-    margin-top: $spacing-xxl;
-    padding-bottom: $spacing-sm;
-    border-bottom: 2px solid rgba($color-4, 0.3);
-  }
-  
-  // 리스트
-  ul, ol {
-    padding-left: $spacing-lg;
-    margin-bottom: $spacing-lg;
-    
-    li {
-      margin-bottom: $spacing-sm;
-      padding-left: $spacing-xs;
-      
-      &::marker {
-        color: $color-6;
-      }
 
-      p {
-        margin-bottom: $spacing-sm;
+  .post-footer {
+    margin-top: $spacing-xxl;
+    padding-top: $spacing-xl;
+    border-top: 1px solid rgba($color-4, 0.1);
+
+    .post-meta-container {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-md;
+    }
+
+    .post-categories-container, .post-tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $spacing-xs;
+    }
+
+    .category-tag, .tag {
+      font-size: 0.9em;
+      padding: $spacing-xs $spacing-sm;
+      border-radius: 4px;
+      color: $color-7;
+      background: rgba($color-4, 0.05);
+      transition: all 0.2s ease;
+      
+      &:hover {
+        color: $color-8;
+        background: rgba($color-8, 0.1);
       }
-    }
-  }
-  
-  // 테이블
-  table {
-    border-collapse: collapse;
-    width: 100%;
-    margin: $spacing-lg 0;
-    font-size: 0.95em;
-    box-shadow: $shadow-sm;
-    border-radius: $radius-sm;
-    overflow: hidden;
-    
-    th, td {
-      border: 1px solid $gray2;
-      padding: $spacing-sm $spacing-md;
-    }
-    
-    th {
-      background-color: $gray1;
-      font-weight: 600;
-      text-align: left;
-    }
-    
-    tr:nth-child(even) {
-      background-color: $light-bg;
-    }
-    
-    tr:hover {
-      background-color: rgba($gray3, 0.1);
     }
   }
 }
@@ -1244,6 +1259,23 @@ a {
         position: absolute;
         left: 0;
       }
+    }
+  }
+}
+
+// Responsive adjustments
+@media screen and (max-width: $on-palm) {
+  .post {
+    padding: 0 $spacing-md;
+    
+    .post-header {
+      .post-title {
+        font-size: 2em;
+      }
+    }
+
+    .post-content {
+      font-size: 1.1em;
     }
   }
 } 

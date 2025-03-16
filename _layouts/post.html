@@ -5,44 +5,38 @@ layout: default
 
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">{{ page.title | escape }}</h1>
-    <time class="post-date dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
-      {{ page.date | date: "%Y년 %m월 %d일" }}
-    </time>
-    
-    <div class="post-meta-container">
-      {% if page.author %}
-        • <span>{{ page.author }}</span>
-      {% endif %}
-    </div>
+    <p class="post-meta">
+      <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
+        {{ page.date | date: "%Y년 %m월 %d일" }}
+      </time>
+      {%- if page.author -%}
+        • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">{{ page.author }}</span></span>
+      {%- endif -%}
+    </p>
   </header>
 
   <div class="post-content e-content" itemprop="articleBody">
     {{ content }}
   </div>
 
-  <div class="post-meta-container">
-    {% if page.categories.size > 0 %}
-    <div class="post-categories-container">
-      <span class="meta-label">Categories:</span>
-      <div class="post-categories">
+  <footer class="post-footer">
+    <div class="post-meta-container">
+      {% if page.categories.size > 0 %}
+      <div class="post-categories-container">
         {% for category in page.categories %}
           <a href="{{ site.baseurl }}/categories#{{ category | slugify }}" class="category-tag">#{{ category }}</a>
         {% endfor %}
       </div>
-    </div>
-    {% endif %}
-    
-    {% if page.tags.size > 0 %}
-    <div class="post-tags-container">
-      <span class="meta-label">Tags:</span>
-      <div class="post-tags">
+      {% endif %}
+      {% if page.tags.size > 0 %}
+      <div class="post-tags-container">
         {% for tag in page.tags %}
           <a href="{{ site.baseurl }}/tags#{{ tag | slugify }}" class="tag">#{{ tag }}</a>
         {% endfor %}
       </div>
+      {% endif %}
     </div>
-    {% endif %}
-  </div>
+  </footer>
 
   <div class="pagination">
     {% if page.previous.url %}
@@ -55,4 +49,17 @@ layout: default
   </div>
 
   <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
-</article> 
+</article>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Wrap sequence diagrams in a container for better scrolling
+  const diagrams = document.querySelectorAll('.sequence-diagram');
+  diagrams.forEach(diagram => {
+    const container = document.createElement('div');
+    container.className = 'sequence-diagram-container';
+    diagram.parentNode.insertBefore(container, diagram);
+    container.appendChild(diagram);
+  });
+});
+</script> 
