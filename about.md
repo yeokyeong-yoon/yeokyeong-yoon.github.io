@@ -16,45 +16,46 @@ permalink: /about/
   .about-page {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 80px 24px;
+    padding: 120px 24px;
   }
   
   .intro {
-    margin-bottom: 100px;
+    margin-bottom: 120px;
     max-width: 800px;
   }
   
   .page-heading {
-    font-size: 6em;
+    font-size: 7em;
     font-weight: 800;
     letter-spacing: -0.05em;
     line-height: 0.9;
-    margin: 0 0 30px;
+    margin: 0 0 40px;
     color: #000;
   }
   
   .intro-text {
-    font-size: 1.8em;
-    line-height: 1.4;
-    color: rgba(0, 0, 0, 0.54);
-    margin-bottom: 50px;
+    font-size: 2.2em;
+    line-height: 1.3;
+    color: rgba(0, 0, 0, 0.7);
+    margin-bottom: 60px;
     max-width: 640px;
+    font-weight: 400;
   }
   
   .quick-links {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
-    margin-top: 50px;
+    margin-top: 60px;
   }
   
   .quick-link {
     display: inline-block;
-    padding: 10px 20px;
-    color: rgba(0, 0, 0, 0.54);
+    padding: 12px 24px;
+    color: rgba(0, 0, 0, 0.6);
     text-decoration: none;
     transition: all 0.2s ease;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 400;
     border: 1px solid rgba(0, 0, 0, 0.15);
     border-radius: 99px;
@@ -62,7 +63,7 @@ permalink: /about/
   
   .quick-link:hover {
     background: rgba(0, 0, 0, 0.03);
-    color: rgba(0, 0, 0, 0.68);
+    color: rgba(0, 0, 0, 0.8);
   }
   
   .quick-link.notion-link {
@@ -76,47 +77,90 @@ permalink: /about/
   }
   
   .section-heading {
-    font-size: 2.5em;
-    margin: 80px 0 40px;
+    font-size: 3em;
+    margin: 100px 0 50px;
     font-weight: 700;
     letter-spacing: -0.03em;
     color: #000;
   }
   
   .content-section {
-    font-size: 1.2em;
+    font-size: 1.3em;
     line-height: 1.6;
     color: rgba(0, 0, 0, 0.8);
-    margin-bottom: 60px;
+    margin-bottom: 80px;
+    max-width: 740px;
   }
   
   .content-section h3 {
-    font-size: 1.8em;
-    margin: 40px 0 20px;
+    font-size: 2em;
+    margin: 60px 0 30px;
     font-weight: 700;
     color: #000;
+    letter-spacing: -0.02em;
   }
   
   .content-section p {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
   }
   
   .content-section ul {
     padding-left: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
   }
   
   .content-section li {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .post-list-item {
+    margin-bottom: 25px;
+  }
+  
+  .post-list-item a {
+    color: #000;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.2em;
+    transition: color 0.2s ease;
+  }
+  
+  .post-list-item a:hover {
+    color: rgba(0, 0, 0, 0.6);
+  }
+  
+  .post-date {
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 0.9em;
+    display: block;
+    margin-top: 5px;
+  }
+  
+  .view-all {
+    display: inline-block;
+    margin-top: 20px;
+    color: #000;
+    font-weight: 500;
+    text-decoration: none;
+    font-size: 1.1em;
+    transition: color 0.2s ease;
+  }
+  
+  .view-all:hover {
+    color: rgba(0, 0, 0, 0.6);
   }
   
   @media (max-width: 768px) {
     .page-heading {
-      font-size: 4em;
+      font-size: 5em;
     }
     
     .intro-text {
-      font-size: 1.4em;
+      font-size: 1.8em;
+    }
+    
+    .about-page {
+      padding: 80px 24px;
     }
   }
 </style>
@@ -154,14 +198,14 @@ permalink: /about/
 
   <section class="content-section">
     <h2 class="section-heading">Latest Posts</h2>
-    <ul>
+    <ul style="list-style-type: none; padding: 0;">
       {% for post in site.posts limit:3 %}
-        <li>
+        <li class="post-list-item">
           <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-          <span style="color: rgba(0, 0, 0, 0.54); font-size: 0.9em;"> - {{ post.date | date: "%Y년 %m월 %d일" }}</span>
+          <span class="post-date">{{ post.date | date: "%Y년 %m월 %d일" }}</span>
         </li>
       {% endfor %}
     </ul>
-    <p><a href="{{ site.baseurl }}/blog" style="color: #000; font-weight: 500; text-decoration: none;">View all posts →</a></p>
+    <a href="{{ site.baseurl }}/blog" class="view-all">View all posts →</a>
   </section>
 </div>
