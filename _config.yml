@@ -22,8 +22,8 @@ markdown: kramdown
 # - slate
 # - tactile
 # - time-machine
-theme: new-theme-name
-remote_theme: jekyll/new-theme-name
+theme: minima
+remote_theme: jekyll/minima@v2.5.1
 plugins:
   - jekyll-feed
   - jekyll-seo-tag

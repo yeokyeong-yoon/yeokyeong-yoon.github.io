@@ -1,0 +1,35 @@
+---
+layout: default
+title: Blog
+permalink: /blog/
+---
+
+<div class="blog-page">
+  <h1 class="page-title">All Posts</h1>
+
+  <div class="posts-grid">
+    {%- for post in site.posts -%}
+    <article class="post-card">
+      <span class="post-date">{{ post.date | date: "%B %-d, %Y" }}</span>
+      
+      <h2>
+        <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+      </h2>
+      
+      {% if post.categories.size > 0 %}
+      <div class="post-categories">
+        {% for category in post.categories %}
+        <span class="category-tag">{{ category }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+      
+      <div class="post-excerpt">
+        {{ post.excerpt | strip_html | truncatewords: 30 }}
+      </div>
+      
+      <a href="{{ post.url | relative_url }}" class="read-more">Read more →</a>
+    </article>
+    {%- endfor -%}
+  </div>
+</div> 

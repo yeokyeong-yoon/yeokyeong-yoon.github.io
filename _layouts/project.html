@@ -3,16 +3,23 @@ layout: default
 ---
 <article class="project">
   <header class="project-header">
-    <h1 class="project-title">{{ page.title }}</h1>
-    <div class="project-meta">
-      <span class="date">{{ page.date | date: "%B %d, %Y" }}</span>
-      {% if page.technologies %}
-      <span class="technologies">
-        Technologies:
-        {% for tech in page.technologies %}
-          <span class="tech-tag">{{ tech }}</span>
-        {% endfor %}
-      </span>
+    <h1 class="project-title">{{ page.title | escape }}</h1>
+    
+    {% if page.technologies %}
+    <div class="technologies">
+      {% for tech in page.technologies %}
+      <span class="tech-tag">{{ tech }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="project-links">
+      {% if page.github %}
+      <a href="{{ page.github }}" class="btn">GitHub</a>
+      {% endif %}
+      
+      {% if page.demo %}
+      <a href="{{ page.demo }}" class="btn">Live Demo</a>
       {% endif %}
     </div>
   </header>
@@ -20,26 +27,8 @@ layout: default
   <div class="project-content">
     {{ content }}
   </div>
-
-  <div class="project-links">
-    {% if page.github_link %}
-      <a href="{{ page.github_link }}" class="btn" target="_blank">View on GitHub</a>
-    {% endif %}
-    {% if page.demo_link %}
-      <a href="{{ page.demo_link }}" class="btn" target="_blank">Live Demo</a>
-    {% endif %}
-  </div>
-
-  <div class="project-navigation">
-    <div class="previous-project">
-      {% if page.previous.url %}
-        <a href="{{ page.previous.url | relative_url }}">&laquo; {{ page.previous.title }}</a>
-      {% endif %}
-    </div>
-    <div class="next-project">
-      {% if page.next.url %}
-        <a href="{{ page.next.url | relative_url }}">{{ page.next.title }} &raquo;</a>
-      {% endif %}
-    </div>
+  
+  <div class="pagination">
+    <a href="{{ '/projects' | relative_url }}">&laquo; Back to Projects</a>
   </div>
 </article> 

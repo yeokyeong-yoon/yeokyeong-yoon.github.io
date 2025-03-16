@@ -1,0 +1,41 @@
+---
+layout: default
+---
+
+<div class="home">
+  <section class="intro-section">
+    <h1>{{ site.author.name | default: site.title }}</h1>
+    <p class="lead">{{ site.description }}</p>
+  </section>
+
+  <div class="posts-grid">
+    {%- for post in site.posts -%}
+    <article class="post-card">
+      <span class="post-date">{{ post.date | date: "%B %-d, %Y" }}</span>
+      
+      <h2>
+        <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+      </h2>
+      
+      {% if post.categories.size > 0 %}
+      <div class="post-categories">
+        {% for category in post.categories %}
+        <span class="category-tag">{{ category }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+      
+      <div class="post-excerpt">
+        {{ post.excerpt | strip_html | truncatewords: 30 }}
+      </div>
+      
+      <a href="{{ post.url | relative_url }}" class="read-more">Read more →</a>
+    </article>
+    {%- endfor -%}
+  </div>
+
+  <div class="home-footer">
+    <a href="{{ '/about' | relative_url }}" class="btn">About Me</a>
+    <a href="{{ '/projects' | relative_url }}" class="btn">My Projects</a>
+  </div>
+</div> 

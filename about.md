@@ -1,34 +1,27 @@
 ---
 layout: page
-title: About Me
+title: About
 permalink: /about/
 ---
 
-# About Me
+## Hi, I'm Yoon
 
-Hello! I'm Yoon, a [Your Profession/Role] passionate about [Your Interests].
+Welcome to my blog! I'm a software developer with a passion for building elegant, efficient, and user-friendly applications.
 
-## Professional Background
+### Experience
 
-I have experience in [Your Skills/Technologies], and I've worked on projects involving [Project Types/Domains]. 
-My professional journey includes [Brief Career Summary].
+I have experience in:
+- Building web applications with Spring Boot and React
+- Creating feature flag systems for continuous delivery
+- Developing RESTful APIs and microservices
+- Working with databases like PostgreSQL
 
-## Skills
+### Projects
 
-- **Programming Languages**: [List your programming languages]
-- **Frameworks & Libraries**: [List frameworks and libraries]
-- **Tools & Technologies**: [List tools and technologies]
-- **Other Skills**: [List any other relevant skills]
+My projects focus on creating practical solutions to real-world problems. I'm particularly interested in tools that improve the developer experience and software development lifecycle.
 
-## Education
+Check out my [Projects](/projects) page to see some of my recent work, including my feature flag implementation system.
 
-- [Degree] in [Field of Study] from [Institution Name], [Year]
+### Get in touch
 
-## Connect With Me
-
-- GitHub: [https://github.com/yeokyeong-yoon](https://github.com/yeokyeong-yoon)
-- LinkedIn: [Your LinkedIn Profile URL]
-- Email: yeokyeongy@gmail.com
-- Portfolio: [Your Portfolio URL if applicable]
-
-Feel free to reach out if you'd like to collaborate on a project or just chat about technology! 
+Feel free to reach out to me on [GitHub](https://github.com/yeokyeong-yoon) or via email at [yeokyeongy@gmail.com](mailto:yeokyeongy@gmail.com). 
