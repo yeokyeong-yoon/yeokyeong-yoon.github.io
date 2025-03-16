@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Feature Flag 설계와 운영 기술 분석"
-date: 2024-03-16 12:00:00 +0900
+date: 2025-03-16 12:00:00 +0900
 categories: [개발, 시스템설계]
 tags: [feature-flag, java, aws, kubernetes, dynamodb]
 ---
