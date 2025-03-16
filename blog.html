@@ -4,31 +4,137 @@ title: Blog
 permalink: /blog/
 ---
 
-<div class="blog-page">
-  <h1 class="page-title">All Posts</h1>
+<style>
+  /* Custom styles to override theme */
+  .blog-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+  
+  .page-title {
+    font-size: 28px;
+    margin-bottom: 40px;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.8);
+  }
+  
+  .posts-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .post-card {
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .post-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .post-date {
+    display: block;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.5);
+    margin-bottom: 10px;
+  }
+  
+  .post-card h2 {
+    margin: 0 0 15px;
+    font-size: 20px;
+    line-height: 1.4;
+  }
+  
+  .post-card h2 a {
+    color: rgba(0, 0, 0, 0.8);
+    text-decoration: none;
+    border-bottom: none;
+  }
+  
+  .post-card h2 a:hover {
+    color: rgba(0, 0, 0, 1);
+  }
+  
+  .post-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+  
+  .category-tag {
+    display: inline-flex;
+    align-items: center;
+    font-size: 14px;
+    padding: 4px 10px;
+    border-radius: 15px;
+    background: rgba(0, 0, 0, 0.05);
+    color: rgba(0, 0, 0, 0.6);
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  
+  .category-tag:hover {
+    background: rgba(0, 0, 0, 0.08);
+  }
+  
+  .post-excerpt {
+    font-size: 16px;
+    line-height: 1.6;
+    color: rgba(0, 0, 0, 0.7);
+    margin-bottom: 15px;
+  }
+  
+  .read-more {
+    display: inline-block;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.6);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .read-more:hover {
+    color: rgba(0, 0, 0, 0.9);
+  }
+  
+  @media (min-width: 768px) {
+    .posts-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
 
-  <div class="posts-grid">
+<div class="blog-page" style="max-width: 800px; margin: 0 auto; padding: 40px 20px;">
+  <h1 class="page-title" style="font-size: 28px; margin-bottom: 40px; text-align: center; color: rgba(0, 0, 0, 0.8);">All Posts</h1>
+
+  <div class="posts-grid" style="display: grid; grid-template-columns: 1fr; gap: 30px;">
     {%- for post in site.posts -%}
-    <article class="post-card">
-      <span class="post-date">{{ post.date | date: "%B %-d, %Y" }}</span>
+    <article class="post-card" style="padding: 25px; background: rgba(255, 255, 255, 0.5); border-radius: 10px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+      <span class="post-date" style="display: block; font-size: 14px; color: rgba(0, 0, 0, 0.5); margin-bottom: 10px;">{{ post.date | date: "%B %-d, %Y" }}</span>
       
-      <h2>
-        <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+      <h2 style="margin: 0 0 15px; font-size: 20px; line-height: 1.4;">
+        <a href="{{ post.url | relative_url }}" style="color: rgba(0, 0, 0, 0.8); text-decoration: none; border-bottom: none;">{{ post.title | escape }}</a>
       </h2>
       
       {% if post.categories.size > 0 %}
-      <div class="post-categories">
+      <div class="post-categories" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px;">
         {% for category in post.categories %}
-        <a href="{{ site.baseurl }}/categories#{{ category | slugify }}" class="category-tag">#{{ category }}</a>
+        <a href="{{ site.baseurl }}/categories#{{ category | slugify }}" class="category-tag" style="display: inline-flex; align-items: center; font-size: 14px; padding: 4px 10px; border-radius: 15px; background: rgba(0, 0, 0, 0.05); color: rgba(0, 0, 0, 0.6); text-decoration: none; transition: all 0.2s ease;">#{{ category }}</a>
         {% endfor %}
       </div>
       {% endif %}
       
-      <div class="post-excerpt">
+      <div class="post-excerpt" style="font-size: 16px; line-height: 1.6; color: rgba(0, 0, 0, 0.7); margin-bottom: 15px;">
         {{ post.excerpt | strip_html | truncatewords: 30 }}
       </div>
       
-      <a href="{{ post.url | relative_url }}" class="read-more">Read more →</a>
+      <a href="{{ post.url | relative_url }}" class="read-more" style="display: inline-block; font-size: 14px; color: rgba(0, 0, 0, 0.6); text-decoration: none; transition: color 0.2s ease;">Read more →</a>
     </article>
     {%- endfor -%}
   </div>
