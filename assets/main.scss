@@ -378,11 +378,12 @@ a {
     letter-spacing: -0.03em;
   }
   
-  .post-meta {
+  .post-date {
     color: $color-7;
     font-size: 0.95em;
     margin-bottom: $spacing-md;
     font-family: $heading-font;
+    display: block;
   }
 }
 
@@ -391,12 +392,20 @@ a {
   background: rgba($color-1, 0.1);
   padding: $spacing-md $spacing-lg;
   border-radius: $radius-lg;
-  margin: $spacing-lg 0;
+  margin: $spacing-xl 0;
   border: 1px solid rgba($color-4, 0.2);
   box-shadow: $shadow-sm;
   display: flex;
   flex-direction: column;
   gap: $spacing-sm;
+}
+
+// 카테고리 컨테이너
+.post-categories-container, .post-tags-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $spacing-xs;
 }
 
 // 메타 레이블 공통 스타일
@@ -410,14 +419,6 @@ a {
 }
 
 // 카테고리 컨테이너
-.post-categories-container, .post-tags-container {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: $spacing-xs;
-}
-
-// 카테고리와 태그 공통 스타일
 .post-categories, .post-tags {
   display: inline-flex;
   flex-wrap: wrap;
@@ -779,18 +780,15 @@ a {
     }
     
     .post-meta-preview {
-      margin: $spacing-sm 0;
+      margin-top: $spacing-md;
+      padding-top: $spacing-md;
+      border-top: 1px solid rgba($color-4, 0.1);
       
-      .categories-preview {
+      .categories-preview, .tags-preview {
         display: flex;
         flex-wrap: wrap;
         gap: $spacing-xs;
         margin-bottom: $spacing-sm;
-        
-        .category-tag {
-          font-size: 0.8em;
-          padding: 0.15rem 0.6rem;
-        }
       }
     }
     
