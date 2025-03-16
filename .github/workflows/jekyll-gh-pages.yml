@@ -46,9 +46,9 @@ jobs:
         env:
           JEKYLL_ENV: production
       
-      # Use the latest version of upload-artifact
+      # Use the latest stable version of upload-pages-artifact
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
           path: "_site/"
 
