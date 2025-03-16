@@ -48,6 +48,46 @@ layout: default
     {% endif %}
   </div>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize Mermaid with custom config
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: 'default',
+        sequence: {
+          diagramMarginX: 50,
+          diagramMarginY: 30,
+          actorMargin: 50,
+          width: 150,
+          height: 65,
+          boxMargin: 10,
+          boxTextMargin: 5,
+          noteMargin: 10,
+          messageMargin: 35,
+          mirrorActors: true,
+          bottomMarginAdj: 1,
+          useMaxWidth: true
+        }
+      });
+
+      // Adjust diagram containers after rendering
+      setTimeout(function() {
+        document.querySelectorAll('.mermaid').forEach(function(diagram) {
+          const svg = diagram.querySelector('svg');
+          if (svg) {
+            const height = svg.getBBox().height + 50; // Add padding
+            svg.style.minHeight = height + 'px';
+            diagram.style.minHeight = height + 'px';
+          }
+        });
+      }, 1000); // Wait for diagrams to render
+    });
+  </script>
+
+  {%- if site.disqus.shortname -%}
+    {%- include disqus_comments.html -%}
+  {%- endif -%}
+
   <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
 </article>
 

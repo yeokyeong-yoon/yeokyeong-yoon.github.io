@@ -346,7 +346,7 @@ a {
 // 다이어그램 스타일 개선
 .mermaid {
   width: 100%;
-  overflow-x: auto;
+  overflow: visible;
   margin: 2rem 0;
   padding: 1rem;
   background: rgba($color-1, 0.05);
@@ -355,12 +355,13 @@ a {
   svg {
     min-width: min-content;
     width: 100%;
-    height: auto;
+    height: auto !important;
+    min-height: 400px;
   }
 }
 
 .post-content {
-  overflow-x: visible;
+  overflow: visible;
   
   img, svg {
     max-width: 100%;
@@ -373,8 +374,10 @@ a {
     min-width: 100%;
     
     svg {
-      min-width: 800px; // Ensure minimum width for complex diagrams
+      min-width: 800px;
       width: 100%;
+      height: auto !important;
+      min-height: 400px;
     }
   }
 }
