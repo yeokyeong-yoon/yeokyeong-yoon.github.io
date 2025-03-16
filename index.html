@@ -1,0 +1,47 @@
+---
+layout: default
+---
+
+<div class="home">
+  <section class="intro">
+    <h1 class="page-heading">yoon's blog</h1>
+    <p class="intro-text">This is a blog about my projects and career</p>
+  </section>
+
+  <section class="posts">
+    {%- if site.posts.size > 0 -%}
+    <div class="post-list">
+      {%- for post in site.posts -%}
+      <article class="post-card">
+        <div class="post-card-content">
+          <header class="post-card-header">
+            <time class="post-date">{{ post.date | date: "%Y년 %m월 %d일" }}</time>
+            <h2 class="post-link">
+              <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+            </h2>
+          </header>
+
+          <div class="post-meta-preview">
+            {% if post.categories.size > 0 %}
+            <div class="categories-preview">
+              {% for category in post.categories %}
+                <a href="{{ site.baseurl }}/categories#{{ category | slugify }}" class="category-tag">#{{ category }}</a>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+
+          {% if post.excerpt %}
+          <div class="post-excerpt">
+            {{ post.excerpt | strip_html | truncatewords: 50 }}
+          </div>
+          {% endif %}
+
+          <a href="{{ post.url | relative_url }}" class="read-more">Read more →</a>
+        </div>
+      </article>
+      {%- endfor -%}
+    </div>
+    {%- endif -%}
+  </section>
+</div> 

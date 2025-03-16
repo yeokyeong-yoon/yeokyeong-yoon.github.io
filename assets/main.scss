@@ -690,4 +690,143 @@ a {
       }
     }
   }
+}
+
+// 홈페이지 스타일
+.home {
+  .intro {
+    text-align: center;
+    margin: $spacing-xxl 0;
+    padding: $spacing-xl 0;
+    border-bottom: 1px solid rgba($color-4, 0.2);
+    
+    .page-heading {
+      font-size: 2.5em;
+      color: $color-9;
+      margin-bottom: $spacing-md;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+    
+    .intro-text {
+      color: $color-7;
+      font-size: 1.1em;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+  }
+  
+  .posts {
+    margin-top: $spacing-xl;
+  }
+  
+  .post-list {
+    display: grid;
+    gap: $spacing-xl;
+    grid-template-columns: 1fr;
+  }
+  
+  .post-card {
+    background: white;
+    border-radius: $radius-lg;
+    border: 1px solid rgba($color-4, 0.2);
+    transition: all 0.3s ease;
+    box-shadow: $shadow-sm;
+    overflow: hidden;
+    
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: $shadow-md;
+      border-color: rgba($color-6, 0.3);
+    }
+    
+    .post-card-content {
+      padding: $spacing-lg;
+    }
+    
+    .post-card-header {
+      margin-bottom: $spacing-md;
+    }
+    
+    .post-date {
+      display: block;
+      color: $color-7;
+      font-size: 0.9em;
+      margin-bottom: $spacing-sm;
+      font-family: $heading-font;
+    }
+    
+    .post-link {
+      margin: 0;
+      padding: 0;
+      border: none;
+      
+      a {
+        color: $color-9;
+        font-size: 1.4em;
+        font-weight: 600;
+        line-height: 1.3;
+        margin-bottom: $spacing-sm;
+        display: block;
+        border-bottom: none;
+        transition: color 0.2s ease;
+        
+        &:hover {
+          color: $color-6;
+        }
+      }
+    }
+    
+    .post-meta-preview {
+      margin: $spacing-sm 0;
+      
+      .categories-preview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $spacing-xs;
+        margin-bottom: $spacing-sm;
+        
+        .category-tag {
+          font-size: 0.8em;
+          padding: 0.15rem 0.6rem;
+        }
+      }
+    }
+    
+    .post-excerpt {
+      color: $color-8;
+      font-size: 0.95em;
+      line-height: 1.6;
+      margin: $spacing-md 0;
+      
+      p {
+        margin: 0;
+      }
+    }
+    
+    .read-more {
+      display: inline-block;
+      color: $color-6;
+      font-size: 0.9em;
+      font-weight: 600;
+      margin-top: $spacing-sm;
+      border-bottom: none;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        color: $color-7;
+        transform: translateX(4px);
+      }
+    }
+  }
+}
+
+// 반응형 디자인
+@media (min-width: 768px) {
+  .home {
+    .post-list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
 } 
