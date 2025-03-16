@@ -1,59 +1,59 @@
 ---
-layout: page
+layout: default
 title: Tags & Categories
 permalink: /tags/
 ---
 
 <div class="tags-page">
-  <div class="filter-intro">
-    <p>Filter posts by tags or categories to find exactly what you're looking for.</p>
-  </div>
-
-  <div class="filter-section">
+  <h1 class="page-title">Tags & Categories</h1>
+  
+  <!-- Categories Section -->
+  <section class="filter-section">
     <h2>Categories</h2>
     <div class="filter-list">
       {% for category in site.categories %}
-        <a href="#{{ category[0] | slugify }}" class="category-tag">#{{ category[0] }}</a>
+        <a href="#category-{{ category[0] | slugify }}" class="category-tag">#{{ category[0] }}</a>
       {% endfor %}
     </div>
-  </div>
+  </section>
 
-  <div class="filter-section">
+  <!-- Tags Section -->
+  <section class="filter-section">
     <h2>Tags</h2>
     <div class="filter-list">
       {% for tag in site.tags %}
-        <a href="#{{ tag[0] | slugify }}" class="tag">#{{ tag[0] }}</a>
+        <a href="#tag-{{ tag[0] | slugify }}" class="tag">#{{ tag[0] }}</a>
       {% endfor %}
     </div>
-  </div>
+  </section>
 
-  <div class="filtered-posts">
-    {% for category in site.categories %}
-      <div class="filter-group" id="{{ category[0] | slugify }}">
-        <h3 class="filter-title">#{{ category[0] }}</h3>
-        <ul class="post-list">
-          {% for post in category[1] %}
-            <li>
-              <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-              <span class="post-date">{{ post.date | date: "%Y년 %m월 %d일" }}</span>
-            </li>
-          {% endfor %}
-        </ul>
-      </div>
-    {% endfor %}
+  <!-- Category Groups -->
+  {% for category in site.categories %}
+    <div class="filter-group" id="category-{{ category[0] | slugify }}">
+      <h3 class="filter-title">Category: {{ category[0] }}</h3>
+      <ul class="post-list">
+        {% for post in category[1] %}
+          <li>
+            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+            <span class="post-date">{{ post.date | date: "%Y년 %m월 %d일" }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endfor %}
 
-    {% for tag in site.tags %}
-      <div class="filter-group" id="{{ tag[0] | slugify }}">
-        <h3 class="filter-title">#{{ tag[0] }}</h3>
-        <ul class="post-list">
-          {% for post in tag[1] %}
-            <li>
-              <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-              <span class="post-date">{{ post.date | date: "%Y년 %m월 %d일" }}</span>
-            </li>
-          {% endfor %}
-        </ul>
-      </div>
-    {% endfor %}
-  </div>
+  <!-- Tag Groups -->
+  {% for tag in site.tags %}
+    <div class="filter-group" id="tag-{{ tag[0] | slugify }}">
+      <h3 class="filter-title">Tag: {{ tag[0] }}</h3>
+      <ul class="post-list">
+        {% for post in tag[1] %}
+          <li>
+            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+            <span class="post-date">{{ post.date | date: "%Y년 %m월 %d일" }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endfor %}
 </div> 

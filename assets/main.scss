@@ -498,13 +498,26 @@ a {
 .tags-page {
   max-width: 860px;
   margin: 0 auto;
-  padding: 0 $spacing-unit;
+  padding: $spacing-xl 0;
+
+  .page-title {
+    font-size: 2.4em;
+    color: $color-9;
+    margin-bottom: $spacing-xl;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
 
   .filter-section {
-    margin-bottom: $spacing-xxl;
+    background: white;
+    padding: $spacing-xl;
+    border-radius: $radius-lg;
+    margin-bottom: $spacing-xl;
+    border: 1px solid rgba($color-4, 0.1);
+    box-shadow: $shadow-sm;
 
     h2 {
-      font-size: 1.8em;
+      font-size: 1.6em;
       color: $color-9;
       margin-bottom: $spacing-lg;
       font-weight: 700;
@@ -520,36 +533,32 @@ a {
     .category-tag, .tag {
       font-size: 1em;
       padding: $spacing-sm $spacing-lg;
-      border-radius: 20px;
-      color: $color-8;
-      background: white;
-      border: 2px solid rgba($color-4, 0.2);
+      border-radius: 25px;
+      color: white;
       transition: all 0.2s ease;
       font-weight: 600;
-      box-shadow: 0 2px 4px rgba($color-4, 0.1);
+      box-shadow: $shadow-sm;
+      border: none;
       
       &:hover {
-        transform: translateY(-2px) scale(1.05);
-        border-color: $color-8;
-        box-shadow: 0 4px 8px rgba($color-4, 0.2);
+        transform: translateY(-2px);
+        box-shadow: $shadow-md;
       }
     }
 
     .category-tag {
-      background: linear-gradient(135deg, rgba($color-1, 0.5), rgba($color-3, 0.5));
-      border-color: rgba($color-4, 0.3);
+      background: linear-gradient(135deg, $color-5, $color-6);
       
       &:hover {
-        background: linear-gradient(135deg, rgba($color-1, 0.7), rgba($color-3, 0.7));
+        background: linear-gradient(135deg, darken($color-5, 5%), darken($color-6, 5%));
       }
     }
 
     .tag {
-      background: linear-gradient(135deg, rgba($color-5, 0.5), rgba($color-7, 0.5));
-      border-color: rgba($color-8, 0.3);
+      background: linear-gradient(135deg, $color-7, $color-8);
       
       &:hover {
-        background: linear-gradient(135deg, rgba($color-5, 0.7), rgba($color-7, 0.7));
+        background: linear-gradient(135deg, darken($color-7, 5%), darken($color-8, 5%));
       }
     }
   }
@@ -585,10 +594,16 @@ a {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: $spacing-sm 0;
+        padding: $spacing-sm $spacing-md;
+        border-radius: $radius-md;
+        transition: all 0.2s ease;
         
         &:not(:last-child) {
-          border-bottom: 1px solid rgba($color-4, 0.1);
+          margin-bottom: $spacing-xs;
+        }
+
+        &:hover {
+          background: rgba($color-1, 0.1);
         }
 
         a {
@@ -599,7 +614,6 @@ a {
           
           &:hover {
             color: $color-6;
-            transform: translateX(4px);
           }
         }
 
@@ -607,6 +621,44 @@ a {
           color: $color-7;
           font-size: 0.9em;
           font-family: $heading-font;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: $on-palm) {
+  .tags-page {
+    padding: $spacing-lg;
+
+    .page-title {
+      font-size: 2em;
+    }
+
+    .filter-section {
+      padding: $spacing-lg;
+
+      .category-tag, .tag {
+        font-size: 0.9em;
+        padding: $spacing-xs $spacing-md;
+      }
+    }
+
+    .filter-group {
+      padding: $spacing-lg;
+
+      .filter-title {
+        font-size: 1.2em;
+      }
+
+      .post-list li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: $spacing-xs;
+        padding: $spacing-sm;
+
+        .post-date {
+          font-size: 0.85em;
         }
       }
     }
