@@ -35,9 +35,7 @@ jobs:
       
       - name: Setup Bundler
         run: |
-          rm -f Gemfile.lock
           gem install bundler -v $BUNDLER_VERSION
-          bundle config set --local deployment 'true'
           bundle config set --local path 'vendor/bundle'
           bundle install --jobs 4 --retry 3
       
