@@ -19,7 +19,7 @@ permalink: /blog/
       {% if post.categories.size > 0 %}
       <div class="post-categories">
         {% for category in post.categories %}
-        <span class="category-tag">{{ category }}</span>
+        <a href="{{ site.baseurl }}/categories#{{ category | slugify }}" class="category-tag">#{{ category }}</a>
         {% endfor %}
       </div>
       {% endif %}

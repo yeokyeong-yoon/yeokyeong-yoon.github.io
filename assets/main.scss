@@ -1,104 +1,158 @@
 @import "minima";
 
-// Notion-inspired Theme & Color Palette
+// Coolors 색상 팔레트 
+// https://coolors.co/palette/d9ed92-b5e48c-99d98c-76c893-52b69a-34a0a4-168aad-1a759f-1e6091-184e77
+$color-1: #d9ed92;  // 연한 라임 그린
+$color-2: #b5e48c;  // 라임 그린
+$color-3: #99d98c;  // 민트 그린
+$color-4: #76c893;  // 민트 
+$color-5: #52b69a;  // 청록색
+$color-6: #34a0a4;  // 밝은 청록색
+$color-7: #168aad;  // 청록색
+$color-8: #1a759f;  // 청색
+$color-9: #1e6091;  // 진한 청색
+$color-10: #184e77; // 가장 진한 청색
+
+// Notion 디자인 시스템
 $background-color: #ffffff;
 $text-color: #37352f;
 $muted-text-color: #6b6b6b;
-$accent-color: #A3A3BD;
-$link-color: #A3A3BD;
-$heading-color: #37352f;
+$accent-color: $color-6;  // 헤더, 강조 텍스트에 사용
+$link-color: $color-7;    // 링크 색상
+$heading-color: $color-9; // 제목 색상
 $border-color: #E8EAE6;
-$code-background: #F7F6F3;
+$code-background: $color-1; // 코드 배경 색상
 $light-bg: #F7F6F3;
-$code-border: #E8EAE6;
+$code-border: $color-2;     // 코드 테두리 색상
+$code-color: $color-10;     // 코드 텍스트 색상
+$blockquote-bg: $color-1;   // 인용구 배경
+$blockquote-border: $color-3; // 인용구 테두리
 
-// 노션 팔레트 응용
-$notion-gray1: #E8EAE6;
-$notion-gray2: #D6D7DC;
-$notion-gray3: #BEBFCB;
-$notion-accent: #A3A3BD;
+// 색상 팔레트
+$gray1: #E8EAE6;
+$gray2: #D6D7DC;
+$gray3: #BEBFCB;
+$accent: $color-6;
+$category-color: $color-8;  // 카테고리 색상
+$tag-color: $color-7;       // 태그 색상
 
-// 한국어 폰트 개선 - Noto Sans KR 기반
-$font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
-$monospace-font: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+// 폰트 시스템
+$font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Noto Sans KR', 'Apple SD Gothic Neo', 'Nunito', sans-serif;
+$heading-font: 'Nunito', $font-family;
+$monospace-font: 'SF Mono', SFMono-Regular, ui-monospace, Menlo, Consolas, monospace;
+$base-font-size: 16px;
+$small-font-size: 14px;
 
-// Custom styles
+// 공간 시스템
+$spacing-xs: 0.5rem;
+$spacing-sm: 0.75rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+$spacing-xxl: 3rem;
+
+// 모서리 둥글기
+$radius-sm: 3px;
+$radius-md: 5px;
+$radius-lg: 8px;
+
+// 그림자
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 2px 4px rgba(0, 0, 0, 0.05);
+$shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.05);
+
+// 기본 스타일
 body {
   font-family: $font-family;
   line-height: 1.6;
   color: $text-color;
   background-color: $background-color;
-  font-size: 15px;
+  font-size: $base-font-size;
   font-weight: 400;
   word-break: keep-all;
   overflow-wrap: break-word;
-  letter-spacing: -0.003em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em;
 }
 
+// 제목 스타일 - 크기 조정하여 균형 맞추기
 h1, h2, h3, h4, h5, h6 {
+  font-family: $heading-font;
   color: $heading-color;
   font-weight: 600;
   line-height: 1.3;
-  margin-top: 1.8em;
-  margin-bottom: 0.6em;
-  letter-spacing: -0.01em;
+  margin-top: $spacing-xl;
+  margin-bottom: $spacing-md;
+  letter-spacing: -0.02em;
 }
 
-h1 { font-size: 1.875em; }
-h2 { font-size: 1.5em; }
-h3 { font-size: 1.25em; }
-h4 { font-size: 1.125em; }
+h1 { 
+  font-size: 1.8em; // 크기 축소
+  margin-top: $spacing-xl;
+  letter-spacing: -0.022em;
+}
+h2 { 
+  font-size: 1.4em; // 크기 축소 
+  margin-top: $spacing-xxl;
+  letter-spacing: -0.021em;
+  border-bottom: 1px solid $gray1;
+  padding-bottom: $spacing-sm;
+}
+h3 { font-size: 1.2em; } // 크기 축소
+h4 { font-size: 1.05em; } // 크기 축소
 
+// 단락 스타일
 p {
-  margin-bottom: 1.2em;
+  margin-bottom: $spacing-lg;
   line-height: 1.7;
   color: $text-color;
 }
 
+// 링크 스타일
 a {
   color: $link-color;
   text-decoration: none;
   transition: color 0.2s ease, opacity 0.2s ease;
-  border-bottom: 1px solid rgba(163, 163, 189, 0.4);
-  opacity: 0.9;
+  border-bottom: 1px solid rgba(107, 109, 123, 0.3);
   
   &:hover {
     color: darken($link-color, 15%);
-    opacity: 1;
-    border-bottom-color: $link-color;
+    border-bottom-color: rgba(107, 109, 123, 0.6);
   }
 }
 
-// Notion 스타일 레이아웃
+// 레이아웃
 .wrapper {
-  max-width: 800px;
+  max-width: 740px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 $spacing-xl;
   
   @media (max-width: 768px) {
-    padding: 0 1.2rem;
+    padding: 0 $spacing-lg;
   }
 }
 
-// 헤더 스타일 - 노션 스타일
+// 헤더 스타일
 .site-header {
-  border-bottom: 1px solid $notion-gray1;
-  padding: 1.5rem 0;
-  margin-bottom: 3rem;
+  border-bottom: 1px solid $gray1;
+  padding: $spacing-lg 0;
+  margin-bottom: $spacing-xxl;
   background-color: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(10px);
+  box-shadow: $shadow-sm;
 }
 
 .site-title {
   font-weight: 600;
   font-size: 1.3rem;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   color: $heading-color;
   border-bottom: none;
   
   &:hover {
     text-decoration: none;
-    color: $notion-accent;
-    opacity: 0.9;
+    color: $accent;
   }
 }
 
@@ -110,127 +164,186 @@ a {
     color: $muted-text-color;
     font-weight: 500;
     font-size: 0.95rem;
-    margin-left: 1.5rem;
+    margin-left: $spacing-lg;
     border-bottom: none;
     
     &:hover {
-      color: $notion-accent;
+      color: $accent;
     }
   }
 }
 
-// 노션 스타일 본문
+// 본문 스타일
 .post-content {
-  margin-bottom: 4rem;
+  margin-bottom: $spacing-xxl;
   
+  // 이미지
   img {
     max-width: 100%;
     height: auto;
     display: block;
-    margin: 2rem auto;
-    border-radius: 3px;
-    border: 1px solid $notion-gray1;
+    margin: $spacing-xl auto;
+    border-radius: $radius-sm;
+    border: 1px solid $gray1;
+    box-shadow: $shadow-sm;
   }
   
+  // 인용구
   blockquote {
-    margin: 1.5rem 0;
-    padding: 0.5rem 1.2rem;
-    background: $light-bg;
-    border-left: 3px solid $notion-gray3;
+    margin: $spacing-lg 0;
+    padding: $spacing-sm $spacing-lg;
+    background: $blockquote-bg;
+    border-left: 3px solid $blockquote-border;
+    border-radius: $radius-sm;
     font-style: normal;
     color: $muted-text-color;
+    
+    p {
+      margin-bottom: $spacing-sm;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
   }
   
-  // 노션 스타일 코드 블록
+  // 인라인 코드
   code {
     background: $code-background;
-    padding: 0.2em 0.4em;
-    border-radius: 3px;
+    padding: 0.15em 0.4em;
+    border-radius: $radius-sm;
     font-size: 0.9em;
     font-family: $monospace-font;
-    color: #EB5757;
+    color: $code-color;
     border: 1px solid $code-border;
   }
   
+  // 코드 블록
   pre {
     background: $light-bg;
     color: $text-color;
-    padding: 1.2rem;
-    border-radius: 3px;
+    padding: $spacing-lg;
+    border-radius: $radius-sm;
     overflow-x: auto;
-    margin: 1.5rem 0;
-    border: 1px solid $notion-gray1;
+    margin: $spacing-lg 0;
+    border: 1px solid $gray1;
+    box-shadow: $shadow-sm;
     
     code {
       background: transparent;
       color: $text-color;
       padding: 0;
       border: none;
-      font-size: 0.9em;
+      font-size: 0.85em;
+      line-height: 1.6;
     }
   }
   
+  // 제목 여백
   h2, h3, h4 {
-    margin-top: 2.2rem;
-    margin-bottom: 0.8rem;
+    margin-top: $spacing-xxl;
+    margin-bottom: $spacing-md;
   }
   
-  // 노션 스타일 리스트
+  // 리스트
   ul, ol {
-    padding-left: 1.5rem;
-    margin-bottom: 1.2rem;
+    padding-left: $spacing-lg;
+    margin-bottom: $spacing-lg;
     
     li {
-      margin-bottom: 0.4rem;
+      margin-bottom: $spacing-sm;
+      padding-left: $spacing-xs;
+      
+      &::marker {
+        color: $accent;
+      }
     }
   }
   
-  // 노션 스타일 테이블
+  // 테이블
   table {
     border-collapse: collapse;
     width: 100%;
-    margin: 1.5rem 0;
+    margin: $spacing-lg 0;
     font-size: 0.95em;
+    box-shadow: $shadow-sm;
+    border-radius: $radius-sm;
+    overflow: hidden;
     
     th, td {
-      border: 1px solid $notion-gray2;
-      padding: 0.5rem 0.8rem;
+      border: 1px solid $gray2;
+      padding: $spacing-sm $spacing-md;
     }
     
     th {
-      background-color: $notion-gray1;
+      background-color: $gray1;
       font-weight: 600;
+      text-align: left;
     }
     
     tr:nth-child(even) {
       background-color: $light-bg;
     }
+    
+    tr:hover {
+      background-color: rgba($gray3, 0.1);
+    }
   }
 }
 
-// Mermaid 다이어그램 스타일 개선
+// 다이어그램 스타일 개선
 .mermaid {
   background: $light-bg;
-  padding: 1.5rem;
-  border-radius: 3px;
-  margin: 2rem 0;
-  border: 1px solid $notion-gray2;
+  padding: $spacing-lg;
+  border-radius: $radius-sm;
+  margin: $spacing-xl 0;
+  border: 1px solid $gray2;
   text-align: center;
+  box-shadow: $shadow-sm;
+  overflow: auto;
   
   svg {
     max-width: 100%;
+    height: auto !important;
+    
+    .actor {
+      fill: #f5f5f7 !important;
+      stroke: $gray3 !important;
+    }
+    
+    .messageLine0, .messageLine1 {
+      stroke: $accent !important;
+    }
+    
+    .messageText {
+      fill: $text-color !important;
+    }
+    
+    .loopText, .loopLine {
+      fill: $text-color !important;
+      stroke: $gray3 !important;
+    }
+    
+    .clusters rect {
+      fill: #f5f5f7 !important;
+      stroke: $gray3 !important;
+    }
   }
 }
 
-// 본문 타이포그래피 개선
+// 페이지 타이틀과 메타 개선
 .post {
-  margin-bottom: 4rem;
+  margin-bottom: $spacing-xxl;
+  
+  .post-header {
+    margin-bottom: $spacing-xl;
+  }
   
   .post-title {
-    font-size: 2em;
-    margin-bottom: 0.4em;
+    font-size: 1.9em; // 크기 축소
+    margin-bottom: $spacing-sm;
     line-height: 1.3;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
     word-break: keep-all;
     color: $heading-color;
   }
@@ -238,111 +351,133 @@ a {
   .post-meta {
     color: $muted-text-color;
     font-size: 0.9rem;
-    margin-bottom: 2rem;
+    margin-bottom: $spacing-lg;
   }
 }
 
-// 카테고리 스타일
-.post-categories-container {
-  margin: 1.2rem 0;
+// 메타 정보 컨테이너 (카테고리 및 태그를 함께 표시)
+.post-meta-container {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
+  gap: $spacing-md;
+  margin: $spacing-md 0;
+  align-items: center;
+  line-height: 1.7;
 }
 
-.categories-label {
-  margin: 0;
-  margin-right: 0.8rem;
+// 메타 레이블 공통 스타일
+.meta-label {
   font-size: 0.9rem;
-  font-weight: 500;
-  color: $muted-text-color;
+  font-weight: 600;
+  color: $color-9;
+  margin-right: $spacing-xs;
+  font-family: 'Nunito', $font-family;
+}
+
+// 카테고리 스타일 개선
+.post-categories-container {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .post-categories {
-  display: flex;
+  display: inline-flex; 
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: $spacing-xs;
   
   .category-tag {
-    display: inline-block;
-    background-color: rgba(190, 191, 203, 0.2);
-    color: #6b6b6b;
-    border-radius: 3px;
-    padding: 0.2rem 0.6rem;
+    display: inline-flex;
+    align-items: center;
+    background-color: rgba($category-color, 0.1);
+    color: $category-color;
+    border-radius: 15px;
+    padding: 0.2rem 0.8rem;
     font-size: 0.85rem;
-    font-weight: 500;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border-bottom: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    font-family: 'Nunito', $font-family;
+    letter-spacing: 0.01em;
+    
+    &:hover {
+      background-color: rgba($category-color, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+      text-decoration: none;
+      border-bottom: none;
+    }
   }
 }
 
-// 개선된 태그 스타일
+// 태그 스타일 개선
 .post-tags-container {
-  margin: 1.2rem 0;
-  display: flex;
+  margin: 0;
+  display: inline-flex;
   align-items: center;
   flex-wrap: wrap;
 }
 
-.tags-label {
-  margin: 0;
-  margin-right: 0.8rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: $muted-text-color;
-}
-
 .post-tags {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: $spacing-xs;
 }
 
 .tag {
-  display: inline-block;
-  background-color: rgba(163, 163, 189, 0.1);
-  color: $notion-accent;
-  border-radius: 3px;
-  padding: 0.2rem 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  background-color: rgba($tag-color, 0.1);
+  color: $tag-color;
+  border-radius: 15px;
+  padding: 0.2rem 0.8rem;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
   transition: all 0.2s ease;
   border-bottom: none;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  font-family: 'Nunito', $font-family;
+  letter-spacing: 0.01em;
   
   &:hover {
-    background-color: rgba(163, 163, 189, 0.2);
-    transform: translateY(-1px);
+    background-color: rgba($tag-color, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 5px rgba(0,0,0,0.1);
     text-decoration: none;
     border-bottom: none;
   }
 }
 
-// Tags 페이지 스타일 개선
+// 태그 페이지
 .tags-page {
-  margin-bottom: 4rem;
+  margin-bottom: $spacing-xxl;
   
   .page-title {
-    font-size: 2em;
-    margin-bottom: 1.5rem;
+    font-size: 1.8em; // 크기 축소
+    margin-bottom: $spacing-lg;
   }
   
   .tags-list {
-    margin: 2rem 0;
+    margin: $spacing-xl 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.6rem;
+    gap: $spacing-sm;
     
     .tag {
       display: inline-flex;
       align-items: center;
-      background-color: rgba(163, 163, 189, 0.1);
-      color: $notion-accent;
-      border-radius: 3px;
-      padding: 0.3rem 0.7rem;
+      background-color: rgba($accent, 0.1);
+      color: $accent;
+      border-radius: $radius-sm;
+      padding: $spacing-xs $spacing-sm;
       font-size: 0.9rem;
       font-weight: 500;
       transition: all 0.2s ease;
       
       &:hover {
-        background-color: rgba(163, 163, 189, 0.2);
+        background-color: rgba($accent, 0.2);
         text-decoration: none;
         transform: translateY(-1px);
       }
@@ -350,12 +485,12 @@ a {
   }
   
   .tag-group {
-    margin: 2.5rem 0;
-    padding-top: 1rem;
-    border-top: 1px solid $notion-gray1;
+    margin: $spacing-xl 0;
+    padding-top: $spacing-md;
+    border-top: 1px solid $gray1;
     
     .tag-title {
-      margin-bottom: 1rem;
+      margin-bottom: $spacing-md;
       color: $heading-color;
       font-size: 1.3rem;
       font-weight: 600;
@@ -366,7 +501,8 @@ a {
       padding-left: 0;
       
       li {
-        margin-bottom: 0.8rem;
+        margin-bottom: $spacing-sm;
+        padding: $spacing-xs 0;
         
         a {
           font-weight: 500;
@@ -375,14 +511,14 @@ a {
           border-bottom: none;
           
           &:hover {
-            color: $notion-accent;
-            border-bottom: 1px solid rgba(163, 163, 189, 0.4);
+            color: $accent;
+            border-bottom: 1px solid rgba($accent, 0.4);
           }
         }
         
         .post-date {
           color: $muted-text-color;
-          margin-left: 0.5rem;
+          margin-left: $spacing-sm;
           font-size: 0.85rem;
         }
       }
@@ -392,9 +528,9 @@ a {
 
 // 페이지네이션
 .pagination {
-  margin: 2.5rem 0;
-  padding-top: 1.5rem;
-  border-top: 1px solid $notion-gray1;
+  margin: $spacing-xl 0;
+  padding-top: $spacing-lg;
+  border-top: 1px solid $gray1;
   display: flex;
   justify-content: space-between;
   
@@ -402,30 +538,131 @@ a {
     color: $muted-text-color;
     font-size: 0.9rem;
     border-bottom: none;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $radius-sm;
+    transition: all 0.2s ease;
     
     &:hover {
-      color: $notion-accent;
+      color: $accent;
+      background-color: rgba($accent, 0.05);
     }
   }
 }
 
 // 푸터
 .site-footer {
-  margin-top: 4rem;
-  padding: 2rem 0;
-  border-top: 1px solid $notion-gray1;
+  margin-top: $spacing-xxl;
+  padding: $spacing-xl 0;
+  border-top: 1px solid $gray1;
   color: $muted-text-color;
   font-size: 0.9rem;
   
   a {
-    color: $notion-accent;
+    color: $accent;
     border-bottom: none;
     
     &:hover {
       opacity: 0.8;
     }
   }
+  
+  .footer-content {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    align-items: center;
+    text-align: center;
+    
+    @media (min-width: 768px) {
+      flex-direction: row;
+      justify-content: space-between;
+      text-align: left;
+    }
+  }
 }
 
-// 한국어 웹폰트 추가
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap'); 
+// 한국어 웹폰트
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+
+// 코드 폰트
+@import url('https://cdn.jsdelivr.net/gh/tonsky/FiraCode@5.2/distr/fira_code.css');
+
+// Nunito 웹폰트 추가 - 귀여운 느낌의 폰트
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap');
+
+// 카테고리 페이지 스타일
+.categories-page {
+  margin-bottom: $spacing-xxl;
+  
+  .page-title {
+    font-size: 1.8em;
+    margin-bottom: $spacing-lg;
+  }
+  
+  .categories-list {
+    margin: $spacing-xl 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+    
+    .category-tag {
+      display: inline-flex;
+      align-items: center;
+      background-color: rgba($category-color, 0.1);
+      color: $category-color;
+      border-radius: $radius-md;
+      padding: $spacing-xs $spacing-sm;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      
+      &:hover {
+        background-color: rgba($category-color, 0.2);
+        text-decoration: none;
+        transform: translateY(-1px);
+      }
+    }
+  }
+  
+  .category-group {
+    margin: $spacing-xl 0;
+    padding-top: $spacing-md;
+    border-top: 1px solid $gray1;
+    
+    .category-title {
+      margin-bottom: $spacing-md;
+      color: $heading-color;
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+    
+    .post-list {
+      list-style: none;
+      padding-left: 0;
+      
+      li {
+        margin-bottom: $spacing-sm;
+        padding: $spacing-xs 0;
+        
+        a {
+          font-weight: 500;
+          color: $heading-color;
+          transition: color 0.2s ease;
+          border-bottom: none;
+          
+          &:hover {
+            color: $category-color;
+            border-bottom: 1px solid rgba($category-color, 0.4);
+          }
+        }
+        
+        .post-date {
+          color: $muted-text-color;
+          margin-left: $spacing-sm;
+          font-size: 0.85rem;
+        }
+      }
+    }
+  }
+} 

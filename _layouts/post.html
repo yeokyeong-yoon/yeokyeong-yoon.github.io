@@ -13,27 +13,29 @@ layout: default
       {% endif %}
     </div>
     
-    {% if page.categories.size > 0 %}
-    <div class="post-categories-container">
-      <h4 class="categories-label">Categories:</h4>
-      <div class="post-categories">
-        {% for category in page.categories %}
-        <span class="category-tag">{{ category }}</span>
-        {% endfor %}
+    <div class="post-meta-container">
+      {% if page.categories.size > 0 %}
+      <div class="post-categories-container">
+        <span class="meta-label">Categories:</span>
+        <div class="post-categories">
+          {% for category in page.categories %}
+          <a href="{{ site.baseurl }}/categories#{{ category | slugify }}" class="category-tag">#{{ category }}</a>
+          {% endfor %}
+        </div>
       </div>
-    </div>
-    {% endif %}
-    
-    {% if page.tags.size > 0 %}
-    <div class="post-tags-container">
-      <h4 class="tags-label">Tags:</h4>
-      <div class="post-tags">
-        {% for tag in page.tags %}
-        <a href="{{ site.baseurl }}/tags#{{ tag | slugify }}" class="tag">#{{ tag }}</a>
-        {% endfor %}
+      {% endif %}
+      
+      {% if page.tags.size > 0 %}
+      <div class="post-tags-container">
+        <span class="meta-label">Tags:</span>
+        <div class="post-tags">
+          {% for tag in page.tags %}
+          <a href="{{ site.baseurl }}/tags#{{ tag | slugify }}" class="tag">#{{ tag }}</a>
+          {% endfor %}
+        </div>
       </div>
+      {% endif %}
     </div>
-    {% endif %}
   </header>
 
   <div class="post-content">
