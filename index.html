@@ -52,8 +52,8 @@ title: Home
   
   .contact-links {
     display: flex;
-    flex-wrap: wrap;
-    gap: 30px;
+    flex-direction: column;
+    gap: 15px;
     margin-bottom: 20px;
   }
   
@@ -63,14 +63,25 @@ title: Home
     transition: all 0.2s ease;
     font-size: 1.2rem;
     font-weight: 500;
-    position: relative;
+    display: flex;
+    align-items: center;
   }
   
   .contact-link:hover {
     color: #000;
   }
   
-  .contact-link:after {
+  .contact-label {
+    min-width: 120px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.6);
+  }
+  
+  .contact-value {
+    position: relative;
+  }
+  
+  .contact-value:after {
     content: '';
     position: absolute;
     width: 100%;
@@ -83,9 +94,16 @@ title: Home
     transition: transform 0.3s ease-out;
   }
   
-  .contact-link:hover:after {
+  .contact-link:hover .contact-value:after {
     transform: scaleX(1);
     transform-origin: bottom left;
+  }
+  
+  .contact-note {
+    margin-left: 10px;
+    font-size: 0.9rem;
+    color: rgba(0, 0, 0, 0.5);
+    font-weight: 400;
   }
   
   .section {
@@ -275,16 +293,38 @@ title: Home
 <div class="home-container">
   <section class="hero">
     <h1 class="hero-title">yeokyeong.yoon</h1>
-    <p class="hero-subtitle">Software Engineer solving complex problems with whatever tools the job requires</p>
+    <p class="hero-subtitle">Crafting elegant solutions at the intersection of technology and human experience — where code meets creativity</p>
     
     <div class="contact-container">
       <div class="contact-links">
-        <a href="https://polished-chicken-aca.notion.site/Yeokyeong-Yoon-19a67bf8bfe280519aaaf36d8d299044" class="contact-link" target="_blank">Portfolio</a>
-        <a href="https://www.linkedin.com/in/yeokyeong-yoon/" class="contact-link" target="_blank">LinkedIn</a>
-        <a href="https://github.com/yeokyeong-yoon" class="contact-link" target="_blank">GitHub</a>
-        <a href="mailto:yeokyeong.yoon@gmail.com" class="contact-link" target="_blank">Email</a>
-        <a href="{{ site.baseurl }}/blog" class="contact-link">Blog</a>
-        <a href="{{ site.baseurl }}/tags" class="contact-link">Tags</a>
+        <a href="mailto:yeokyeongy@gmail.com" class="contact-link">
+          <span class="contact-label">Email</span>
+          <span class="contact-value">yeokyeongy@gmail.com</span>
+        </a>
+        
+        <a href="https://www.linkedin.com/in/yeokyeong-yoon/" class="contact-link" target="_blank">
+          <span class="contact-label">LinkedIn</span>
+          <span class="contact-value">yeokyeong-yoon</span>
+          <span class="contact-note">(English)</span>
+        </a>
+        
+        <a href="https://github.com/yeokyeong-yoon" class="contact-link" target="_blank">
+          <span class="contact-label">GitHub</span>
+          <span class="contact-value">yeokyeong-yoon</span>
+        </a>
+        
+        <a href="https://polished-chicken-aca.notion.site/Yeokyeong-Yoon-19a67bf8bfe280519aaaf36d8d299044" class="contact-link" target="_blank">
+          <span class="contact-label">Portfolio</span>
+          <span class="contact-value">Notion Portfolio</span>
+          <span class="contact-note">(Korean)</span>
+        </a>
+        
+        <div class="contact-link">
+          <span class="contact-label">Blog</span>
+          <a href="{{ site.baseurl }}/blog" class="contact-value">Articles</a>
+          <span class="contact-note">|</span>
+          <a href="{{ site.baseurl }}/tags" class="contact-value" style="margin-left: 10px;">Categories & Tags</a>
+        </div>
       </div>
     </div>
   </section>
