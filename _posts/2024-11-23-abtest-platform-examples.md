@@ -36,7 +36,7 @@ A/B 테스트는 현대 디지털 서비스 개발에서 필수적인 요소가 
 
 > 출처: [Uber Engineering Blog - Building an Experimentation Platform at Uber](https://www.uber.com/blog/experimentation-platform/)
 
-### 1.6 오늘의집(Bucketplace)의 A/B 테스트 시스템
+### 1.4 오늘의집(Bucketplace)의 A/B 테스트 시스템
 
 오늘의집은 테크 블로그를 통해 그들의 A/B 테스트 시스템에 대해 공유했습니다. 오늘의집은 특히 '사용자 경험 최적화'에 중점을 두고 A/B 테스트를 활용하고 있습니다. 그들은 프론트엔드 중심의 테스트를 위한 자체 라이브러리를 개발하여 디자인 변경, 기능 추가, UI 개선 등을 실험할 수 있는 환경을 구축했습니다.
 
@@ -44,7 +44,7 @@ A/B 테스트는 현대 디지털 서비스 개발에서 필수적인 요소가 
 
 > 출처: [오늘의집 테크 블로그 - 사용자 경험을 개선하는 A/B 테스트 시스템](https://www.bucketplace.com/post/2021-10-29-%EC%98%A4%EB%8A%98%EC%9D%98%EC%A7%91-a-b-%EC%8B%A4%ED%97%98-%ED%94%8C%EB%9E%AB%ED%8F%BC-%EA%B5%AC%EC%B6%95%EA%B8%B0/)
 
-### 1.7 당근마켓(Karrot)의 실험 플랫폼
+### 1.5 당근마켓(Karrot)의 실험 플랫폼
 
 당근마켓 역시 자체 테크 블로그를 통해 그들의 실험 문화와 플랫폼에 대해 소개했습니다. 당근마켓은 지역 기반 서비스라는 특성을 고려한 '지역 분리 실험(Region-based Experiment)' 방법론을 개발했습니다. 이는 특정 지역만을 대상으로 새로운 기능이나 UI를 테스트하여, 지역 간 교차 효과를 최소화하면서도 정확한 실험 결과를 얻을 수 있게 해줍니다.
 
