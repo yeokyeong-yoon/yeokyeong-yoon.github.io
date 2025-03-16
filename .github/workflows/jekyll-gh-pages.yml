@@ -46,16 +46,9 @@ jobs:
         env:
           JEKYLL_ENV: production
       
-      # Use the more stable upload-artifact first
-      - name: Upload artifact for debugging
-        uses: actions/upload-artifact@v3
-        with:
-          name: site-content
-          path: "_site/"
-      
-      # Then use the pages artifact uploader
-      - name: Upload pages artifact
-        uses: actions/upload-pages-artifact@v1
+      # Use the latest version of upload-artifact
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
         with:
           path: "_site/"
 
@@ -68,4 +61,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2 
+        uses: actions/deploy-pages@v3 
