@@ -29,7 +29,12 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2'
-          bundler-cache: true
+          bundler-cache: false
+      
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle install
       
       - name: Setup Pages
         id: pages
@@ -37,8 +42,6 @@ jobs:
       
       - name: Build site
         run: |
-          bundle config set --local path 'vendor/bundle'
-          bundle install
           bundle exec jekyll build --future
         env:
           JEKYLL_ENV: production
