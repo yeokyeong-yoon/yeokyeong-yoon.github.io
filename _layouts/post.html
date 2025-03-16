@@ -50,7 +50,6 @@ layout: default
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Initialize Mermaid with custom config
       mermaid.initialize({
         startOnLoad: true,
         theme: 'default',
@@ -66,21 +65,28 @@ layout: default
           messageMargin: 35,
           mirrorActors: true,
           bottomMarginAdj: 1,
-          useMaxWidth: true
+          useMaxWidth: true,
+          wrap: false
+        },
+        themeVariables: {
+          fontSize: '16px'
         }
       });
 
-      // Adjust diagram containers after rendering
-      setTimeout(function() {
-        document.querySelectorAll('.mermaid').forEach(function(diagram) {
-          const svg = diagram.querySelector('svg');
-          if (svg) {
-            const height = svg.getBBox().height + 50; // Add padding
-            svg.style.minHeight = height + 'px';
-            diagram.style.minHeight = height + 'px';
-          }
-        });
-      }, 1000); // Wait for diagrams to render
+      // Remove any fixed positioning that might cause the diagram to move
+      document.querySelectorAll('.mermaid').forEach(function(diagram) {
+        const svg = diagram.querySelector('svg');
+        if (svg) {
+          svg.style.position = 'static';
+          svg.style.width = '100%';
+          svg.style.height = '100%';
+          
+          // Ensure all internal elements are also static
+          svg.querySelectorAll('*').forEach(function(el) {
+            el.style.position = 'static';
+          });
+        }
+      });
     });
   </script>
 

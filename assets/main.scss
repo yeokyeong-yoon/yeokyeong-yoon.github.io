@@ -351,17 +351,58 @@ a {
   padding: 1rem;
   background: rgba($color-1, 0.05);
   border-radius: $radius-lg;
+  position: static;
   
   svg {
-    min-width: min-content;
-    width: 100%;
-    height: auto !important;
-    min-height: 400px;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    position: static !important;
+  }
+
+  .actor {
+    fill: rgba($color-1, 0.3) !important;
+    stroke: $color-6 !important;
+    stroke-width: 1.5px !important;
+  }
+
+  .messageText {
+    fill: $color-9 !important;
+    font-size: 12px !important;
+    font-family: $monospace-font !important;
+  }
+
+  .messageLine0, .messageLine1 {
+    stroke: $color-7 !important;
+    stroke-width: 1.5px !important;
+  }
+
+  .loopText, .loopLine {
+    fill: $color-8 !important;
+    stroke: $color-6 !important;
+  }
+
+  .note {
+    fill: rgba($color-2, 0.3) !important;
+    stroke: $color-6 !important;
+  }
+
+  .actor-line {
+    stroke: $color-4 !important;
+    stroke-width: 1px !important;
+  }
+
+  text.actor {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    font-family: $heading-font !important;
+    fill: $color-9 !important;
   }
 }
 
 .post-content {
   overflow: visible;
+  position: static;
   
   img, svg {
     max-width: 100%;
@@ -371,13 +412,13 @@ a {
   }
   
   .mermaid {
+    position: static;
     min-width: 100%;
     
     svg {
-      min-width: 800px;
-      width: 100%;
-      height: auto !important;
-      min-height: 400px;
+      position: static !important;
+      width: 100% !important;
+      height: 100% !important;
     }
   }
 }
