@@ -236,52 +236,52 @@ a {
 .post {
   max-width: 740px;
   margin: 0 auto;
-  padding: $spacing-lg 0;
+  padding: 0 $spacing-unit;
 
   .post-header {
-    margin-bottom: $spacing-lg;
+    margin-bottom: $spacing-xl;
     
     .post-title {
-      font-size: 2.2em;
+      font-size: 2.4em;
       line-height: 1.3;
       font-weight: 700;
       letter-spacing: -0.03em;
-      margin-bottom: $spacing-sm;
+      margin-bottom: $spacing-md;
       color: $color-9;
     }
 
     .post-meta {
-      font-size: 0.95em;
+      font-size: 1em;
       color: $color-7;
     }
   }
 
   .post-content {
     font-size: 1.1em;
-    line-height: 1.7;
+    line-height: 1.8;
     color: $text-color;
 
     h2 {
-      font-size: 1.5em;
+      font-size: 1.6em;
       font-weight: 700;
-      margin: $spacing-xl 0 $spacing-md;
+      margin: $spacing-xxl 0 $spacing-md;
       color: $color-9;
     }
 
     h3 {
-      font-size: 1.25em;
+      font-size: 1.3em;
       font-weight: 600;
-      margin: $spacing-lg 0 $spacing-md;
+      margin: $spacing-xl 0 $spacing-md;
       color: $color-9;
     }
 
     p {
-      margin-bottom: $spacing-md;
+      margin-bottom: $spacing-lg;
     }
 
     pre {
-      margin: $spacing-md 0;
-      padding: $spacing-md;
+      margin: $spacing-lg 0;
+      padding: $spacing-lg;
       border-radius: 8px;
       background: #f8f9fa;
       overflow-x: auto;
@@ -317,8 +317,8 @@ a {
   }
 
   .post-footer {
-    margin-top: $spacing-xl;
-    padding-top: $spacing-md;
+    margin-top: $spacing-xxl;
+    padding-top: $spacing-lg;
     border-top: 1px solid rgba($color-4, 0.1);
 
     .post-meta-container {
@@ -347,8 +347,8 @@ a {
 .mermaid {
   width: 100%;
   overflow: visible;
-  margin: $spacing-lg 0;
-  padding: $spacing-md;
+  margin: 2rem 0;
+  padding: 1rem;
   background: rgba($color-1, 0.05);
   border-radius: $radius-lg;
   
@@ -367,7 +367,7 @@ a {
     max-width: 100%;
     height: auto;
     display: block;
-    margin: $spacing-lg auto;
+    margin: 2rem auto;
   }
   
   .mermaid {
@@ -511,6 +511,63 @@ a {
     letter-spacing: -0.03em;
   }
 
+  // Search and Filter Bar
+  .filter-bar {
+    margin-bottom: $spacing-xl;
+    
+    .search-input {
+      width: 100%;
+      padding: $spacing-md;
+      font-size: 1.1em;
+      border: none;
+      border-radius: $radius-lg;
+      background: rgba($color-1, 0.1);
+      color: $color-9;
+      transition: all 0.2s ease;
+      
+      &:focus {
+        outline: none;
+        background: rgba($color-1, 0.2);
+        box-shadow: $shadow-sm;
+      }
+      
+      &::placeholder {
+        color: rgba($color-7, 0.6);
+      }
+    }
+
+    .active-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $spacing-sm;
+      margin-top: $spacing-md;
+
+      .active-filter {
+        display: inline-flex;
+        align-items: center;
+        padding: $spacing-xs $spacing-md;
+        background: $color-8;
+        color: white;
+        border-radius: 20px;
+        font-size: 0.9em;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        
+        &:hover {
+          background: darken($color-8, 10%);
+          transform: translateY(-1px);
+        }
+
+        &::after {
+          content: "×";
+          margin-left: $spacing-xs;
+          font-size: 1.2em;
+        }
+      }
+    }
+  }
+
   .filter-section {
     background: white;
     padding: $spacing-xl;
@@ -520,11 +577,10 @@ a {
     box-shadow: $shadow-sm;
 
     h2 {
-      font-size: 1.6em;
+      font-size: 1.4em;
       color: $color-9;
       margin-bottom: $spacing-lg;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+      font-weight: 600;
     }
 
     .filter-list {
@@ -533,97 +589,99 @@ a {
       gap: $spacing-sm;
     }
 
-    .category-tag, .tag {
-      font-size: 1em;
-      padding: $spacing-sm $spacing-lg;
-      border-radius: 25px;
-      color: white;
-      transition: all 0.2s ease;
-      font-weight: 600;
-      box-shadow: $shadow-sm;
+    .filter-btn {
+      font-size: 0.95em;
+      padding: $spacing-xs $spacing-md;
+      border-radius: 20px;
       border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 500;
+      background: rgba($color-1, 0.1);
+      color: $color-8;
+      
+      &:hover {
+        background: rgba($color-1, 0.2);
+        transform: translateY(-1px);
+      }
+      
+      &.active {
+        background: $color-8;
+        color: white;
+      }
+    }
+
+    .category-tag {
+      &.active {
+        background: $color-6;
+      }
+    }
+
+    .tag {
+      &.active {
+        background: $color-8;
+      }
+    }
+  }
+
+  .posts-container {
+    .post-item {
+      background: white;
+      padding: $spacing-lg;
+      border-radius: $radius-lg;
+      margin-bottom: $spacing-md;
+      border: 1px solid rgba($color-4, 0.1);
+      transition: all 0.2s ease;
       
       &:hover {
         transform: translateY(-2px);
         box-shadow: $shadow-md;
       }
-    }
 
-    .category-tag {
-      background: linear-gradient(135deg, $color-5, $color-6);
-      
-      &:hover {
-        background: linear-gradient(135deg, darken($color-5, 5%), darken($color-6, 5%));
-      }
-    }
-
-    .tag {
-      background: linear-gradient(135deg, $color-7, $color-8);
-      
-      &:hover {
-        background: linear-gradient(135deg, darken($color-7, 5%), darken($color-8, 5%));
-      }
-    }
-  }
-
-  .filter-group {
-    background: white;
-    padding: $spacing-xl;
-    border-radius: $radius-lg;
-    margin-bottom: $spacing-xl;
-    border: 1px solid rgba($color-4, 0.1);
-    box-shadow: $shadow-sm;
-    transition: all 0.3s ease;
-
-    &:hover {
-      box-shadow: $shadow-md;
-    }
-
-    .filter-title {
-      font-size: 1.4em;
-      color: $color-8;
-      margin-bottom: $spacing-lg;
-      padding-bottom: $spacing-sm;
-      border-bottom: 2px solid rgba($color-4, 0.1);
-      font-weight: 700;
-    }
-
-    .post-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-
-      li {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: $spacing-sm $spacing-md;
-        border-radius: $radius-md;
-        transition: all 0.2s ease;
+      .post-title {
+        margin: 0 0 $spacing-sm;
         
-        &:not(:last-child) {
-          margin-bottom: $spacing-xs;
-        }
-
-        &:hover {
-          background: rgba($color-1, 0.1);
-        }
-
         a {
           color: $color-9;
-          font-weight: 500;
-          transition: all 0.2s ease;
+          font-size: 1.2em;
+          font-weight: 600;
           border-bottom: none;
           
           &:hover {
             color: $color-6;
           }
         }
+      }
+
+      .post-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $spacing-sm;
+        align-items: center;
 
         .post-date {
           color: $color-7;
           font-size: 0.9em;
-          font-family: $heading-font;
+        }
+
+        .post-filters {
+          display: flex;
+          flex-wrap: wrap;
+          gap: $spacing-xs;
+
+          .category-tag, .tag {
+            font-size: 0.85em;
+            padding: $spacing-xs $spacing-sm;
+            border-radius: 15px;
+            background: rgba($color-1, 0.1);
+            color: $color-8;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            
+            &:hover {
+              background: rgba($color-1, 0.2);
+            }
+          }
         }
       }
     }
@@ -634,34 +692,34 @@ a {
   .tags-page {
     padding: $spacing-lg;
 
-    .page-title {
-      font-size: 2em;
+    .filter-bar {
+      .search-input {
+        font-size: 1em;
+        padding: $spacing-sm $spacing-md;
+      }
     }
 
     .filter-section {
       padding: $spacing-lg;
 
-      .category-tag, .tag {
+      .filter-btn {
         font-size: 0.9em;
-        padding: $spacing-xs $spacing-md;
+        padding: $spacing-xs $spacing-sm;
       }
     }
 
-    .filter-group {
-      padding: $spacing-lg;
+    .posts-container {
+      .post-item {
+        padding: $spacing-md;
 
-      .filter-title {
-        font-size: 1.2em;
-      }
+        .post-title a {
+          font-size: 1.1em;
+        }
 
-      .post-list li {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: $spacing-xs;
-        padding: $spacing-sm;
-
-        .post-date {
-          font-size: 0.85em;
+        .post-meta {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: $spacing-xs;
         }
       }
     }
