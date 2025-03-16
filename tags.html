@@ -1,37 +1,63 @@
 ---
-layout: default
-title: Tags
+layout: page
+title: Tags & Categories
 permalink: /tags/
 ---
 
 <div class="tags-page">
-  <h1 class="page-title">Tags</h1>
-  
-  {% assign tags_list = site.tags | sort %}
-  
-  {% if tags_list.size > 0 %}
-  <div class="tags-list">
-    {% for tag in tags_list %}
-      <a href="#{{ tag[0] | slugify }}" class="tag">{{ tag[0] }} ({{ tag[1].size }})</a>
-    {% endfor %}
+  <div class="filter-intro">
+    <p>Filter posts by tags or categories to find exactly what you're looking for.</p>
   </div>
-  
-  <div class="tag-groups">
-    {% for tag in tags_list %}
-    <div class="tag-group" id="{{ tag[0] | slugify }}">
-      <h2 class="tag-title">{{ tag[0] }}</h2>
-      <ul class="post-list">
-        {% for post in tag[1] %}
-        <li>
-          <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-          <small class="post-date">{{ post.date | date: "%Y-%m-%d" }}</small>
-        </li>
-        {% endfor %}
-      </ul>
+
+  <div class="filter-section">
+    <h2>Categories</h2>
+    <div class="filter-list">
+      {% assign sorted_categories = site.categories | sort %}
+      {% for category in sorted_categories %}
+        <a href="#cat-{{ category[0] | slugify }}" class="category-tag">#{{ category[0] }}</a>
+      {% endfor %}
     </div>
+  </div>
+
+  <div class="filter-section">
+    <h2>Tags</h2>
+    <div class="filter-list">
+      {% assign sorted_tags = site.tags | sort %}
+      {% for tag in sorted_tags %}
+        <a href="#tag-{{ tag[0] | slugify }}" class="tag">#{{ tag[0] }}</a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="filtered-posts">
+    {% assign sorted_categories = site.categories | sort %}
+    {% for category in sorted_categories %}
+      <div class="filter-group" id="cat-{{ category[0] | slugify }}">
+        <h3 class="filter-title">Category: {{ category[0] }}</h3>
+        <ul class="post-list">
+          {% for post in category[1] %}
+            <li>
+              <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+              <span class="post-date">{{ post.date | date: "%Y-%m-%d" }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+
+    {% assign sorted_tags = site.tags | sort %}
+    {% for tag in sorted_tags %}
+      <div class="filter-group" id="tag-{{ tag[0] | slugify }}">
+        <h3 class="filter-title">Tag: {{ tag[0] }}</h3>
+        <ul class="post-list">
+          {% for post in tag[1] %}
+            <li>
+              <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+              <span class="post-date">{{ post.date | date: "%Y-%m-%d" }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
     {% endfor %}
   </div>
-  {% else %}
-  <p>No tags found.</p>
-  {% endif %}
 </div> 

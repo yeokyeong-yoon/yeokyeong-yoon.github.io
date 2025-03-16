@@ -136,49 +136,119 @@ a {
 
 // 헤더 스타일
 .site-header {
-  border-bottom: 1px solid $gray1;
-  padding: $spacing-lg 0;
-  margin-bottom: $spacing-xxl;
-  background-color: rgba(255, 255, 255, 0.97);
-  backdrop-filter: blur(10px);
-  box-shadow: $shadow-sm;
-}
+  border: none;
+  min-height: 80px;
+  position: relative;
+  background: white;
+  border-bottom: 1px solid rgba($color-4, 0.1);
 
-.site-title {
-  font-weight: 600;
-  font-size: 1.3rem;
-  letter-spacing: -0.02em;
-  color: $heading-color;
-  border-bottom: none;
-  
-  &:hover {
-    text-decoration: none;
-    color: $accent;
+  .wrapper {
+    max-width: 960px;
+    padding: 0 $spacing-unit;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 80px;
+  }
+
+  .site-title {
+    font-size: 1.4em;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: $color-9;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $color-8;
+      text-decoration: none;
+    }
+  }
+
+  .site-nav {
+    display: flex;
+    align-items: center;
+
+    .nav-trigger {
+      display: none;
+    }
+
+    .menu-icon {
+      display: none;
+    }
+
+    .page-link {
+      color: $color-8;
+      font-weight: 500;
+      font-size: 0.95em;
+      padding: $spacing-xs $spacing-sm;
+      margin: 0 $spacing-xs;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba($color-8, 0.05);
+      }
+
+      &.active {
+        background: rgba($color-8, 0.1);
+      }
+    }
   }
 }
 
-.site-nav {
-  float: right;
-  margin-top: 0;
-  
-  .page-link {
-    background: rgba($color-1, 0.1);
-    padding: $spacing-xs $spacing-md;
-    border-radius: 20px;
-    transition: all 0.3s ease;
-    margin-left: $spacing-md;
-    font-weight: 500;
-    border-bottom: none;
-    color: $color-8;
+@media screen and (max-width: $on-palm) {
+  .site-header {
+    .site-nav {
+      position: absolute;
+      top: 100%;
+      right: $spacing-unit;
+      background-color: white;
+      border: 1px solid rgba($color-4, 0.1);
+      border-radius: 8px;
+      text-align: right;
+      padding: $spacing-sm;
+      z-index: 100;
+      display: none;
+      box-shadow: $shadow-md;
 
-    &:hover, &.active {
-      background: rgba($color-6, 0.1);
-      transform: translateY(-1px);
-      color: $color-6;
-    }
+      .nav-trigger:checked ~ .trigger {
+        display: block;
+      }
 
-    &:first-child {
-      margin-left: 0;
+      .menu-icon {
+        display: block;
+        float: right;
+        width: 36px;
+        height: 36px;
+        line-height: 0;
+        padding: $spacing-xs;
+        text-align: center;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: rgba($color-8, 0.05);
+        }
+
+        > svg path {
+          fill: $color-8;
+        }
+      }
+
+      input:checked ~ .trigger {
+        display: block;
+        padding-bottom: 5px;
+      }
+
+      .page-link {
+        display: block;
+        padding: $spacing-xs $spacing-sm;
+        margin: $spacing-xs 0;
+        
+        &:not(:last-child) {
+          margin-right: 0;
+        }
+      }
     }
   }
 }
@@ -719,30 +789,30 @@ a {
 .home {
   .intro {
     text-align: center;
-    padding: $spacing-xxl $spacing-xl;
-    margin: $spacing-xl 0 $spacing-xxl;
-    background: linear-gradient(135deg, rgba($color-1, 0.05) 0%, rgba($color-3, 0.1) 100%);
-    border-radius: $radius-xl;
-    box-shadow: $shadow-sm;
-    border: 1px solid rgba($color-4, 0.1);
+    padding: $spacing-xxl 0;
+    margin: -$spacing-xxl 0 $spacing-xxl;
+    background: linear-gradient(135deg, rgba($color-1, 0.2) 0%, rgba($color-3, 0.3) 100%);
+    border-radius: 0 0 $radius-xl $radius-xl;
     
     .page-heading {
-      font-size: 3em;
+      font-size: 3.5em;
       color: $color-9;
-      margin-bottom: $spacing-lg;
+      margin: $spacing-xl 0 $spacing-md;
       font-weight: 800;
       letter-spacing: -0.03em;
       background: linear-gradient(135deg, $color-9, $color-6);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 4px rgba($color-9, 0.1);
     }
     
     .intro-text {
-      font-size: 1.3em;
+      font-size: 1.4em;
       color: $color-7;
       max-width: 600px;
       margin: 0 auto $spacing-xl;
       line-height: 1.6;
+      font-weight: 500;
     }
 
     .quick-links {
@@ -768,22 +838,46 @@ a {
           color: white;
           box-shadow: $shadow-md;
         }
+
+        &.notion-link {
+          background: linear-gradient(135deg, #2E3437, #37352F);
+          color: white;
+          border: none;
+          
+          &:hover {
+            background: linear-gradient(135deg, #37352F, #2E3437);
+            transform: translateY(-2px);
+          }
+        }
       }
     }
   }
 
   .section-heading {
-    font-size: 2em;
+    font-size: 2.2em;
     color: $color-9;
     margin: $spacing-xxl 0 $spacing-xl;
     text-align: center;
     font-weight: 700;
+    position: relative;
+    
+    &::after {
+      content: "";
+      display: block;
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(to right, $color-6, $color-4);
+      margin: $spacing-sm auto 0;
+      border-radius: 2px;
+    }
   }
 
   .post-list {
     display: grid;
     gap: $spacing-xl;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    margin: 0 -$spacing-md;
+    padding: 0 $spacing-md;
   }
 }
 
@@ -797,10 +891,12 @@ a {
   height: 100%;
   display: flex;
   flex-direction: column;
+  box-shadow: $shadow-sm;
   
   &:hover {
     transform: translateY(-4px);
     box-shadow: $shadow-lg;
+    border-color: rgba($color-4, 0.2);
   }
 
   .post-card-content {
@@ -810,23 +906,28 @@ a {
     flex-direction: column;
   }
 
+  .post-card-header {
+    margin-bottom: $spacing-lg;
+  }
+
   .post-date {
     color: $color-7;
     font-size: 0.9em;
     margin-bottom: $spacing-sm;
     font-family: $heading-font;
+    display: block;
   }
 
-  .post-link {
-    margin-bottom: $spacing-md;
+  .post-title {
+    margin: 0;
+    line-height: 1.3;
     
     a {
       color: $color-9;
       font-size: 1.4em;
       font-weight: 700;
-      line-height: 1.3;
-      margin-bottom: $spacing-md;
       transition: color 0.2s ease;
+      border-bottom: none;
       
       &:hover {
         color: $color-6;
@@ -842,16 +943,38 @@ a {
     flex-grow: 1;
   }
 
-  .post-meta-preview {
+  .post-card-footer {
     margin-top: auto;
-    padding-top: $spacing-md;
     border-top: 1px solid rgba($color-4, 0.1);
+    padding-top: $spacing-md;
+  }
+
+  .post-meta-preview {
+    margin-bottom: $spacing-md;
     
     .categories-preview, .tags-preview {
       display: flex;
       flex-wrap: wrap;
       gap: $spacing-xs;
       margin-bottom: $spacing-sm;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .read-more {
+    display: inline-block;
+    color: $color-8;
+    font-weight: 600;
+    font-size: 0.95em;
+    transition: all 0.2s ease;
+    border-bottom: none;
+    
+    &:hover {
+      color: $color-6;
+      transform: translateX(4px);
     }
   }
 }

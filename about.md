@@ -38,4 +38,4 @@ I specialize in:
 <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/yeokyeongyoon/" target="_blank">linkedin.com/in/yeokyeongyoon</a> (in English)</li>
 <li><strong>GitHub:</strong> <a href="https://github.com/yeokyeong-yoon" target="_blank">github.com/yeokyeong-yoon</a></li>
 </ul>
-</div> 
+</div>
