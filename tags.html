@@ -5,41 +5,30 @@ permalink: /tags/
 ---
 
 <div class="tags-page">
-  <h1 class="page-title">Tags & Categories</h1>
-
-  <!-- Search and Filter Bar -->
   <div class="filter-bar">
-    <input type="text" id="tagSearch" placeholder="Search tags or posts..." class="search-input">
-    <div class="active-filters" id="activeFilters"></div>
+    <input type="text" class="search-input" placeholder="Search posts by title, tag, or category...">
+    <div class="active-filters"></div>
   </div>
-  
-  <!-- Categories Section -->
-  <section class="filter-section">
-    <h2>Categories</h2>
-    <div class="filter-list" id="categoryList">
-      {% for category in site.categories %}
-        <button class="category-tag filter-btn" data-type="category" data-filter="{{ category[0] | slugify }}">#{{ category[0] }}</button>
+
+  <div class="filter-section">
+    <div class="filter-list">
+      {% assign categories = site.categories | sort %}
+      {% for category in categories %}
+        <button class="filter-btn category-tag" data-filter="category-{{ category[0] | slugify }}">#{{ category[0] }}</button>
+      {% endfor %}
+      
+      {% assign tags = site.tags | sort %}
+      {% for tag in tags %}
+        <button class="filter-btn tag" data-filter="tag-{{ tag[0] | slugify }}">#{{ tag[0] }}</button>
       {% endfor %}
     </div>
-  </section>
+  </div>
 
-  <!-- Tags Section -->
-  <section class="filter-section">
-    <h2>Tags</h2>
-    <div class="filter-list" id="tagList">
-      {% for tag in site.tags %}
-        <button class="tag filter-btn" data-type="tag" data-filter="{{ tag[0] | slugify }}">#{{ tag[0] }}</button>
-      {% endfor %}
-    </div>
-  </section>
-
-  <!-- Posts Container -->
-  <div class="posts-container" id="postsContainer">
+  <div class="posts-container">
     {% for post in site.posts %}
       <div class="post-item" 
-           data-categories="{% for category in post.categories %}{{ category | slugify }} {% endfor %}"
-           data-tags="{% for tag in post.tags %}{{ tag | slugify }} {% endfor %}"
-           data-title="{{ post.title | slugify }}">
+           data-categories="{% for category in post.categories %}category-{{ category | slugify }} {% endfor %}"
+           data-tags="{% for tag in post.tags %}tag-{{ tag | slugify }} {% endfor %}">
         <h3 class="post-title">
           <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
         </h3>
@@ -47,10 +36,10 @@ permalink: /tags/
           <span class="post-date">{{ post.date | date: "%Y년 %m월 %d일" }}</span>
           <div class="post-filters">
             {% for category in post.categories %}
-              <span class="category-tag" data-type="category" data-filter="{{ category | slugify }}">#{{ category }}</span>
+              <span class="category-tag" data-filter="category-{{ category | slugify }}">#{{ category }}</span>
             {% endfor %}
             {% for tag in post.tags %}
-              <span class="tag" data-type="tag" data-filter="{{ tag | slugify }}">#{{ tag }}</span>
+              <span class="tag" data-filter="tag-{{ tag | slugify }}">#{{ tag }}</span>
             {% endfor %}
           </div>
         </div>
@@ -61,94 +50,73 @@ permalink: /tags/
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const postsContainer = document.getElementById('postsContainer');
-  const tagSearch = document.getElementById('tagSearch');
-  const activeFilters = document.getElementById('activeFilters');
-  const posts = document.querySelectorAll('.post-item');
-  let activeFilterSet = new Set();
+  const searchInput = document.querySelector('.search-input');
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  const postItems = document.querySelectorAll('.post-item');
+  const activeFilters = document.querySelector('.active-filters');
+  const activeFilterSet = new Set();
 
-  // Function to update active filters display
-  function updateActiveFilters() {
-    activeFilters.innerHTML = '';
-    activeFilterSet.forEach(filter => {
-      const filterTag = document.createElement('span');
-      filterTag.className = 'active-filter';
-      filterTag.textContent = `#${filter}`;
-      filterTag.onclick = () => removeFilter(filter);
-      activeFilters.appendChild(filterTag);
-    });
-  }
+  // Search functionality
+  searchInput.addEventListener('input', filterPosts);
 
-  // Function to add filter
-  function addFilter(filter) {
-    activeFilterSet.add(filter);
-    updateActiveFilters();
-    filterPosts();
-  }
-
-  // Function to remove filter
-  function removeFilter(filter) {
-    activeFilterSet.delete(filter);
-    updateActiveFilters();
-    filterPosts();
-    
-    // Unselect the corresponding filter button
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      if (btn.dataset.filter === filter) {
-        btn.classList.remove('active');
-      }
-    });
-  }
-
-  // Function to filter posts
-  function filterPosts() {
-    const searchTerm = tagSearch.value.toLowerCase();
-    
-    posts.forEach(post => {
-      const categories = post.dataset.categories.split(' ').filter(Boolean);
-      const tags = post.dataset.tags.split(' ').filter(Boolean);
-      const title = post.dataset.title;
+  // Filter button click handling
+  filterButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const filter = this.dataset.filter;
       
-      let shouldShow = true;
-      
-      // Check if post matches active filters
-      if (activeFilterSet.size > 0) {
-        shouldShow = false;
-        const allFilters = [...categories, ...tags];
-        activeFilterSet.forEach(filter => {
-          if (allFilters.includes(filter)) {
-            shouldShow = true;
-          }
-        });
-      }
-      
-      // Check if post matches search term
-      if (searchTerm) {
-        const matchesSearch = title.includes(searchTerm) ||
-                            categories.some(cat => cat.includes(searchTerm)) ||
-                            tags.some(tag => tag.includes(searchTerm));
-        shouldShow = shouldShow && matchesSearch;
-      }
-      
-      post.style.display = shouldShow ? 'block' : 'none';
-    });
-  }
-
-  // Add click handlers to filter buttons
-  document.querySelectorAll('.filter-btn').forEach(button => {
-    button.addEventListener('click', () => {
-      const filter = button.dataset.filter;
-      if (button.classList.contains('active')) {
-        button.classList.remove('active');
-        removeFilter(filter);
+      if (activeFilterSet.has(filter)) {
+        activeFilterSet.delete(filter);
+        this.classList.remove('active');
+        removeActiveFilter(filter);
       } else {
-        button.classList.add('active');
-        addFilter(filter);
+        activeFilterSet.add(filter);
+        this.classList.add('active');
+        addActiveFilter(filter, this.textContent);
       }
+      
+      filterPosts();
     });
   });
 
-  // Add search handler
-  tagSearch.addEventListener('input', filterPosts);
+  // Post filtering logic
+  function filterPosts() {
+    const searchTerm = searchInput.value.toLowerCase();
+    
+    postItems.forEach(post => {
+      const title = post.querySelector('.post-title').textContent.toLowerCase();
+      const categories = post.dataset.categories;
+      const tags = post.dataset.tags;
+      
+      const matchesSearch = title.includes(searchTerm);
+      const matchesFilters = activeFilterSet.size === 0 || 
+        Array.from(activeFilterSet).some(filter => 
+          categories.includes(filter) || tags.includes(filter)
+        );
+
+      post.style.display = matchesSearch && matchesFilters ? 'block' : 'none';
+    });
+  }
+
+  // Active filter management
+  function addActiveFilter(filter, text) {
+    const filterElement = document.createElement('span');
+    filterElement.className = 'active-filter';
+    filterElement.textContent = text;
+    filterElement.dataset.filter = filter;
+    filterElement.addEventListener('click', () => {
+      activeFilterSet.delete(filter);
+      filterElement.remove();
+      document.querySelector(`[data-filter="${filter}"]`).classList.remove('active');
+      filterPosts();
+    });
+    activeFilters.appendChild(filterElement);
+  }
+
+  function removeActiveFilter(filter) {
+    const filterElement = activeFilters.querySelector(`[data-filter="${filter}"]`);
+    if (filterElement) {
+      filterElement.remove();
+    }
+  }
 });
 </script> 

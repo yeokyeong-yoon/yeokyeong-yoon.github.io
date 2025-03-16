@@ -540,36 +540,34 @@ a {
 
 // Tags page styling
 .tags-page {
-  max-width: 860px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: $spacing-xl 0;
+  padding: $spacing-xl $spacing-lg;
 
-  .page-title {
-    font-size: 2.4em;
-    color: $color-9;
-    margin-bottom: $spacing-xl;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-  }
-
-  // Search and Filter Bar
   .filter-bar {
+    position: sticky;
+    top: 0;
+    background: rgba(255, 255, 255, 0.98);
+    padding: $spacing-lg 0;
     margin-bottom: $spacing-xl;
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    border-bottom: 1px solid rgba($color-4, 0.1);
     
     .search-input {
       width: 100%;
-      padding: $spacing-md;
+      padding: $spacing-md $spacing-lg;
       font-size: 1.1em;
-      border: none;
-      border-radius: $radius-lg;
-      background: rgba($color-1, 0.1);
+      border: 1px solid rgba($color-4, 0.2);
+      border-radius: 25px;
+      background: white;
       color: $color-9;
       transition: all 0.2s ease;
       
       &:focus {
         outline: none;
-        background: rgba($color-1, 0.2);
-        box-shadow: $shadow-sm;
+        border-color: $color-6;
+        box-shadow: 0 0 0 3px rgba($color-6, 0.1);
       }
       
       &::placeholder {
@@ -604,6 +602,7 @@ a {
           content: "×";
           margin-left: $spacing-xs;
           font-size: 1.2em;
+          opacity: 0.8;
         }
       }
     }
@@ -611,18 +610,9 @@ a {
 
   .filter-section {
     background: white;
-    padding: $spacing-xl;
-    border-radius: $radius-lg;
+    padding: $spacing-lg 0;
     margin-bottom: $spacing-xl;
-    border: 1px solid rgba($color-4, 0.1);
-    box-shadow: $shadow-sm;
-
-    h2 {
-      font-size: 1.4em;
-      color: $color-9;
-      margin-bottom: $spacing-lg;
-      font-weight: 600;
-    }
+    border-bottom: 1px solid rgba($color-4, 0.1);
 
     .filter-list {
       display: flex;
@@ -634,33 +624,43 @@ a {
       font-size: 0.95em;
       padding: $spacing-xs $spacing-md;
       border-radius: 20px;
-      border: none;
+      border: 1px solid rgba($color-4, 0.2);
+      background: white;
       cursor: pointer;
       transition: all 0.2s ease;
       font-weight: 500;
-      background: rgba($color-1, 0.1);
       color: $color-8;
       
       &:hover {
-        background: rgba($color-1, 0.2);
+        border-color: $color-8;
+        background: rgba($color-8, 0.05);
         transform: translateY(-1px);
       }
       
       &.active {
         background: $color-8;
         color: white;
+        border-color: $color-8;
       }
-    }
 
-    .category-tag {
-      &.active {
-        background: $color-6;
+      &.category-tag {
+        color: $category-color;
+        &:hover { border-color: $category-color; }
+        &.active {
+          background: $category-color;
+          color: white;
+          border-color: $category-color;
+        }
       }
-    }
 
-    .tag {
-      &.active {
-        background: $color-8;
+      &.tag {
+        color: $tag-color;
+        &:hover { border-color: $tag-color; }
+        &.active {
+          background: $tag-color;
+          color: white;
+          border-color: $tag-color;
+        }
       }
     }
   }
@@ -668,11 +668,11 @@ a {
   .posts-container {
     .post-item {
       background: white;
-      padding: $spacing-lg;
+      padding: $spacing-xl;
       border-radius: $radius-lg;
-      margin-bottom: $spacing-md;
+      margin-bottom: $spacing-lg;
       border: 1px solid rgba($color-4, 0.1);
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
       
       &:hover {
         transform: translateY(-2px);
@@ -680,13 +680,15 @@ a {
       }
 
       .post-title {
-        margin: 0 0 $spacing-sm;
+        margin: 0 0 $spacing-md;
         
         a {
           color: $color-9;
-          font-size: 1.2em;
-          font-weight: 600;
+          font-size: 1.4em;
+          font-weight: 700;
+          line-height: 1.3;
           border-bottom: none;
+          transition: color 0.2s ease;
           
           &:hover {
             color: $color-6;
@@ -697,21 +699,22 @@ a {
       .post-meta {
         display: flex;
         flex-wrap: wrap;
-        gap: $spacing-sm;
+        gap: $spacing-md;
         align-items: center;
 
         .post-date {
           color: $color-7;
-          font-size: 0.9em;
+          font-size: 0.95em;
+          font-weight: 500;
         }
 
         .post-filters {
           display: flex;
           flex-wrap: wrap;
-          gap: $spacing-xs;
+          gap: $spacing-sm;
 
           .category-tag, .tag {
-            font-size: 0.85em;
+            font-size: 0.9em;
             padding: $spacing-xs $spacing-sm;
             border-radius: 15px;
             background: rgba($color-1, 0.1);
@@ -721,7 +724,20 @@ a {
             
             &:hover {
               background: rgba($color-1, 0.2);
+              transform: translateY(-1px);
             }
+          }
+
+          .category-tag {
+            color: $category-color;
+            background: rgba($category-color, 0.1);
+            &:hover { background: rgba($category-color, 0.2); }
+          }
+
+          .tag {
+            color: $tag-color;
+            background: rgba($tag-color, 0.1);
+            &:hover { background: rgba($tag-color, 0.2); }
           }
         }
       }
@@ -731,9 +747,11 @@ a {
 
 @media screen and (max-width: $on-palm) {
   .tags-page {
-    padding: $spacing-lg;
+    padding: $spacing-md;
 
     .filter-bar {
+      padding: $spacing-md 0;
+      
       .search-input {
         font-size: 1em;
         padding: $spacing-sm $spacing-md;
@@ -741,7 +759,7 @@ a {
     }
 
     .filter-section {
-      padding: $spacing-lg;
+      padding: $spacing-md 0;
 
       .filter-btn {
         font-size: 0.9em;
@@ -751,16 +769,16 @@ a {
 
     .posts-container {
       .post-item {
-        padding: $spacing-md;
+        padding: $spacing-lg;
 
         .post-title a {
-          font-size: 1.1em;
+          font-size: 1.2em;
         }
 
         .post-meta {
           flex-direction: column;
           align-items: flex-start;
-          gap: $spacing-xs;
+          gap: $spacing-sm;
         }
       }
     }
