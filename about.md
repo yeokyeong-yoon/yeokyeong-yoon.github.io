@@ -24,18 +24,22 @@ I have experience in:
 ### Portfolio & Resume
 
 <div class="portfolio-section">
-Check out my detailed portfolio and resume:
+<ul>
+<li><a href="https://polished-chicken-aca.notion.site/Yeokyeong-Yoon-19a67bf8bfe280519aaaf36d8d299044">📌 Portfolio on Notion</a> (in English)</li>
+<li><a href="https://docs.google.com/document/d/e/2PACX-1vQ89-o6Af_Pc1VAHxXySZPjQIoBZXhrqwISkzdC1gQ_ErF7smHgtld-qOSzdEfX40zHSxBC27uSvUSl/pub">📎 Resume</a></li>
+</ul>
 
-* [📌 Portfolio on Notion](https://polished-chicken-aca.notion.site/Yeokyeong-Yoon-19a67bf8bfe280519aaaf36d8d299044)
-* [📎 Resume](https://docs.google.com/document/d/e/2PACX-1vQ89-o6Af_Pc1VAHxXySZPjQIoBZXhrqwISkzdC1gQ_ErF7smHgtld-qOSzdEfX40zHSxBC27uSvUSl/pub)
-
-> This portfolio is created in Notion and is best viewed online for an optimized experience.
+<blockquote>
+This portfolio is created in Notion and is best viewed online for an optimized experience.
+</blockquote>
 </div>
 
 ### Contact
 
 <div class="contact-links">
-* **Email:** [yeokyeongy@gmail.com](mailto:yeokyeongy@gmail.com)
-* **LinkedIn:** [linkedin.com/in/yeokyeongyoon](https://www.linkedin.com/in/yeokyeongyoon/)
-* **GitHub:** [github.com/yeokyeong-yoon](https://github.com/yeokyeong-yoon)
+<ul>
+<li><strong>Email:</strong> <a href="mailto:yeokyeongy@gmail.com">yeokyeongy@gmail.com</a></li>
+<li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/yeokyeongyoon/">linkedin.com/in/yeokyeongyoon</a> (in English)</li>
+<li><strong>GitHub:</strong> <a href="https://github.com/yeokyeong-yoon">github.com/yeokyeong-yoon</a></li>
+</ul>
 </div> 
