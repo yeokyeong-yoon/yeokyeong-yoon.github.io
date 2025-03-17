@@ -187,7 +187,25 @@ layout: default
 <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting" style="max-width: 800px; margin: 0 auto; padding: 40px 20px;">
 
   <header class="post-header" style="margin-bottom: 40px; text-align: center;">
-    <h1 class="post-title p-name" itemprop="name headline" style="font-size: 32px; margin-bottom: 15px; color: rgba(0, 0, 0, 0.8); font-weight: 600; line-height: 1.3;">{{ page.title | escape }}</h1>
+    <h1 class="post-title p-name" itemprop="name headline" style="font-size: 32px; margin-bottom: 15px; color: rgba(0, 0, 0, 0.8); font-weight: 600; line-height: 1.3;">
+      {% assign title_length = page.title | size %}
+      {% assign half_length = title_length | divided_by: 2 %}
+      {% assign chars = 0 %}
+      {% assign words = page.title | split: ' ' %}
+      
+      {% for word in words %}
+        {{ word }}
+        {% assign chars = chars | plus: word.size | plus: 1 %}
+        {% if chars > half_length and forloop.index < words.size %}
+          <br>
+          {% assign chars = 0 %}
+        {% else %}
+          {% unless forloop.last %}
+            {{ ' ' }}
+          {% endunless %}
+        {% endif %}
+      {% endfor %}
+    </h1>
     <p class="post-meta" style="font-size: 16px; color: rgba(0, 0, 0, 0.5); margin-bottom: 30px;">
       <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
         {{ page.date | date: "%Y년 %m월 %d일" }}
