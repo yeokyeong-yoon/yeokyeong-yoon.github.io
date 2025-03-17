@@ -5,7 +5,7 @@ service cloud.firestore {
     match /pageViews/{document} {
       allow read, write: if true;
     }
-    match /uniqueVisitors/{document} {
+    match /siteVisitors/{document} {
       allow read, write: if true;
     }
     match /{document=**} {

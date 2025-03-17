@@ -368,4 +368,60 @@ title: Home
     
     <a href="{{ site.baseurl }}/blog" class="view-all">View all articles</a>
   </section>
+
+  <div class="section posts-section" id="blog">
+    <div class="home-container">
+      <h2 class="section-heading">Blog</h2>
+      <ul class="post-list">
+        {% for post in site.posts limit:3 %}
+        <li class="post-item">
+          <h3 class="post-title">
+            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+          </h3>
+          <span class="post-date">{{ post.date | date: "%B %d, %Y" }}</span>
+          <div class="post-excerpt">{{ post.excerpt | strip_html | truncatewords: 50 }}</div>
+          <a href="{{ post.url | relative_url }}" class="read-more">Read more</a>
+        </li>
+        {% endfor %}
+      </ul>
+      <a href="{{ '/blog' | relative_url }}" class="view-all">View all posts</a>
+    </div>
+  </div>
+
+  <footer class="section" style="padding-top: 60px; padding-bottom: 60px; background-color: #f5f5f5;">
+    <div class="home-container">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <p style="margin: 0; color: rgba(0, 0, 0, 0.6);">© {{ site.time | date: '%Y' }} {{ site.title | escape }}. All rights reserved.</p>
+        </div>
+        <div class="site-stats" style="font-size: 12px; color: rgba(0, 0, 0, 0.4);">
+          <span class="visitors">Visitors: <span id="site-visitors">0</span></span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Include the Firebase configuration script -->
+  <script>
+    // Check if firebase-config.js exists, if not use the simple counter
+    function loadScript(src, fallback) {
+      var script = document.createElement('script');
+      script.src = src;
+      script.onerror = fallback;
+      script.onload = function() {
+        if (src.includes('firebase-config.js')) {
+          // Load the site visitors script after firebase config is loaded
+          loadScript("{{ '/assets/js/site-visitors.js' | relative_url }}", function() {
+            console.warn("Failed to load site-visitors.js");
+          });
+        }
+      };
+      document.head.appendChild(script);
+    }
+
+    // Try to load firebase-config.js
+    loadScript("{{ '/assets/js/firebase-config.js' | relative_url }}", function() {
+      console.warn("Firebase config not found");
+    });
+  </script>
 </div> 

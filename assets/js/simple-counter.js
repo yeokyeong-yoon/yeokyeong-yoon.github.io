@@ -1,56 +1,58 @@
-// Simple Page Views and Visitor Counter using localStorage
+// Simple Counter using localStorage
 document.addEventListener('DOMContentLoaded', function() {
-  // Only run on post pages
-  if (!document.querySelector('.post')) {
-    return;
-  }
-
-  // Get current page URL path as the unique identifier
-  const pagePath = window.location.pathname;
-  
-  // Get the counter elements
-  const pageViewsElement = document.getElementById('page-views');
-  const uniqueVisitorsElement = document.getElementById('unique-visitors');
-  
-  if (!pageViewsElement || !uniqueVisitorsElement) return;
-  
-  // Initialize localStorage if needed
-  if (!localStorage.getItem('pageViews')) {
-    localStorage.setItem('pageViews', JSON.stringify({}));
-  }
-  
-  if (!localStorage.getItem('uniqueVisitors')) {
-    localStorage.setItem('uniqueVisitors', JSON.stringify({}));
-  }
-  
-  if (!localStorage.getItem('visitedPages')) {
-    localStorage.setItem('visitedPages', JSON.stringify({}));
+  // Check if we're on a post page
+  if (document.querySelector('.post')) {
+    // Handle page views for post pages
+    const pagePath = window.location.pathname;
+    const pageViewsElement = document.getElementById('page-views');
+    
+    if (pageViewsElement) {
+      // Initialize localStorage if needed
+      if (!localStorage.getItem('pageViews')) {
+        localStorage.setItem('pageViews', JSON.stringify({}));
+      }
+      
+      // Get current counts
+      const pageViews = JSON.parse(localStorage.getItem('pageViews'));
+      
+      // Update page views
+      if (!pageViews[pagePath]) {
+        pageViews[pagePath] = 0;
+      }
+      pageViews[pagePath]++;
+      localStorage.setItem('pageViews', JSON.stringify(pageViews));
+      pageViewsElement.textContent = pageViews[pagePath];
+    }
   }
   
-  // Get current counts
-  const pageViews = JSON.parse(localStorage.getItem('pageViews'));
-  const uniqueVisitors = JSON.parse(localStorage.getItem('uniqueVisitors'));
-  const visitedPages = JSON.parse(localStorage.getItem('visitedPages'));
-  
-  // Update page views
-  if (!pageViews[pagePath]) {
-    pageViews[pagePath] = 0;
+  // Check if we're on the home page
+  if (document.querySelector('.home-container')) {
+    // Handle site visitors for home page
+    const siteVisitorsElement = document.getElementById('site-visitors');
+    
+    if (siteVisitorsElement) {
+      // Initialize localStorage if needed
+      if (!localStorage.getItem('siteVisitors')) {
+        localStorage.setItem('siteVisitors', '0');
+      }
+      
+      // Get current count
+      let siteVisitors = parseInt(localStorage.getItem('siteVisitors'));
+      
+      // Check if this is a new visitor
+      const hasVisitedBefore = localStorage.getItem('visitedSite');
+      
+      if (!hasVisitedBefore) {
+        // Mark as visited
+        localStorage.setItem('visitedSite', 'true');
+        
+        // Increment visitor count
+        siteVisitors++;
+        localStorage.setItem('siteVisitors', siteVisitors.toString());
+      }
+      
+      // Display the count
+      siteVisitorsElement.textContent = siteVisitors.toString();
+    }
   }
-  pageViews[pagePath]++;
-  localStorage.setItem('pageViews', JSON.stringify(pageViews));
-  pageViewsElement.textContent = pageViews[pagePath];
-  
-  // Update unique visitors
-  if (!uniqueVisitors[pagePath]) {
-    uniqueVisitors[pagePath] = 0;
-  }
-  
-  if (!visitedPages[pagePath]) {
-    visitedPages[pagePath] = true;
-    uniqueVisitors[pagePath]++;
-    localStorage.setItem('uniqueVisitors', JSON.stringify(uniqueVisitors));
-    localStorage.setItem('visitedPages', JSON.stringify(visitedPages));
-  }
-  
-  uniqueVisitorsElement.textContent = uniqueVisitors[pagePath];
 }); 

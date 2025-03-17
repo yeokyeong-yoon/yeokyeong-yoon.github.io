@@ -1,6 +1,6 @@
 # Firebase Configuration Setup
 
-This project uses Firebase for tracking page views and unique visitors. To set up Firebase for your own use, follow these steps:
+This project uses Firebase for tracking page views and site visitors. To set up Firebase for your own use, follow these steps:
 
 ## Setup Instructions
 
@@ -47,7 +47,7 @@ This project uses Firebase for tracking page views and unique visitors. To set u
        match /pageViews/{document} {
          allow read, write: if true;
        }
-       match /uniqueVisitors/{document} {
+       match /siteVisitors/{document} {
          allow read, write: if true;
        }
        match /{document=**} {
@@ -56,6 +56,20 @@ This project uses Firebase for tracking page views and unique visitors. To set u
      }
    }
    ```
+
+## Implementation Details
+
+This project implements two types of counters:
+
+1. **Page View Counter**: 
+   - Displayed in a subtle way at the bottom of each blog post
+   - Counts each view of a specific post
+   - Stored in the `pageViews` collection in Firestore
+
+2. **Site Visitor Counter**:
+   - Displayed in the footer of the home page
+   - Counts unique visitors to the site
+   - Stored in the `siteVisitors` collection in Firestore
 
 ## Security Notes
 
