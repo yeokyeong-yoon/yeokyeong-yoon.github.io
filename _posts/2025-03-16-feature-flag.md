@@ -21,15 +21,20 @@ sequenceDiagram
     participant Cache as LRU Cache
     participant API as Splitter API
     participant Admin as Admin Page
+    participant DB as DynamoDB
 
     Client->>Manager: Flags declared via Annotation (Reflection)
     Manager->>API: Register declared flags (initial execution)
+    API->>DB: Store flag definitions
+    DB-->>API: Acknowledge storage
     API->>Admin: Send flag registration
     Admin-->>API: Acknowledge registration
     API-->>Manager: Respond with registration acknowledgment
 
     loop Periodic Update
         Manager->>API: Request latest Flag Treatments
+        API->>DB: Query latest flag values
+        DB-->>API: Return flag data
         API->>Admin: Fetch latest Treatment values
         Admin-->>API: Return latest Treatment values
         API-->>Manager: Respond with latest Flag values
@@ -40,6 +45,11 @@ sequenceDiagram
     Manager->>Cache: Retrieve cached Flag
     Cache-->>Manager: Return cached value
     Manager-->>Client: Provide Flag value
+
+    Note over Admin,DB: Admin changes are persisted to DynamoDB
+    Admin->>API: Update flag value
+    API->>DB: Store updated value
+    DB-->>API: Acknowledge update
 </div>
 
 ## 핵심 설계 원칙과 기술적 구현
@@ -103,6 +113,7 @@ FeatureFlagManager manager = FeatureFlagManager.builder()
 ```java
 @FeatureFlag(flagName = "Test2")
 public static int privateField = 3;
+```
 
 ## 개선 필요사항
 
