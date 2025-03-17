@@ -357,7 +357,7 @@ title: Home
       {% for post in site.posts limit:3 %}
       <div class="portfolio-item">
         <h3 class="portfolio-title">{{ post.title }}</h3>
-        <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y년 %m월 %d일" }}</time>
+        <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%B %d, %Y" }}</time>
         {% if post.excerpt %}
         <p class="portfolio-desc">{{ post.excerpt | strip_html | truncatewords: 30 }}</p>
         {% endif %}
@@ -369,33 +369,14 @@ title: Home
     <a href="{{ site.baseurl }}/blog" class="view-all">View all articles</a>
   </section>
 
-  <div class="section posts-section" id="blog">
-    <div class="home-container">
-      <h2 class="section-heading">Blog</h2>
-      <ul class="post-list">
-        {% for post in site.posts limit:3 %}
-        <li class="post-item">
-          <h3 class="post-title">
-            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-          </h3>
-          <span class="post-date">{{ post.date | date: "%B %d, %Y" }}</span>
-          <div class="post-excerpt">{{ post.excerpt | strip_html | truncatewords: 50 }}</div>
-          <a href="{{ post.url | relative_url }}" class="read-more">Read more</a>
-        </li>
-        {% endfor %}
-      </ul>
-      <a href="{{ '/blog' | relative_url }}" class="view-all">View all posts</a>
-    </div>
-  </div>
-
   <footer class="section" style="padding-top: 60px; padding-bottom: 60px; background-color: #f5f5f5;">
     <div class="home-container">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
           <p style="margin: 0; color: rgba(0, 0, 0, 0.6);">© {{ site.time | date: '%Y' }} {{ site.title | escape }}. All rights reserved.</p>
-        </div>
-        <div class="site-stats" style="font-size: 12px; color: rgba(0, 0, 0, 0.4);">
-          <span class="visitors">Visitors: <span id="site-visitors">0</span></span>
+          <div class="site-stats" style="font-size: 12px; color: rgba(0, 0, 0, 0.4); margin-top: 5px;">
+            <span class="visitors">Visitors: <span id="site-visitors">0</span></span>
+          </div>
         </div>
       </div>
     </div>
