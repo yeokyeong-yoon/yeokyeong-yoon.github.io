@@ -213,6 +213,10 @@ layout: default
       {%- if page.author -%}
         • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">{{ page.author }}</span></span>
       {%- endif -%}
+      • <span class="post-stats">
+        <span class="views">조회수: <span id="page-views">0</span></span>
+        • <span class="visitors">방문자 수: <span id="unique-visitors">0</span></span>
+      </span>
     </p>
   </header>
 
@@ -315,4 +319,9 @@ document.addEventListener('DOMContentLoaded', function() {
     container.appendChild(diagram);
   });
 });
-</script> 
+</script>
+
+<!-- Include the Firebase configuration script -->
+<script src="{{ '/assets/js/firebase-config.js' | relative_url }}"></script>
+<!-- Include the page views script -->
+<script src="{{ '/assets/js/page-views.js' | relative_url }}"></script> 

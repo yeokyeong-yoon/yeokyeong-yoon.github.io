@@ -26,4 +26,19 @@ Thumbs.db
 *~
 
 # Logs
-*.log 
+*.log
+
+# Firebase
+.firebase/
+firebase-debug.log
+ui-debug.log
+.runtimeconfig.json
+# Uncomment the following line if you want to hide your Firebase service account key
+# serviceAccountKey.json
+
+# Local environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local 
