@@ -18,8 +18,14 @@
   {%- endif -%}
   
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script>
+    // Log Firebase initialization
+    window.addEventListener('load', function() {
+      console.log('Window loaded, Firebase available:', typeof firebase !== 'undefined');
+    });
+  </script>
   
   <!-- Highlight.js for syntax highlighting -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
@@ -112,5 +118,10 @@
       </div>
     </footer>
   </div>
+  
+  <!-- Debug script for counters (development mode only) -->
+  {% if jekyll.environment != 'production' %}
+  <script src="{{ '/assets/js/counter-debug.js' | relative_url }}"></script>
+  {% endif %}
 </body>
 </html> 

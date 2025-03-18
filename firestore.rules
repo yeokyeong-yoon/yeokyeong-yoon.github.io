@@ -8,6 +8,9 @@ service cloud.firestore {
     match /siteVisitors/{document} {
       allow read, write: if true;
     }
+    match /debug/{document} {
+      allow read, write: if true;
+    }
     match /{document=**} {
       allow read, write: if false;
     }

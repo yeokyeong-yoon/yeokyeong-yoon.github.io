@@ -405,4 +405,40 @@ title: Home
       console.warn("Firebase config not found");
     });
   </script>
+  
+  <!-- Debug helper for Firebase (development mode only) -->
+  {% if jekyll.environment != 'production' %}
+  <script>
+    // This script will only run in development mode
+    // Add a manual reset function for the Firestore counter
+    window.resetFirebaseCounter = function() {
+      if (typeof firebase !== 'undefined' && firebase.firestore) {
+        const db = firebase.firestore();
+        
+        // Reset the site visitors counter to 1
+        db.collection('siteVisitors').doc('counter').set({
+          count: 1
+        }).then(() => {
+          console.log('Site visitors counter reset to 1');
+          alert('Site visitors counter reset to 1');
+          // Refresh the page
+          window.location.reload();
+        }).catch(error => {
+          console.error('Failed to reset counter:', error);
+          alert('Failed to reset counter: ' + error.message);
+        });
+      } else {
+        alert('Firebase is not available');
+      }
+    };
+    
+    // Check if counters are working after a delay
+    setTimeout(function() {
+      const visitorElement = document.getElementById('site-visitors');
+      if (visitorElement && visitorElement.textContent === '0') {
+        console.warn('Visitor counter is still 0. Firebase may not be working correctly.');
+      }
+    }, 3000);
+  </script>
+  {% endif %}
 </div> 

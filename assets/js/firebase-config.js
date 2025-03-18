@@ -12,17 +12,31 @@ const firebaseConfig = {
 
 // Initialize Firebase
 if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-  // Replace the placeholder with the actual API key at runtime
-  // This approach helps avoid exposing the key in the repository
-  firebaseConfig.apiKey = firebaseConfig.apiKey.replace("FIREBASE_API_KEY", 
-    "AIzaSyC4XvOHbMnPNyjR3IbU0fZkNWKExMI6dEE".split('').reverse().join(''));
-  
-  firebase.initializeApp(firebaseConfig);
-  // Initialize Analytics
-  if (firebase.analytics) {
-    firebase.analytics();
+  try {
+    // Replace the placeholder with the actual API key at runtime
+    // This approach helps avoid exposing the key in the repository
+    firebaseConfig.apiKey = firebaseConfig.apiKey.replace("FIREBASE_API_KEY", 
+      "AIzaSyC4XvOHbMnPNyjR3IbU0fZkNWKExMI6dEE".split('').reverse().join(''));
+    
+    firebase.initializeApp(firebaseConfig);
+    console.log("Firebase initialized successfully");
+    
+    // Initialize Analytics
+    if (firebase.analytics) {
+      firebase.analytics();
+    }
+  } catch (error) {
+    console.error("Firebase initialization error:", error);
   }
+} else {
+  console.log("Firebase already initialized or not available");
 }
 
 // Export the Firestore instance
-const db = firebase.firestore ? firebase.firestore() : null; 
+let db = null;
+try {
+  db = firebase.firestore ? firebase.firestore() : null;
+  console.log("Firestore initialized:", db ? "Yes" : "No");
+} catch (error) {
+  console.error("Firestore initialization error:", error);
+} 
