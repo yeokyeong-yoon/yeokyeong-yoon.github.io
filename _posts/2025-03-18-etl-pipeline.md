@@ -269,40 +269,63 @@ def validate_pricing_pattern(df):
 ## 4. 개발 및 운영 전략
 
 <div class="mermaid">
-journey
-    title ETL 파이프라인 운영 여정
-    section 추출(Extract)
-        데이터 도착 확인: 5: ETL 시스템
-        데이터 수집: 5: ETL 시스템
-    section 변환(Transform)
-        기본 검증: 3: ETL 시스템, 데이터 품질팀
-        업종별 검증: 4: ETL 시스템, 비즈니스 분석가
-        표준화: 5: ETL 시스템
-    section 적재(Load)
-        데이터 적재: 5: ETL 시스템
-        적재 후 검증: 4: ETL 시스템, 데이터 품질팀
+flowchart LR
+    classDef extract fill:#f9d5e5,stroke:#d64161,stroke-width:2px
+    classDef transform fill:#dcf2e9,stroke:#20b2aa,stroke-width:2px
+    classDef load fill:#e6e6fa,stroke:#6a5acd,stroke-width:2px
+    
+    subgraph 추출단계[추출(Extract)]
+        E1["데이터 도착 확인<br><small>중요도: ★★★★★</small><br><small>담당: ETL 시스템</small>"]:::extract
+        E2["데이터 수집<br><small>중요도: ★★★★★</small><br><small>담당: ETL 시스템</small>"]:::extract
+    end
+    
+    subgraph 변환단계[변환(Transform)]
+        T1["기본 검증<br><small>중요도: ★★★☆☆</small><br><small>담당: ETL 시스템, 품질팀</small>"]:::transform
+        T2["업종별 검증<br><small>중요도: ★★★★☆</small><br><small>담당: ETL, 비즈니스 분석가</small>"]:::transform
+        T3["표준화<br><small>중요도: ★★★★★</small><br><small>담당: ETL 시스템</small>"]:::transform
+    end
+    
+    subgraph 적재단계[적재(Load)]
+        L1["데이터 적재<br><small>중요도: ★★★★★</small><br><small>담당: ETL 시스템</small>"]:::load
+        L2["적재 후 검증<br><small>중요도: ★★★★☆</small><br><small>담당: ETL 시스템, 품질팀</small>"]:::load
+    end
+    
+    E1 --> E2 --> T1 --> T2 --> T3 --> L1 --> L2
+    
+    style 추출단계 fill:#fef6f8,stroke:#d64161,stroke-width:2px
+    style 변환단계 fill:#f0f9f6,stroke:#20b2aa,stroke-width:2px
+    style 적재단계 fill:#f5f5fd,stroke:#6a5acd,stroke-width:2px
 </div>
 
-*이 여정 다이어그램은 ETL 과정의 각 단계별 작업과 해당 작업의 난이도(1-5점 척도), 그리고 담당 시스템이나 팀을 보여줍니다.*
+*이 플로우차트는 ETL 과정의 각 단계별 작업, 중요도(1-5점 척도), 그리고 담당 시스템이나 팀을 보여줍니다. 추출, 변환, 적재 단계가 색상으로 구분되어 있습니다.*
+
+## 5. 개발 및 운영 전략
 
 <div class="mermaid">
-journey
-    title ETL 파이프라인 발전 로드맵
-    section 현재
-        데이터 수집 자동화: 5: 완료
-        기본 ETL 파이프라인: 5: 완료
-        데이터 품질 관리: 4: 진행중
-    section 단기 계획
-        추가 데이터 소스 통합: 3: 계획
-        성능 최적화: 2: 검토중
-        모니터링 개선: 3: 계획
-    section 장기 계획
-        실시간 처리 도입: 1: 아이디어
-        ML 파이프라인 연동: 1: 아이디어
-        클라우드 확장: 2: 검토중
+gantt
+    title ETL 파이프라인 개발 로드맵
+    dateFormat  YYYY-MM-DD
+    axisFormat %y-%m
+    
+    section 완료된 작업
+    데이터 수집 자동화      :done, task1, 2023-01-01, 2023-03-15
+    기본 ETL 파이프라인 구축 :done, task2, 2023-02-15, 2023-05-30
+    
+    section 진행중
+    데이터 품질 관리 체계화  :active, task3, 2023-05-01, 2023-12-31
+    
+    section 단기 계획 (6개월)
+    추가 데이터 소스 통합    :task4, after task3, 90d
+    성능 최적화            :task5, after task4, 60d
+    모니터링 개선           :task6, 2024-01-01, 90d
+    
+    section 장기 계획 (1년+)
+    실시간 처리 도입        :task7, 2024-06-01, 180d
+    ML 파이프라인 연동      :task8, 2024-07-01, 150d
+    클라우드 확장          :task9, after task8, 120d
 </div>
 
-*이 로드맵은 ETL 파이프라인의 현재 상태와 향후 발전 계획을 보여줍니다. 현재 완료된 작업, 진행 중인 작업, 그리고 단기/장기 계획으로 구분되어 있습니다.*
+*이 간트 차트는 ETL 파이프라인 개발의 타임라인을 보여줍니다. 완료된 작업(파란색), 진행 중인 작업(노란색), 그리고 계획된 단기 및 장기 작업이 시간순으로 정렬되어 있습니다.*
 
 ### ETL 파이프라인 운영 단계 설명
 
@@ -323,4 +346,4 @@ ETL 파이프라인의 운영은 크게 세 단계로 나뉘며, 각 단계별�
 
 이러한 단계적 접근을 통해 데이터 처리의 신뢰성과 효율성을 확보할 수 있습니다. 특히 각 단계마다 담당자를 명확히 하여 문제 발생 시 신속한 대응이 가능하도록 설계했습니다.
 
-### 4.1 개발 환경
+### 5.1 개발 환경
