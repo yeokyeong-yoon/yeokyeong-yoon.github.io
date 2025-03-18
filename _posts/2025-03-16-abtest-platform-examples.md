@@ -147,6 +147,16 @@ tags: [A/B 테스트, 실험 플랫폼, 데이터 기반 의사결정]
 앞으로의 핵심 과제는 데이터 신뢰성 확보, 실시간 분석 기능 구현, 세분화된 타겟팅 구현, 그리고 통합 분석 시스템 개발이 될 것이며, 이를 통해 더욱 신뢰할 수 있는 플랫폼을 구축하고 조직 전체의 데이터 기반 의사결정 문화를 강화할 수 있을 것이다.
 
 
+## 참고 자료
+
+이 글에 다 담지는 못했지만, 다음의 추가 자료도 참고하였습니다:
+
+- [배달의 민족 - A/B 테스트를 위한 실험플랫폼, Grape](https://techblog.woowahan.com/9935/) - 배달의 민족의 실험 플랫폼 Grape의 아키텍처와 기능에 대한 인사이트 참고
+- [뱅크샐러드 - 실험플랫폼 분석 인프라 살펴보기](https://blog.banksalad.com/tech/experiment-platform-analysis-architecture/) - 뱅크샐러드의 실험 플랫폼 분석 인프라 구축 과정 참고
+- [Spotify - Spotify's New Experimentation Platform](https://engineering.atspotify.com/2020/10/spotifys-new-experimentation-platform-part-1/) - 스포티파이의 실험 플랫폼 설계 원칙과 구현 방식 참고
+- [LINE - 오프라인 및 온라인 A/B 테스트로 오픈챗 추천 모델 개선하기](https://techblog.lycorp.co.jp/ko/improve-openchat-recommendation-model-with-offline-and-online-ab-test) - LINE의 오픈챗 서비스에서 추천 모델 개선을 위한 A/B 테스트 사례 참고
+
+
 ## 용어
 - **A/B Testing(A/B 테스트)**: 두 가지 이상의 버전을 사용자 그룹에 무작위로 제공하여 어떤 버전이 더 효과적인지 데이터를 기반으로 검증하는 실험 방법
 - **API(Application Programming Interface)**: 서로 다른 소프트웨어 시스템이 상호작용할 수 있게 해주는 인터페이스로, 실험 플랫폼에서 데이터 교환에 활용됨
