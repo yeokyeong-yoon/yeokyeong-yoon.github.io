@@ -59,6 +59,8 @@ C4Context
     Rel(s3, models, "학습 데이터")
 </div>
 
+*이 다이어그램은 ETL 파이프라인의 주요 구성 요소(AWS S3, Databricks, PySpark, ML 모델)와 이들 간의 데이터 흐름을 보여줍니다.*
+
 ### 2.2 데이터 흐름도
 
 <div class="mermaid">
@@ -78,6 +80,8 @@ timeline
         Analytics : Support analytics queries
         ML Models : Train price optimization models
 </div>
+
+*이 타임라인 다이어그램은 ETL 과정의 주요 단계(데이터 수집, 처리, 저장, 활용)를 시간 순서에 따라 표현합니다.*
 
 데이터 흐름은 다음과 같은 단계로 이루어진다:
 
@@ -153,6 +157,8 @@ stateDiagram-v2
     ResponseAction --> [*]
 </div>
 
+*이 상태 다이어그램은 데이터 검증 프로세스의 4단계(기본 검증, 업종 특화 검증, 이상 패턴 감지, 문제 대응)와 각 단계 내의 세부 작업을 보여줍니다.*
+
 #### 검증 실패 시 대응 방안
 
 데이터 검증에 실패했을 때는 문제의 심각도에 따라 다음과 같이 대응한다:
@@ -208,18 +214,20 @@ def validate_pricing_pattern(df):
 
 <div class="mermaid">
 journey
-    title ETL Pipeline Journey
-    section Extract
-        Data arrival check: 5: ETL System
-        Data collection: 5: ETL System
-    section Transform
-        Basic validation: 3: ETL System, Data Quality Team
-        Domain validation: 4: ETL System, Business Analyst
-        Standardization: 5: ETL System
-    section Load
-        Data loading: 5: ETL System
-        Post-process verification: 4: ETL System, Data Quality Team
+    title ETL 파이프라인 운영 여정
+    section 추출(Extract)
+        데이터 도착 확인: 5: ETL 시스템
+        데이터 수집: 5: ETL 시스템
+    section 변환(Transform)
+        기본 검증: 3: ETL 시스템, 데이터 품질팀
+        업종별 검증: 4: ETL 시스템, 비즈니스 분석가
+        표준화: 5: ETL 시스템
+    section 적재(Load)
+        데이터 적재: 5: ETL 시스템
+        적재 후 검증: 4: ETL 시스템, 데이터 품질팀
 </div>
+
+*이 여정 다이어그램은 ETL 과정의 각 단계별 작업과 해당 작업의 난이도(1-5점 척도), 그리고 담당 시스템이나 팀을 보여줍니다.*
 
 ### 4.1 개발 환경
 
