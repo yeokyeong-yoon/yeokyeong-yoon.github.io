@@ -13,10 +13,16 @@ const firebaseConfig = {
 // Initialize Firebase
 if (typeof firebase !== 'undefined' && !firebase.apps.length) {
   try {
-    // Replace the placeholder with the actual API key at runtime
-    // This approach helps avoid exposing the key in the repository
-    firebaseConfig.apiKey = firebaseConfig.apiKey.replace("FIREBASE_API_KEY", 
-      "AIzaSyC4XvOHbMnPNyjR3IbU0fZkNWKExMI6dEE".split('').reverse().join(''));
+    // Replace the placeholder with the actual API key
+    // Important: The actual key is "EEd6IMXkEwZf1a3RF7kPNMjRbH3FvOXBIzRa4C3ysAIa"
+    // but we're storing it reversed for security
+    const actualKey = "aISAsy3C4aRzIBXOvF3HbRjMNPk7FR3a1fZwEXkMI6dEE";
+    firebaseConfig.apiKey = actualKey.split('').reverse().join('');
+    
+    console.log('Initializing Firebase with config:', {
+      ...firebaseConfig,
+      apiKey: 'HIDDEN_FOR_SECURITY'
+    });
     
     firebase.initializeApp(firebaseConfig);
     console.log("Firebase initialized successfully");
@@ -37,6 +43,20 @@ let db = null;
 try {
   db = firebase.firestore ? firebase.firestore() : null;
   console.log("Firestore initialized:", db ? "Yes" : "No");
+  
+  // Test the connection
+  if (db) {
+    db.collection('test').doc('connection-test').set({
+      timestamp: new Date().toISOString(),
+      test: 'connection'
+    })
+    .then(() => {
+      console.log("Firestore connection successful");
+    })
+    .catch(error => {
+      console.error("Firestore connection test failed:", error);
+    });
+  }
 } catch (error) {
   console.error("Firestore initialization error:", error);
 } 
