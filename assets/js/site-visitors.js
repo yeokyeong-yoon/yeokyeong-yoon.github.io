@@ -33,77 +33,54 @@ document.addEventListener('DOMContentLoaded', function() {
     const db = firebase.firestore();
     console.log('Using Firestore for site visitors');
     
-    // Check if this is a new session
-    const sessionKey = 'visitorSession';
-    const hasActiveSession = sessionStorage.getItem(sessionKey);
+    // Use a random ID for testing to always count as a new visit
+    const sessionKey = 'visitorSession_' + Math.random();
+    console.log('Created new session key:', sessionKey);
     
-    // Print out all items in localStorage for debugging
-    console.log('localStorage items:');
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      console.log(`- ${key}: ${localStorage.getItem(key)}`);
-    }
+    // For testing - always increment
+    const alwaysIncrement = true;
     
     // Reference to the document for site visitors
     const visitorRef = db.collection('siteVisitors').doc('counter');
     
-    if (!hasActiveSession) {
-      // Mark this session
-      sessionStorage.setItem(sessionKey, 'true');
-      console.log('New session, incrementing visitor count');
+    // Now always increment the counter during testing
+    console.log('Always incrementing visitor count for testing');
+    
+    // Increment the visitor count
+    visitorRef.get().then((doc) => {
+      console.log('Visitor counter document exists:', doc.exists);
       
-      // Increment the visitor count
-      visitorRef.get().then((doc) => {
-        console.log('Visitor counter document exists:', doc.exists);
+      if (doc.exists) {
+        // Document exists, increment the count
+        const currentCount = doc.data().count || 0;
+        console.log('Current visitor count:', currentCount);
         
-        if (doc.exists) {
-          // Document exists, increment the count
-          const currentCount = doc.data().count || 0;
-          console.log('Current visitor count:', currentCount);
-          
-          return visitorRef.update({
-            count: firebase.firestore.FieldValue.increment(1)
-          }).then(() => {
-            // Get the updated count
-            return visitorRef.get();
-          }).then((updatedDoc) => {
-            // Display the updated count
-            const newCount = updatedDoc.data().count;
-            console.log('Updated visitor count:', newCount);
-            visitorCountElement.textContent = newCount;
-          });
-        } else {
-          // Document doesn't exist, create it with count 1
-          console.log('Creating new visitor counter document');
-          return visitorRef.set({
-            count: 1,
-            createdAt: new Date().toISOString()
-          }).then(() => {
-            console.log('New visitor document created with count: 1');
-            visitorCountElement.textContent = '1';
-          });
-        }
-      }).catch((error) => {
-        console.error("Error with Firestore operation:", error);
-        useLocalStorage();
-      });
-    } else {
-      // Just display the current count
-      console.log('Existing session, just showing the count');
-      visitorRef.get().then((doc) => {
-        if (doc.exists) {
-          const count = doc.data().count;
-          console.log('Retrieved visitor count:', count);
-          visitorCountElement.textContent = count;
-        } else {
-          console.log('Visitor counter document does not exist');
-          visitorCountElement.textContent = '0';
-        }
-      }).catch((error) => {
-        console.error("Error getting site visitors:", error);
-        useLocalStorage();
-      });
-    }
+        // Increment by 1
+        const newCount = currentCount + 1;
+        
+        return visitorRef.update({
+          count: newCount,
+          lastVisit: new Date().toISOString()
+        }).then(() => {
+          // Display the updated count
+          console.log('Incremented visitor count to:', newCount);
+          visitorCountElement.textContent = newCount;
+        });
+      } else {
+        // Document doesn't exist, create it with count 1
+        console.log('Creating new visitor counter document');
+        return visitorRef.set({
+          count: 1,
+          createdAt: new Date().toISOString()
+        }).then(() => {
+          console.log('New visitor document created with count: 1');
+          visitorCountElement.textContent = '1';
+        });
+      }
+    }).catch((error) => {
+      console.error("Error with Firestore operation:", error);
+      useLocalStorage();
+    });
   } catch (error) {
     console.error("Error initializing Firestore:", error);
     useLocalStorage();
@@ -114,17 +91,12 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Falling back to localStorage for site visitors');
     try {
       const visitors = localStorage.getItem('siteVisitors') ? parseInt(localStorage.getItem('siteVisitors')) : 0;
-      const hasVisitedBefore = localStorage.getItem('visitedSite');
       
-      if (!hasVisitedBefore) {
-        localStorage.setItem('visitedSite', 'true');
-        localStorage.setItem('siteVisitors', (visitors + 1).toString());
-        console.log('Incremented local visitor count to:', visitors + 1);
-        visitorCountElement.textContent = (visitors + 1).toString();
-      } else {
-        console.log('Using existing local visitor count:', visitors);
-        visitorCountElement.textContent = visitors.toString();
-      }
+      // Always increment for testing
+      const newCount = visitors + 1;
+      localStorage.setItem('siteVisitors', newCount.toString());
+      console.log('Incremented local visitor count to:', newCount);
+      visitorCountElement.textContent = newCount.toString();
     } catch (error) {
       console.error("Error using localStorage:", error);
       visitorCountElement.textContent = '0';

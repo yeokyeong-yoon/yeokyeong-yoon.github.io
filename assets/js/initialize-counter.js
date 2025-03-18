@@ -28,30 +28,27 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!doc.exists) {
           // Create it with count 1
           console.log('Creating initial counter document');
-          return visitorRef.set({ count: 1 });
+          return visitorRef.set({ 
+            count: 1,
+            createdAt: new Date().toISOString()
+          });
         } else {
-          // Document exists, check if count is valid
-          const count = doc.data().count;
-          console.log('Current visitor count:', count);
+          // Document exists, get current count and increment
+          const currentCount = doc.data().count || 0;
+          console.log('Current visitor count:', currentCount);
           
-          if (count === undefined || count === null || isNaN(count)) {
-            // Reset the counter if the count is invalid
-            console.log('Invalid count, resetting to 1');
-            return visitorRef.set({ count: 1 });
-          }
+          // Always increment the count for testing
+          const newCount = currentCount + 1;
           
-          // Otherwise just display the count
-          siteVisitorsElement.textContent = count;
-          return Promise.resolve();
-        }
-      }).then(() => {
-        // Check again to make sure the count is displayed
-        return visitorRef.get();
-      }).then(doc => {
-        if (doc.exists) {
-          const count = doc.data().count;
-          console.log('Final visitor count:', count);
-          siteVisitorsElement.textContent = count;
+          // Update the counter
+          return visitorRef.update({
+            count: newCount,
+            lastVisit: new Date().toISOString()
+          }).then(() => {
+            console.log('Incremented visitor count to:', newCount);
+            // Display the count
+            siteVisitorsElement.textContent = newCount;
+          });
         }
       }).catch(error => {
         console.error('Error initializing visitor counter:', error);
@@ -83,34 +80,29 @@ document.addEventListener('DOMContentLoaded', function() {
           console.log('Creating initial page views document');
           return pageRef.set({ 
             count: 1,
-            path: pagePath // Store the original path for reference
+            path: pagePath,
+            createdAt: new Date().toISOString()
+          }).then(() => {
+            console.log('Created document with count 1');
+            pageViewsElement.textContent = '1';
           });
         } else {
-          // Document exists, check if count is valid
-          const count = doc.data().count;
-          console.log('Current page views:', count);
+          // Document exists, get current count
+          const currentCount = doc.data().count || 0;
+          console.log('Current page views:', currentCount);
           
-          if (count === undefined || count === null || isNaN(count)) {
-            // Reset the counter if the count is invalid
-            console.log('Invalid count, resetting to 1');
-            return pageRef.set({ 
-              count: 1,
-              path: pagePath
-            });
-          }
+          // Always increment the count for testing
+          const newCount = currentCount + 1;
           
-          // Otherwise display the count
-          pageViewsElement.textContent = count;
-          return Promise.resolve();
-        }
-      }).then(() => {
-        // Check again to make sure the count is displayed
-        return pageRef.get();
-      }).then(doc => {
-        if (doc.exists) {
-          const count = doc.data().count;
-          console.log('Final page views count:', count);
-          pageViewsElement.textContent = count;
+          // Update the counter
+          return pageRef.update({
+            count: newCount,
+            lastVisit: new Date().toISOString()
+          }).then(() => {
+            console.log('Incremented page views to:', newCount);
+            // Display the count
+            pageViewsElement.textContent = newCount;
+          });
         }
       }).catch(error => {
         console.error('Error initializing page views counter:', error);
