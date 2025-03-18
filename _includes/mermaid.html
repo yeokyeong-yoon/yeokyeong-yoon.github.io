@@ -4,8 +4,12 @@
   document.addEventListener("DOMContentLoaded", function() {
     mermaid.initialize({
       startOnLoad: true,
-      theme: 'default',
-      flowchart: { useMaxWidth: false }
+      // Try themes at: https://mermaid.live/
+      theme: 'neutral', // Available themes: default, forest, dark, neutral, base
+      flowchart: { 
+        useMaxWidth: true,
+        curve: 'rough'
+      }
     });
   });
 </script>
