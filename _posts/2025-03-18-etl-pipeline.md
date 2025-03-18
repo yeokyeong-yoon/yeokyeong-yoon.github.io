@@ -44,88 +44,39 @@ mermaid: true
 
 - **Parquet (데이터 저장 형식)**: 데이터를 효율적으로 압축하고 빠르게 읽을 수 있는 파일 형식으로, 데이터의 구조 정보도 함께 저장하여 일관성을 유지한다.
 
+<div class="mermaid">
+C4Context
+    title ETL 파이프라인 아키텍처 구성요소
+    
+    Container(s3, "AWS S3", "데이터 저장소", "원본 및 처리된 데이터 저장")
+    Container(databricks, "Databricks", "처리 환경", "분산 컴퓨팅 플랫폼")
+    Container(pyspark, "PySpark", "데이터 처리", "변환 및 검증 로직")
+    Container(models, "ML 모델", "가격 최적화", "처리된 데이터 소비")
+    
+    Rel(s3, databricks, "원본 데이터")
+    Rel(databricks, pyspark, "데이터 처리")
+    Rel(pyspark, s3, "처리된 데이터")
+    Rel(s3, models, "학습 데이터")
+</div>
+
 ### 2.2 데이터 흐름도
 
 <div class="mermaid">
-graph TD
-    subgraph "데이터 소스"
-        A1[업체 1<br>일일 데이터 파일] 
-        A2[업체 2<br>일일 데이터 파일]
-        A3[업체 N<br>일일 데이터 파일]
-    end
-
-    subgraph "수집 레이어"
-        B1[변환기 1]
-        B2[변환기 2] 
-        B3[변환기 N]
-        B4[업체별 설정 관리]
-    end
-    
-    subgraph "공통 데이터 처리 과정"
-        C1[데이터 도착 확인]
-        C2[데이터 검증 & 품질 관리]
-        C3[데이터 변환 & 표준화]
-        C4[데이터 적재]
-    end
-    
-    subgraph "Databricks 분산 처리"
-        D1[컴퓨팅 자원 관리]
-        D2[성능 최적화]
-        D3[자원 할당]
-        D4[오류 복구]
-    end
-    
-    subgraph "품질 관리"
-        E1[비정상 값 탐지]
-        E2[중복 데이터 확인]
-        E3[데이터 구조 검증]
-        E4[데이터 누락 감지]
-    end
-    
-    subgraph "데이터 활용 대상"
-        G1[분석용 데이터 저장소]
-        G2[머신러닝 모델 학습 데이터]
-        G3[가격 최적화 시스템]
-    end
-    
-    A1 --> B1
-    A2 --> B2
-    A3 --> B3
-    
-    B1 --> C1
-    B2 --> C1
-    B3 --> C1
-    B4 -.-> B1
-    B4 -.-> B2
-    B4 -.-> B3
-    
-    C1 --> C2 --> C3 --> C4
-    
-    C2 <--> E1
-    C2 <--> E2
-    C2 <--> E3
-    C2 <--> E4
-    
-    D1 -.-> C1
-    D1 -.-> C2
-    D1 -.-> C3
-    D1 -.-> C4
-    D2 -.-> C1
-    D2 -.-> C2
-    D2 -.-> C3
-    D2 -.-> C4
-    D3 -.-> C1
-    D3 -.-> C2
-    D3 -.-> C3
-    D3 -.-> C4
-    D4 -.-> C1
-    D4 -.-> C2
-    D4 -.-> C3
-    D4 -.-> C4
-    
-    C4 --> G1
-    C4 --> G2
-    C4 --> G3
+timeline
+    title ETL Pipeline Process Flow
+    section Data Collection
+        Raw data arrives : Provider files received
+        Initial check : Validate file format and structure
+    section Data Processing
+        Transformation : Convert to standard format
+        Validation : Apply quality checks
+        Enrichment : Add derived attributes
+    section Data Storage
+        Load to storage : Save to Parquet files
+        Partition : Organize by date and source
+    section Data Consumption
+        Analytics : Support analytics queries
+        ML Models : Train price optimization models
 </div>
 
 데이터 흐름은 다음과 같은 단계로 이루어진다:
@@ -158,101 +109,48 @@ graph TD
 데이터 품질을 보장하기 위해 4단계로 구성된 체계적인 검증 과정을 구현한다:
 
 <div class="mermaid">
-graph TD
-    subgraph "기본 데이터 검증"
-        A1[빈 값 확인]
-        A2[데이터 유형 확인]
-        A3[값 범위 확인]
-        A4[데이터 형식 확인<br>정규표현식]
-    end
-
-    subgraph "업종 특화 검증"
-        B1[가격 합리성 확인]
-        B2[재고 관리 논리 검증]
-        B3[예약 충돌 확인]
-        B4[시즌별 가격 변동 검증]
-        B5[할인 규칙 적용 확인]
-        B6[특별 날짜 패턴 확인]
-    end
-
-    subgraph "이상 패턴 감지"
-        C1[통계적 이상값 감지]
-        C2[시간에 따른 패턴 분석]
-        C3[급격한 변동 감지]
-        C4[계절 패턴 적용]
-    end
-
-    subgraph "문제 대응"
-        D1[심각도 분류]
-        D2[업체 알림]
-        D3[내부팀 알림]
-        D4[자동 수정 적용]
-        D5[수동 검토 요청]
-        D6[문제 추적 관리]
-    end
+stateDiagram-v2
+    [*] --> BasicValidation
     
-    A1 --> B1
-    A2 --> B1
-    A3 --> B1
-    A4 --> B1
-    A1 --> B2
-    A2 --> B2
-    A3 --> B2
-    A4 --> B2
-    A1 --> B3
-    A2 --> B3
-    A3 --> B3
-    A4 --> B3
-    A1 --> B4
-    A2 --> B4
-    A3 --> B4
-    A4 --> B4
-    A1 --> B5
-    A2 --> B5
-    A3 --> B5
-    A4 --> B5
-    A1 --> B6
-    A2 --> B6
-    A3 --> B6
-    A4 --> B6
+    state BasicValidation {
+        EmptyCheck
+        TypeCheck
+        RangeCheck
+        FormatCheck
+    }
     
-    B1 --> C1
-    B2 --> C1
-    B3 --> C1
-    B4 --> C1
-    B5 --> C1
-    B6 --> C1
-    B1 --> C2
-    B2 --> C2
-    B3 --> C2
-    B4 --> C2
-    B5 --> C2
-    B6 --> C2
-    B1 --> C3
-    B2 --> C3
-    B3 --> C3
-    B4 --> C3
-    B5 --> C3
-    B6 --> C3
-    B1 --> C4
-    B2 --> C4
-    B3 --> C4
-    B4 --> C4
-    B5 --> C4
-    B6 --> C4
+    BasicValidation --> DomainValidation
     
-    C1 --> D1
-    C2 --> D1
-    C3 --> D1
-    C4 --> D1
+    state DomainValidation {
+        PriceValidation
+        InventoryValidation
+        ReservationValidation
+        SeasonalValidation
+        DiscountValidation
+        DatePatternValidation
+    }
     
-    D1 --> D2
-    D1 --> D3
-    D1 --> D4
-    D1 --> D5
+    DomainValidation --> AnomalyDetection
     
-    D4 --> D6
-    D5 --> D6
+    state AnomalyDetection {
+        StatisticalAnalysis
+        TimePatternAnalysis
+        SuddenChangeDetection
+        SeasonalPatternApplication
+    }
+    
+    AnomalyDetection --> ResponseAction
+    
+    state ResponseAction {
+        SeverityClassification
+        VendorNotification
+        InternalTeamNotification
+        AutomaticCorrection
+        ManualReview
+        IssueTracking
+    }
+    
+    ResponseAction --> [*]
 </div>
 
 #### 검증 실패 시 대응 방안
@@ -270,28 +168,28 @@ graph TD
 
 주요 데이터 처리 로직의 예시이다:
 
-```python
+  ```python
 # 주중/주말 가격 패턴 검증 예시
 def validate_pricing_pattern(df):
-    # 요일 정보 추출
-    df['day_of_week'] = df['date'].dt.dayofweek
-    
-    # 주중/주말 구분
-    weekday_prices = df[df['day_of_week'].isin([0,1,2,3,4])]['price']
-    weekend_prices = df[df['day_of_week'].isin([5,6])]['price']
-    
+      # 요일 정보 추출
+      df['day_of_week'] = df['date'].dt.dayofweek
+      
+      # 주중/주말 구분
+      weekday_prices = df[df['day_of_week'].isin([0,1,2,3,4])]['price']
+      weekend_prices = df[df['day_of_week'].isin([5,6])]['price']
+      
     # 평균 가격 계산
-    avg_weekday = weekday_prices.mean()
-    avg_weekend = weekend_prices.mean()
-    
+      avg_weekday = weekday_prices.mean()
+      avg_weekend = weekend_prices.mean()
+      
     # 일반적인 패턴 검증
-    if avg_weekend < avg_weekday * 0.8:
-        raise_alert(
-            severity="High",
+      if avg_weekend < avg_weekday * 0.8:
+          raise_alert(
+              severity="High",
             message=f"비정상 가격 패턴 감지: 주말 평균 {avg_weekend}이 주중 평균 {avg_weekday}의 80% 미만",
-            metrics={"weekend_avg": avg_weekend, "weekday_avg": avg_weekday, "ratio": avg_weekend/avg_weekday}
-        )
-```
+              metrics={"weekend_avg": avg_weekend, "weekday_avg": avg_weekday, "ratio": avg_weekend/avg_weekday}
+          )
+  ```
 
 #### 배치 처리 전략
 
@@ -307,6 +205,21 @@ def validate_pricing_pattern(df):
 - **처리 단위 최적화**: 적절한 데이터 분할 단위 설정으로 분산 처리 효율 향상
 
 ## 4. 개발 및 운영 전략
+
+<div class="mermaid">
+journey
+    title ETL Pipeline Journey
+    section Extract
+        Data arrival check: 5: ETL System
+        Data collection: 5: ETL System
+    section Transform
+        Basic validation: 3: ETL System, Data Quality Team
+        Domain validation: 4: ETL System, Business Analyst
+        Standardization: 5: ETL System
+    section Load
+        Data loading: 5: ETL System
+        Post-process verification: 4: ETL System, Data Quality Team
+</div>
 
 ### 4.1 개발 환경
 
