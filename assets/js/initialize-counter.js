@@ -63,12 +63,16 @@ document.addEventListener('DOMContentLoaded', function() {
     if (pageViewsElement) {
       console.log('Found page-views element, checking counter');
       
-      // Get the current page path
+      // Get the current page path and convert it to a safe document ID
       const pagePath = window.location.pathname;
       console.log('Current page path:', pagePath);
       
+      // Create a safe document ID by replacing all slashes with underscores
+      const safeDocId = pagePath.replace(/\//g, '_');
+      console.log('Safe document ID:', safeDocId);
+      
       // Get the reference to the counter document
-      const pageRef = db.collection('pageViews').doc(pagePath);
+      const pageRef = db.collection('pageViews').doc(safeDocId);
       
       // First check if the document exists
       pageRef.get().then(doc => {
@@ -77,7 +81,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!doc.exists) {
           // Create it with count 1
           console.log('Creating initial page views document');
-          return pageRef.set({ count: 1 });
+          return pageRef.set({ 
+            count: 1,
+            path: pagePath // Store the original path for reference
+          });
         } else {
           // Document exists, check if count is valid
           const count = doc.data().count;
@@ -86,7 +93,10 @@ document.addEventListener('DOMContentLoaded', function() {
           if (count === undefined || count === null || isNaN(count)) {
             // Reset the counter if the count is invalid
             console.log('Invalid count, resetting to 1');
-            return pageRef.set({ count: 1 });
+            return pageRef.set({ 
+              count: 1,
+              path: pagePath
+            });
           }
           
           // Otherwise display the count

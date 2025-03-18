@@ -2,17 +2,9 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /pageViews/{document} {
-      allow read, write: if true;
-    }
-    match /siteVisitors/{document} {
-      allow read, write: if true;
-    }
-    match /debug/{document} {
-      allow read, write: if true;
-    }
+    // Allow read/write access to all collections for testing
     match /{document=**} {
-      allow read, write: if false;
+      allow read, write: if true;
     }
   }
 }

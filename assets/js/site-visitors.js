@@ -33,17 +33,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const db = firebase.firestore();
     console.log('Using Firestore for site visitors');
     
-    // Check if user has visited the site before
-    const hasVisitedBefore = localStorage.getItem('visitedSite');
-    console.log('User has visited before:', hasVisitedBefore ? 'Yes' : 'No');
+    // Check if this is a new session
+    const sessionKey = 'visitorSession';
+    const hasActiveSession = sessionStorage.getItem(sessionKey);
+    
+    // Print out all items in localStorage for debugging
+    console.log('localStorage items:');
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      console.log(`- ${key}: ${localStorage.getItem(key)}`);
+    }
     
     // Reference to the document for site visitors
     const visitorRef = db.collection('siteVisitors').doc('counter');
     
-    if (!hasVisitedBefore) {
-      // Mark the site as visited
-      localStorage.setItem('visitedSite', 'true');
-      console.log('Marked site as visited');
+    if (!hasActiveSession) {
+      // Mark this session
+      sessionStorage.setItem(sessionKey, 'true');
+      console.log('New session, incrementing visitor count');
       
       // Increment the visitor count
       visitorRef.get().then((doc) => {
@@ -69,7 +76,8 @@ document.addEventListener('DOMContentLoaded', function() {
           // Document doesn't exist, create it with count 1
           console.log('Creating new visitor counter document');
           return visitorRef.set({
-            count: 1
+            count: 1,
+            createdAt: new Date().toISOString()
           }).then(() => {
             console.log('New visitor document created with count: 1');
             visitorCountElement.textContent = '1';
@@ -81,6 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     } else {
       // Just display the current count
+      console.log('Existing session, just showing the count');
       visitorRef.get().then((doc) => {
         if (doc.exists) {
           const count = doc.data().count;

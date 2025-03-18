@@ -388,21 +388,40 @@ title: Home
     function loadScript(src, fallback) {
       var script = document.createElement('script');
       script.src = src;
-      script.onerror = fallback;
+      script.onerror = function() {
+        console.warn("Failed to load script:", src);
+        if (fallback) fallback();
+      };
       script.onload = function() {
+        console.log("Successfully loaded:", src);
+        
+        // If this is firebase-config, we've just initialized Firebase,
+        // wait a moment then load the site-visitors script
         if (src.includes('firebase-config.js')) {
-          // Load the site visitors script after firebase config is loaded
-          loadScript("{{ '/assets/js/site-visitors.js' | relative_url }}", function() {
-            console.warn("Failed to load site-visitors.js");
-          });
+          setTimeout(function() {
+            // First verify Firebase is fully initialized
+            if (typeof firebase !== 'undefined' && firebase.firestore) {
+              console.log("Firebase ready, loading site-visitors.js");
+              loadScript("{{ '/assets/js/site-visitors.js' | relative_url }}", function() {
+                console.warn("Failed to load site-visitors.js, falling back to simple counter");
+                loadScript("{{ '/assets/js/simple-counter.js' | relative_url }}");
+              });
+            } else {
+              console.warn("Firebase not initialized properly, using simple counter");
+              loadScript("{{ '/assets/js/simple-counter.js' | relative_url }}");
+            }
+          }, 1000); // Wait 1 second to ensure Firebase is initialized
         }
       };
       document.head.appendChild(script);
+      console.log("Script tag added for:", src);
     }
 
     // Try to load firebase-config.js
+    console.log("Starting to load Firebase config");
     loadScript("{{ '/assets/js/firebase-config.js' | relative_url }}", function() {
-      console.warn("Firebase config not found");
+      console.warn("Firebase config not found, using simple counter instead");
+      loadScript("{{ '/assets/js/simple-counter.js' | relative_url }}");
     });
   </script>
   

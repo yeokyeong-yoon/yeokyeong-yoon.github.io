@@ -44,18 +44,29 @@ try {
   db = firebase.firestore ? firebase.firestore() : null;
   console.log("Firestore initialized:", db ? "Yes" : "No");
   
-  // Test the connection
+  // Wait until Firestore is ready and create the initial collections if they don't exist
   if (db) {
-    db.collection('test').doc('connection-test').set({
-      timestamp: new Date().toISOString(),
-      test: 'connection'
-    })
-    .then(() => {
-      console.log("Firestore connection successful");
-    })
-    .catch(error => {
-      console.error("Firestore connection test failed:", error);
-    });
+    // First we'll check siteVisitors
+    db.collection('siteVisitors').doc('counter').get()
+      .then(doc => {
+        if (!doc.exists) {
+          console.log("Creating siteVisitors counter document");
+          return db.collection('siteVisitors').doc('counter').set({
+            count: 0,
+            createdAt: new Date().toISOString()
+          });
+        } else {
+          console.log("siteVisitors counter document exists:", doc.data());
+          return Promise.resolve();
+        }
+      })
+      .then(() => {
+        console.log("Firestore setup completed");
+      })
+      .catch(error => {
+        console.error("Firestore setup error:", error);
+        console.log("Collections may need to be created manually in the Firebase console");
+      });
   }
 } catch (error) {
   console.error("Firestore initialization error:", error);

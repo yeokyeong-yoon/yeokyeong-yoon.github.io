@@ -12,6 +12,10 @@ document.addEventListener('DOMContentLoaded', function() {
   const pagePath = window.location.pathname;
   console.log('Current page path:', pagePath);
   
+  // Create a safe document ID by replacing all slashes with underscores
+  const safeDocId = pagePath.replace(/\//g, '_');
+  console.log('Safe document ID:', safeDocId);
+  
   // Get the counter element
   const pageViewsElement = document.getElementById('page-views');
   if (!pageViewsElement) {
@@ -39,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Using Firestore for page views');
     
     // Reference to the document for this page
-    const pageRef = db.collection('pageViews').doc(pagePath);
+    const pageRef = db.collection('pageViews').doc(safeDocId);
     
     // Increment the view count
     pageRef.get().then((doc) => {
@@ -65,7 +69,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Document doesn't exist, create it with count 1
         console.log('Creating new page view document');
         return pageRef.set({
-          count: 1
+          count: 1,
+          path: pagePath, // Store original path
+          createdAt: new Date().toISOString()
         }).then(() => {
           console.log('New document created with count: 1');
           pageViewsElement.textContent = '1';
