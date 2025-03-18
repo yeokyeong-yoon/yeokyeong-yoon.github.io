@@ -136,6 +136,54 @@ tags: [A/B 테스트, 실험 플랫폼, 데이터 기반 의사결정]
 - 실험 관련 교육 및 가이드 제공
 - 실험 결과 공유 및 학습을 위한 정기적인 리뷰 세션 운영
 
+## 시각적 자료 및 참고 리소스
+
+이 글에서 다룬 내용을 더 잘 이해하기 위한 시각적 자료와 참고할 수 있는 리소스들을 정리했다. 다양한 기업의 사례를 조사하면서 발견한 유용한 자료들로, 실험 플랫폼 구축 과정에서 팀원들과 공유했을 때 큰 도움이 되었다. 특히 국내외 기업들의 실험 플랫폼 구축 사례는 우리 회사의 실험 문화 발전에 중요한 참고자료가 되었다.
+
+### 1. A/B 테스트 프로세스 및 아키텍처
+
+![A/B 테스트 프로세스 다이어그램](https://www.optimizely.com/contentassets/40eee6740aaf4bcebe1957a4682582d1/ab-test-flow.png)
+*그림 1: A/B 테스트의 기본 프로세스 흐름도 (출처: Optimizely)*
+
+A/B 테스트 플랫폼 아키텍처에 관심이 있다면 다음 자료들을 참고하세요:
+- [넷플릭스의 실험 분석 시스템 아키텍처](https://netflixtechblog.com/reimagining-experimentation-analysis-at-netflix-71356393af21)
+- [스포티파이의 실험 플랫폼 아키텍처](https://engineering.atspotify.com/2020/10/spotifys-new-experimentation-platform-part-1/)
+
+### 2. 데이터 흐름 시각화
+
+![실험 데이터 흐름](https://www.optimizely.com/contentassets/40eee6740aaf4bcebe1957a4682582d1/experimentation-flow.png)
+*그림 2: 실험 데이터의 수집부터 분석까지의 흐름 (출처: Optimizely)*
+
+### 3. 층화 샘플링 개념
+
+층화 샘플링(Stratified Sampling)의 개념을 이해하려면 다음 리소스를 확인하세요:
+- [Khan Academy의 층화 샘플링 설명](https://www.khanacademy.org/math/statistics-probability/designing-studies/sampling-methods-stats/v/stratified-sampling)
+
+### 4. 실험 규모 비교
+
+다양한 기업의 실험 규모를 비교한 자료는 다음과 같습니다:
+- [Microsoft의 실험 발전 과정](https://www.microsoft.com/en-us/research/group/experimentation-platform-exp/)
+- [Booking.com의 실험 문화](https://booking.ai/how-booking-com-increases-the-power-of-online-experiments-with-cuped-995d186fff1d)
+
+### 5. 실험 대시보드 예시
+
+실험 결과를 시각화하는 대시보드 예시:
+- [구글 옵티마이즈 대시보드](https://support.google.com/optimize/answer/6218117?hl=en)
+- [Growth Book의 오픈소스 대시보드](https://docs.growthbook.io/app/metrics)
+
+### 6. 유용한 A/B 테스트 도구
+
+A/B 테스트를 시작하거나 개선하는 데 도움이 되는 도구들:
+- [샘플 크기 계산기](https://www.optimizely.com/sample-size-calculator/)
+- [통계적 유의성 계산기](https://www.evanmiller.org/ab-testing/sample-size.html)
+- [A/B 테스트 ROI 계산기](https://vwo.com/tools/ab-test-duration-calculator/)
+
+### 7. 국내 기업 A/B 테스트 시스템 사례
+
+국내 기업의 실제 A/B 테스트 시스템 구축 사례:
+- [당근마켓의 실험 플랫폼](https://medium.com/daangn/data-team-building-data-platform-for-a-b-testing-2d17fcf1a2b1)
+- [배달의민족 A/B 테스트 플랫폼 Grape](https://techblog.woowahan.com/9935/)
+
 ## 결론
 
 여러 기업의 A/B 테스트 플랫폼을 살펴본 결과, 우리 실험 플랫폼도 단순한 도구에서 의사결정 인프라로 발전할 가능성을 확인할 수 있었다. 그동안 일상적인 운영에만 집중하느라 전체 시스템을 제대로 이해하지 못했던 점이 아쉬움으로 남는다.
@@ -145,16 +193,6 @@ tags: [A/B 테스트, 실험 플랫폼, 데이터 기반 의사결정]
 특히 로깅과 분석이 서로 다른 팀에서 이루어지는 현재 구조는 효율적인 시스템 통합과 데이터 흐름 최적화가 시급하다고 판단된다. 이러한 분석을 바탕으로, 실험 플랫폼 팀은 단순한 도구 제공자에서 벗어나 실험 전체 과정에 적극적으로 참여하는 방향으로 역할을 확장해야 한다.
 
 앞으로의 핵심 과제는 데이터 신뢰성 확보, 실시간 분석 기능 구현, 세분화된 타겟팅 구현, 그리고 통합 분석 시스템 개발이 될 것이며, 이를 통해 더욱 신뢰할 수 있는 플랫폼을 구축하고 조직 전체의 데이터 기반 의사결정 문화를 강화할 수 있을 것이다.
-
-
-## 참고 자료
-
-이 글에 다 담지는 못했지만, 다음의 추가 자료도 참고하였습니다:
-
-- [배달의 민족 - A/B 테스트를 위한 실험플랫폼, Grape](https://techblog.woowahan.com/9935/) - 배달의 민족의 실험 플랫폼 Grape의 아키텍처와 기능에 대한 인사이트 참고
-- [뱅크샐러드 - 실험플랫폼 분석 인프라 살펴보기](https://blog.banksalad.com/tech/experiment-platform-analysis-architecture/) - 뱅크샐러드의 실험 플랫폼 분석 인프라 구축 과정 참고
-- [Spotify - Spotify's New Experimentation Platform](https://engineering.atspotify.com/2020/10/spotifys-new-experimentation-platform-part-1/) - 스포티파이의 실험 플랫폼 설계 원칙과 구현 방식 참고
-- [LINE - 오프라인 및 온라인 A/B 테스트로 오픈챗 추천 모델 개선하기](https://techblog.lycorp.co.jp/ko/improve-openchat-recommendation-model-with-offline-and-online-ab-test) - LINE의 오픈챗 서비스에서 추천 모델 개선을 위한 A/B 테스트 사례 참고
 
 
 ## 용어
