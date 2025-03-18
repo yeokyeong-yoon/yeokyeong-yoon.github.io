@@ -274,18 +274,18 @@ flowchart LR
     classDef transform fill:#dcf2e9,stroke:#20b2aa,stroke-width:2px
     classDef load fill:#e6e6fa,stroke:#6a5acd,stroke-width:2px
     
-    subgraph 추출단계[추출(Extract)]
+    subgraph 추출단계["추출(Extract)"]
         E1["데이터 도착 확인<br><small>중요도: ★★★★★</small><br><small>담당: ETL 시스템</small>"]:::extract
         E2["데이터 수집<br><small>중요도: ★★★★★</small><br><small>담당: ETL 시스템</small>"]:::extract
     end
     
-    subgraph 변환단계[변환(Transform)]
+    subgraph 변환단계["변환(Transform)"]
         T1["기본 검증<br><small>중요도: ★★★☆☆</small><br><small>담당: ETL 시스템, 품질팀</small>"]:::transform
         T2["업종별 검증<br><small>중요도: ★★★★☆</small><br><small>담당: ETL, 비즈니스 분석가</small>"]:::transform
         T3["표준화<br><small>중요도: ★★★★★</small><br><small>담당: ETL 시스템</small>"]:::transform
     end
     
-    subgraph 적재단계[적재(Load)]
+    subgraph 적재단계["적재(Load)"]
         L1["데이터 적재<br><small>중요도: ★★★★★</small><br><small>담당: ETL 시스템</small>"]:::load
         L2["적재 후 검증<br><small>중요도: ★★★★☆</small><br><small>담당: ETL 시스템, 품질팀</small>"]:::load
     end
@@ -305,27 +305,25 @@ flowchart LR
 gantt
     title ETL 파이프라인 개발 로드맵
     dateFormat  YYYY-MM-DD
-    axisFormat %y-%m
+    axisFormat %y-Q%q
     
     section 완료된 작업
-    데이터 수집 자동화      :done, task1, 2023-01-01, 2023-03-15
-    기본 ETL 파이프라인 구축 :done, task2, 2023-02-15, 2023-05-30
+    데이터 수집 자동화      :done, task1, 2025-01-01, 2025-03-31
+    기본 ETL 파이프라인 구축 :done, task2, 2025-01-01, 2025-06-30
     
     section 진행중
-    데이터 품질 관리 체계화  :active, task3, 2023-05-01, 2023-12-31
+    데이터 품질 관리 체계화  :active, task3, 2025-04-01, 2025-06-30
     
     section 단기 계획 (6개월)
-    추가 데이터 소스 통합    :task4, after task3, 90d
-    성능 최적화            :task5, after task4, 60d
-    모니터링 개선           :task6, 2024-01-01, 90d
+    추가 데이터 소스 통합    :task4, 2025-07-01, 2025-09-30
+    성능 최적화            :task5, 2025-07-01, 2025-09-30
+    모니터링 개선           :task6, 2025-07-01, 2025-09-30
     
-    section 장기 계획 (1년+)
-    실시간 처리 도입        :task7, 2024-06-01, 180d
-    ML 파이프라인 연동      :task8, 2024-07-01, 150d
-    클라우드 확장          :task9, after task8, 120d
+    section 장기 계획
+    ML 파이프라인 연동      :task8, 2025-10-01, 2025-12-31
 </div>
 
-*이 간트 차트는 ETL 파이프라인 개발의 타임라인을 보여줍니다. 완료된 작업(파란색), 진행 중인 작업(노란색), 그리고 계획된 단기 및 장기 작업이 시간순으로 정렬되어 있습니다.*
+*이 간트 차트는 ETL 파이프라인 개발의 타임라인을 보여줍니다. 2025년 2월에 시작된 프로젝트의 완료된 작업(파란색), 진행 중인 작업(노란색), 그리고 계획된 작업이 시간순으로 정렬되어 있습니다.*
 
 ### ETL 파이프라인 운영 단계 설명
 
