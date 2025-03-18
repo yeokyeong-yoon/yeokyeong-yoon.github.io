@@ -7,6 +7,55 @@ tags: [etl, databricks, pyspark, aws-s3, data-engineering]
 mermaid: true
 ---
 
+<style>
+.mermaid {
+  width: 100%;
+  max-width: 1200px;
+  margin: 40px auto;
+  font-size: 18px;
+  font-family: 'Arial', sans-serif;
+  overflow: visible;
+}
+.mermaid .node rect, 
+.mermaid .node circle, 
+.mermaid .node ellipse, 
+.mermaid .node polygon, 
+.mermaid .node path {
+  fill: #f5f9ff;
+  stroke: #4a6da7;
+  stroke-width: 1.5px;
+}
+.mermaid .node text {
+  font-size: 18px;
+  font-weight: 500;
+}
+.mermaid .edgeLabel {
+  font-size: 16px;
+  background-color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.mermaid .cluster rect {
+  fill: #f0f8ff;
+  stroke: #4a6da7;
+  stroke-width: 1px;
+  rx: 8px;
+  ry: 8px;
+}
+.mermaid .label {
+  font-size: 20px;
+  font-weight: bold;
+}
+.mermaid .timeline-event {
+  font-size: 16px;
+}
+.mermaid .journey-section {
+  font-size: 18px;
+  font-weight: bold;
+}
+</style>
+
 ## 1. 개요
 
 최근 수요 예측과 가격 최적화 모델을 위한 데이터 처리 시스템 개발을 담당하게 되었다. 초기에는 내부 팀과 외부 업체 1곳의 데이터만을 처리하는 소규모 시스템으로 시작하였으나, 향후 다수의 데이터 소스를 수용해야 할 것으로 예상되어 확장성 있는 시스템 설계가 필수적이었다.
@@ -48,15 +97,15 @@ mermaid: true
 C4Context
     title ETL 파이프라인 아키텍처 구성요소
     
-    Container(s3, "AWS S3", "데이터 저장소", "원본 및 처리된 데이터 저장")
+    Container(s3, "AWS S3", "데이터 저장소", "원본 및 처리된<br>데이터 저장")
     Container(databricks, "Databricks", "처리 환경", "분산 컴퓨팅 플랫폼")
     Container(pyspark, "PySpark", "데이터 처리", "변환 및 검증 로직")
     Container(models, "ML 모델", "가격 최적화", "처리된 데이터 소비")
     
-    Rel(s3, databricks, "원본 데이터")
-    Rel(databricks, pyspark, "데이터 처리")
-    Rel(pyspark, s3, "처리된 데이터")
-    Rel(s3, models, "학습 데이터")
+    Rel_R(s3, databricks, "원본<br>데이터")
+    Rel_D(databricks, pyspark, "데이터<br>처리")
+    Rel_L(pyspark, s3, "처리된<br>데이터")
+    Rel_U(s3, models, "학습<br>데이터")
 </div>
 
 *이 다이어그램은 ETL 파이프라인의 주요 구성 요소(AWS S3, Databricks, PySpark, ML 모델)와 이들 간의 데이터 흐름을 보여줍니다.*
@@ -65,20 +114,20 @@ C4Context
 
 <div class="mermaid">
 timeline
-    title ETL Pipeline Process Flow
-    section Data Collection
-        Raw data arrives : Provider files received
-        Initial check : Validate file format and structure
-    section Data Processing
-        Transformation : Convert to standard format
-        Validation : Apply quality checks
-        Enrichment : Add derived attributes
-    section Data Storage
-        Load to storage : Save to Parquet files
-        Partition : Organize by date and source
-    section Data Consumption
-        Analytics : Support analytics queries
-        ML Models : Train price optimization models
+    title ETL 파이프라인 처리 흐름
+    section 데이터 수집
+        원본 데이터 도착 : 업체 파일 수신
+        초기 점검 : 파일 형식 및 구조 검증
+    section 데이터 처리
+        변환 : 표준 형식으로 변환
+        검증 : 품질 검사 적용
+        보강 : 파생 속성 추가
+    section 데이터 저장
+        저장소 적재 : Parquet 파일로 저장
+        분할 : 날짜 및 출처별 구성
+    section 데이터 활용
+        분석 : 분석 쿼리 지원
+        ML 모델 : 가격 최적화 모델 학습
 </div>
 
 *이 타임라인 다이어그램은 ETL 과정의 주요 단계(데이터 수집, 처리, 저장, 활용)를 시간 순서에 따라 표현합니다.*
@@ -114,47 +163,47 @@ timeline
 
 <div class="mermaid">
 stateDiagram-v2
-    [*] --> BasicValidation
+    [*] --> 기본검증
     
-    state BasicValidation {
-        EmptyCheck
-        TypeCheck
-        RangeCheck
-        FormatCheck
+    state 기본검증 {
+        빈값확인
+        데이터유형확인
+        값범위확인
+        형식확인
     }
     
-    BasicValidation --> DomainValidation
+    기본검증 --> 업종특화검증
     
-    state DomainValidation {
-        PriceValidation
-        InventoryValidation
-        ReservationValidation
-        SeasonalValidation
-        DiscountValidation
-        DatePatternValidation
+    state 업종특화검증 {
+        가격합리성확인
+        재고관리검증
+        예약충돌확인
+        시즌별가격검증
+        할인규칙확인
+        날짜패턴확인
     }
     
-    DomainValidation --> AnomalyDetection
+    업종특화검증 --> 이상패턴감지
     
-    state AnomalyDetection {
-        StatisticalAnalysis
-        TimePatternAnalysis
-        SuddenChangeDetection
-        SeasonalPatternApplication
+    state 이상패턴감지 {
+        통계적이상감지
+        시간패턴분석
+        급격한변동감지
+        계절패턴적용
     }
     
-    AnomalyDetection --> ResponseAction
+    이상패턴감지 --> 문제대응
     
-    state ResponseAction {
-        SeverityClassification
-        VendorNotification
-        InternalTeamNotification
-        AutomaticCorrection
-        ManualReview
-        IssueTracking
+    state 문제대응 {
+        심각도분류
+        업체알림
+        내부팀알림
+        자동수정적용
+        수동검토요청
+        문제추적관리
     }
     
-    ResponseAction --> [*]
+    문제대응 --> [*]
 </div>
 
 *이 상태 다이어그램은 데이터 검증 프로세스의 4단계(기본 검증, 업종 특화 검증, 이상 패턴 감지, 문제 대응)와 각 단계 내의 세부 작업을 보여줍니다.*
@@ -177,24 +226,24 @@ stateDiagram-v2
   ```python
 # 주중/주말 가격 패턴 검증 예시
 def validate_pricing_pattern(df):
-      # 요일 정보 추출
-      df['day_of_week'] = df['date'].dt.dayofweek
-      
-      # 주중/주말 구분
-      weekday_prices = df[df['day_of_week'].isin([0,1,2,3,4])]['price']
-      weekend_prices = df[df['day_of_week'].isin([5,6])]['price']
-      
+    # 요일 정보 추출
+    df['day_of_week'] = df['date'].dt.dayofweek
+    
+    # 주중/주말 구분
+    weekday_prices = df[df['day_of_week'].isin([0,1,2,3,4])]['price']
+    weekend_prices = df[df['day_of_week'].isin([5,6])]['price']
+    
     # 평균 가격 계산
-      avg_weekday = weekday_prices.mean()
-      avg_weekend = weekend_prices.mean()
-      
+    avg_weekday = weekday_prices.mean()
+    avg_weekend = weekend_prices.mean()
+    
     # 일반적인 패턴 검증
-      if avg_weekend < avg_weekday * 0.8:
-          raise_alert(
-              severity="High",
+    if avg_weekend < avg_weekday * 0.8:
+        raise_alert(
+            severity="High",
             message=f"비정상 가격 패턴 감지: 주말 평균 {avg_weekend}이 주중 평균 {avg_weekday}의 80% 미만",
-              metrics={"weekend_avg": avg_weekend, "weekday_avg": avg_weekday, "ratio": avg_weekend/avg_weekday}
-          )
+            metrics={"weekend_avg": avg_weekend, "weekday_avg": avg_weekday, "ratio": avg_weekend/avg_weekday}
+        )
   ```
 
 #### 배치 처리 전략
@@ -228,6 +277,25 @@ journey
 </div>
 
 *이 여정 다이어그램은 ETL 과정의 각 단계별 작업과 해당 작업의 난이도(1-5점 척도), 그리고 담당 시스템이나 팀을 보여줍니다.*
+
+### ETL 파이프라인 운영 단계 설명
+
+ETL 파이프라인의 운영은 크게 세 단계로 나뉘며, 각 단계별로 중요한 작업과 담당자가 있습니다:
+
+1. **추출(Extract) 단계**:
+   - **데이터 도착 확인**: 외부 업체로부터 데이터가 정해진 시간에 도착했는지 확인합니다. ETL 시스템이 자동으로 수행하며, 중요도가 매우 높습니다(5점).
+   - **데이터 수집**: S3 버킷에서 Databricks 환경으로 데이터를 가져오는 작업입니다. 역시 ETL 시스템에 의해 자동으로 수행되며 중요도가 높습니다(5점).
+
+2. **변환(Transform) 단계**:
+   - **기본 검증**: 데이터 형식, 범위, 필수값 존재 여부 등을 확인합니다. ETL 시스템과 데이터 품질팀이 함께 담당하며, 난이도는 보통 수준입니다(3점).
+   - **업종별 검증**: 비즈니스 규칙에 맞는 데이터인지 검증합니다. ETL 시스템과 비즈니스 분석가가 협업하며, 난이도가 높은 편입니다(4점).
+   - **표준화**: 다양한 형식의 데이터를 일관된 형태로 변환합니다. ETL 시스템이 담당하며 중요도가 매우 높습니다(5점).
+
+3. **적재(Load) 단계**:
+   - **데이터 적재**: 변환된 데이터를 Parquet 형식으로 S3에 저장합니다. ETL 시스템이 자동으로 수행하며 중요도가 높습니다(5점).
+   - **적재 후 검증**: 저장된 데이터의 정합성을 최종 확인합니다. ETL 시스템과 데이터 품질팀이 협업하며 난이도가 높습니다(4점).
+
+이러한 단계적 접근을 통해 데이터 처리의 신뢰성과 효율성을 확보할 수 있습니다. 특히 각 단계마다 담당자를 명확히 하여 문제 발생 시 신속한 대응이 가능하도록 설계했습니다.
 
 ### 4.1 개발 환경
 
