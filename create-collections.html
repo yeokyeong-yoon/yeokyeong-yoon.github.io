@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Initialize Firebase Collections</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+    }
+    button {
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+    button:hover {
+      background-color: #3367d6;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 4px;
+      overflow: auto;
+      margin-top: 20px;
+    }
+    .log {
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-top: 20px;
+      font-family: monospace;
+      background-color: #f9f9f9;
+    }
+  </style>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
+  <!-- Firebase configuration -->
+  <script src="/assets/js/firebase-config.js"></script>
+</head>
+<body>
+  <h1>Initialize Firebase Collections</h1>
+  
+  <p>This page will help you initialize the necessary Firestore collections for your blog's visitor and view counters.</p>
+  
+  <p><strong>Note:</strong> You only need to run this once to set up the collections.</p>
+  
+  <button id="create-collections">Create Collections</button>
+  <button id="check-collections">Check Existing Collections</button>
+  
+  <div class="log" id="log"></div>
+  
+  <script>
+    // Logging function
+    function log(message) {
+      const logElement = document.getElementById('log');
+      const timestamp = new Date().toLocaleTimeString();
+      logElement.innerHTML += `[${timestamp}] ${message}<br>`;
+      logElement.scrollTop = logElement.scrollHeight;
+      console.log(message);
+    }
+    
+    // Wait for Firebase to be ready
+    document.addEventListener('DOMContentLoaded', function() {
+      log('Page loaded, waiting for Firebase to initialize...');
+      
+      // Check Firebase initialization
+      setTimeout(function() {
+        if (typeof firebase !== 'undefined' && firebase.firestore) {
+          log('✅ Firebase is available and initialized');
+        } else {
+          log('❌ Firebase is not available or not initialized');
+        }
+      }, 2000);
+      
+      // Create collections button
+      document.getElementById('create-collections').addEventListener('click', function() {
+        if (typeof firebase === 'undefined' || !firebase.firestore) {
+          log('❌ Firebase or Firestore not available');
+          return;
+        }
+        
+        log('Creating collections...');
+        const db = firebase.firestore();
+        
+        // Create or update the site visitors counter
+        db.collection('siteVisitors').doc('counter').set({
+          count: 0,
+          createdAt: new Date().toISOString()
+        })
+        .then(() => {
+          log('✅ siteVisitors collection and counter document created');
+          return db.collection('pageViews').doc('home').set({
+            count: 0,
+            path: '/',
+            createdAt: new Date().toISOString()
+          });
+        })
+        .then(() => {
+          log('✅ pageViews collection and home document created');
+          log('✅ Collections created successfully!');
+        })
+        .catch(error => {
+          log(`❌ Error creating collections: ${error.message}`);
+        });
+      });
+      
+      // Check collections button
+      document.getElementById('check-collections').addEventListener('click', function() {
+        if (typeof firebase === 'undefined' || !firebase.firestore) {
+          log('❌ Firebase or Firestore not available');
+          return;
+        }
+        
+        log('Checking existing collections...');
+        const db = firebase.firestore();
+        
+        // Check siteVisitors collection
+        db.collection('siteVisitors').get()
+          .then(snapshot => {
+            log(`Found ${snapshot.size} documents in siteVisitors collection`);
+            snapshot.forEach(doc => {
+              log(`- Document ID: ${doc.id}, Data: ${JSON.stringify(doc.data())}`);
+            });
+            
+            // Check pageViews collection
+            return db.collection('pageViews').get();
+          })
+          .then(snapshot => {
+            log(`Found ${snapshot.size} documents in pageViews collection`);
+            snapshot.forEach(doc => {
+              log(`- Document ID: ${doc.id}, Data: ${JSON.stringify(doc.data())}`);
+            });
+          })
+          .catch(error => {
+            log(`❌ Error checking collections: ${error.message}`);
+          });
+      });
+    });
+  </script>
+</body>
+</html> 
