@@ -6,6 +6,8 @@ categories: [개발, 시스템설계]
 tags: [feature-flag, java, aws, kubernetes, dynamodb]
 ---
 
+# Feature Flag 설계와 운영 기술 분석
+
 ## 1. Feature Flag 시스템 개요
 
 Feature Flag는 코드 수정이나 재배포 없이 특정 기능을 켜거나 끌 수 있는 기법으로, A/B 테스트, 점진적 기능 출시, 긴급 롤백 상황에서 활용되었다. 인턴으로 입사했을 당시, 회사는 단순한 롤아웃/롤백 작업에도 이전 버전 재배포나 새로운 실험 생성이 필요했다. 이 문제를 해결하기 위해 Java 기반의 Feature Flag SDK를 개발했다.
@@ -14,54 +16,39 @@ Feature Flag는 코드 수정이나 재배포 없이 특정 기능을 켜거나 
 
 시스템의 데이터 흐름과 주요 컴포넌트 간의 상호작용은 다음 시퀀스 다이어그램과 같다:
 
-<div class="mermaid">
-sequenceDiagram
-    participant Client as Client Application
-    participant Manager as Feature Flag Manager
-    participant Cache as LRU Cache
-    participant API as Splitter API
-    participant Admin as Admin Page
-    participant DB as DynamoDB
-
-    Client->>Manager: Flags declared via Annotation (Reflection)
-    Manager->>API: Register declared flags (initial execution)
-    API->>DB: Store flag definitions
-    DB-->>API: Acknowledge storage
-    API->>Admin: Send flag registration
-    Admin-->>API: Acknowledge registration
-    API-->>Manager: Respond with registration acknowledgment
-
-    loop Periodic Update
-        Manager->>API: Request latest Flag Treatments
-        API->>DB: Query latest flag values
-        DB-->>API: Return flag data
-        API->>Admin: Fetch latest Treatment values
-        Admin-->>API: Return latest Treatment values
-        API-->>Manager: Respond with latest Flag values
-        Manager->>Cache: Update cache
-    end
-
-    Client->>Manager: Request Flag value
-    Manager->>Cache: Retrieve cached Flag
-    Cache-->>Manager: Return cached value
-    Manager-->>Client: Provide Flag value
-
-    Note over Admin,DB: Admin changes are persisted to DynamoDB
-    Admin->>API: Update flag value
-    API->>DB: Store updated value
-    DB-->>API: Acknowledge update
-</div>
-
 ## 3. 핵심 설계 원칙과 기술적 구현
 
 ### 3.1 Annotation 기반 관리 시스템
 
 ```java
 @FeatureFlag(flagName="new-search-algorithm")
-private static boolean useNewSearchAlgorithm;
+private static boolean useNewSearchAlgorithm = true;
 ```
 
 이 설계는 Admin 페이지와 코드 사이의 Splitter API 네트워크 장애 시에도 기능 상태의 일관성을 보장했다. 애플리케이션 시작 시 코드 내 선언된 Flag가 실험 플랫폼에 자동 등록되었으며, 이후 실험 플랫폼에서 상태를 수정할 수 있도록 했다.
+
+이 설계를 선택하기 전에 다음과 같은 대안들을 고려했다:
+
+1. **Properties 파일 기반 설정**
+   - 장점: 설정 변경이 쉽고, 코드 수정 없이 값 변경 가능
+   - 단점: 배포가 필요하고, 코드와 설정의 불일치 가능성 존재
+   - 기각 이유: 실시간 변경이 어렵고, 설정 파일 관리의 복잡성 증가
+
+2. **데이터베이스 직접 관리**
+   - 장점: 중앙 집중식 관리, 실시간 변경 용이
+   - 단점: 네트워크 장애 시 전체 시스템 영향, 초기 구동 시 지연
+   - 기각 이유: 높은 결합도와 장애 전파 위험
+
+3. **REST API 기반 동적 설정**
+   - 장점: 유연한 관리, 실시간 업데이트 가능
+   - 단점: 네트워크 의존성, 초기값 설정의 어려움
+   - 기각 이유: 코드의 의도가 불명확하고 타입 안정성 부족
+
+Annotation 방식은 이러한 대안들의 단점을 보완하면서도 다음과 같은 이점을 제공했다:
+- 코드의 의도가 명확히 드러남
+- 컴파일 타임 검증 가능
+- IDE 지원을 통한 개발 생산성 향상
+- 기본값 지정으로 안정성 확보
 
 ### 3.2 Reflection 기반 자동 등록 메커니즘
 
@@ -79,7 +66,21 @@ public static boolean useNewSearchAlgorithm = false;
 private boolean premiumFeatureEnabled = false;
 ```
 
-또한 클래스 로더 계층 구조를 고려하여 애플리케이션의 모든 패키지를 스캔하는 재귀적 알고리즘을 구현했고, 성능 최적화를 위해 스캔 대상 패키지를 설정할 수 있는 필터링 메커니즘도 추가했다. 이렇게 수집된 Feature Flag 정보는 ConcurrentHashMap을 사용해 스레드 안전하게 관리했으며, 주기적으로 백엔드 서버와 동기화되도록 ScheduledExecutorService를 구성했다. 이 접근 방식으로 개발자들은 코드에 어노테이션만 추가하면 자동으로 시스템에 등록되어 관리되는 편리함을 제공할 수 있었다.
+또한 클래스 로더 계층 구조를 고려하여 애플리케이션의 모든 패키지를 스캔하는 재귀적 알고리즘을 구현했고, 성능 최적화를 위해 스캔 대상 패키지를 설정할 수 있는 필터링 메커니즘도 추가했다. 이렇게 수집된 Feature Flag 정보는 ConcurrentHashMap을 사용해 스레드 안전하게 관리했으며, 주기적으로 백엔드 서버와 동기화되도록 ScheduledExecutorService를 구성했다.
+
+주기적 업데이트 방식을 선택한 것도 신중한 고려 끝에 내린 결정이었다. WebSocket(양방향 실시간 통신)이나 Server-Sent Events(서버에서 클라이언트로의 단방향 실시간 통신)를 통한 실시간 업데이트도 고려했지만, 연결 유지에 따른 서버 부하와 네트워크 비용이 우려되어 채택하지 않았다. WebSocket은 실시간 채팅처럼 양방향 통신이 필요한 경우에 적합하고, Server-Sent Events는 실시간 알림처럼 서버에서 클라이언트로의 푸시 알림이 필요한 경우에 적합하다. 실시간 업데이트 대신 주기적 업데이트를 선택한 이유는 다음과 같다:
+
+1. **서버 부하 감소**: 수많은 클라이언트의 실시간 연결 대신 주기적 업데이트를 통해 서버 리소스를 효율적으로 관리할 수 있다. 특히 수천 개의 서비스 인스턴스가 동시에 연결을 유지하는 상황을 피할 수 있었다.
+
+2. **네트워크 효율성**: 여러 변경사항을 모아서 배치로 처리함으로써 네트워크 트래픽을 최적화할 수 있다. 실시간 전파는 각각의 작은 변경에도 즉시 통신이 발생하는 반면, 주기적 업데이트는 여러 변경을 한 번에 처리할 수 있다.
+
+3. **장애 복원력**: 일시적인 네트워크 문제나 서버 장애 시에도 다음 주기에 자연스럽게 복구된다. 실시간 연결 방식은 연결 끊김 시 즉각적인 재연결 로직이 필요하지만, 주기적 업데이트는 이러한 복잡성을 피할 수 있다.
+
+4. **구현 단순성**: 실시간 업데이트는 연결 관리, 재시도 로직, 장애 복구 등 복잡한 구현이 필요한 반면, 주기적 업데이트는 단순한 HTTP 요청만으로 구현이 가능하다.
+
+5. **캐시 활용**: 업데이트 주기 사이에는 로컬 캐시를 활용하여 빠른 응답시간을 보장할 수 있다. 대부분의 Flag 값은 자주 변경되지 않는다는 점을 고려할 때, 이는 실용적인 접근이었다.
+
+이러한 설계를 통해 개발자들은 코드에 어노테이션만 추가하면 자동으로 시스템에 등록되어 관리되는 편리함을 제공할 수 있었다. XML 기반 설정이나 프로그래밍 방식의 등록도 고려했지만, 코드와 설정이 분리되어 관리가 어려워질 수 있다는 단점 때문에 어노테이션 방식을 선택했다. 특히 LRU 캐시를 도입한 것은 시스템의 성능을 크게 향상시켰는데, Redis나 Memcached 같은 외부 캐시 시스템도 검토했지만 추가적인 인프라 관리 부담을 줄이기 위해 인메모리 캐시로 결정했다. 이는 다음과 같은 이점을 가져왔다:
 
 ### 3.3 싱글톤 패턴과 스레드 안전성 확보
 
@@ -93,7 +94,7 @@ Feature Flag Manager는 싱글톤 패턴으로 구현하여 애플리케이션 �
 
 4. **중앙화된 로깅과 모니터링**: 모든 Flag 조회와 변경 이벤트를 단일 지점에서 추적하고 로깅함으로써 디버깅과 모니터링이 용이해진다.
 
-특히 마이크로서비스 환경에서는 각 서비스 인스턴스마다 Feature Flag Manager가 하나씩만 존재하도록 하는 것이 중요했다. 여러 인스턴스가 동시에 백엔드 서버에 연결하여 Flag 값을 업데이트하는 상황을 방지하고, 메모리 사용량을 최적화할 수 있었다.
+특히 마이크로서비스 환경에서는 각 서비스 인스턴스마다 Feature Flag Manager가 하나씩만 존재하도록 하는 것이 중요했다. Spring의 ApplicationContext를 통한 싱글톤 관리나 Enum을 통한 싱글톤 구현도 고려했지만, 프레임워크 의존성 제거와 더 세밀한 초기화 제어를 위해 전통적인 싱글톤 패턴을 선택했다.
 
 ```java
 public class FeatureFlagManager {
@@ -132,7 +133,7 @@ public class FeatureFlagManager {
 
 4. **원자적 연산 지원**: `ConcurrentHashMap`은 `putIfAbsent`, `computeIfAbsent` 등의 원자적 연산을 제공하여 락 없이도 안전한 업데이트가 가능하다.
 
-사실 `ConcurrentHashMap`은 이 프로젝트를 통해 처음 알게 된 개념이었다. 동시성 문제를 해결하기 위해 자료구조를 찾아보던 중 발견했는데, 기존의 `HashMap`과 달리 스레드 안전성을 보장하면서도 `Collections.synchronizedMap()`보다 훨씬 뛰어난 성능을 제공한다는 점이 인상적이었다. 
+사실 `ConcurrentHashMap`은 이 프로젝트를 통해 처음 알게 된 개념이었다. 처음에는 synchronized 키워드나 ReentrantReadWriteLock을 사용하는 방법을 고려했지만, 성능 테스트 결과 읽기 작업이 많은 우리 시스템에서는 ConcurrentHashMap이 월등히 좋은 성능을 보여주었다.
 
 `ConcurrentHashMap`의 주요 특징을 요약하자면:
 
@@ -149,14 +150,6 @@ public class FeatureFlagManager {
 ### 4.1 코어 SDK: Java 8 (Vanilla Java)
 Java 8을 선택한 이유는 회사의 기존 코드베이스와의 호환성도 있었지만, 더 중요한 것은 SDK의 확장성과 유지보수성이었다. 프레임워크 의존성이 가져올 수 있는 문제점을 고민했다. Spring과 같은 프레임워크를 사용할 경우 버전 충돌이 발생할 수 있고, 사용자들이 SDK를 도입할 때 추가적인 설정이 필요해질 수 있다고 판단했다. 순수 Java만으로 구현함으로써 어떤 환경에서도 쉽게 통합될 수 있는 유연성을 확보했고, 이는 실제로 레거시 시스템에서도 문제없이 작동하는 결과로 이어졌다. 특히 Reflection API를 활용한 어노테이션 처리 부분에서는 외부 라이브러리 없이 직접 구현하는 과정이 도전적이었지만, 이를 통해 Java의 메타프로그래밍 기능에 대한 이해도를 크게 높일 수 있었다.
 
-<!-- 
-메타프로그래밍(Metaprogramming)이란 코드가 다른 코드를 생성하거나 조작하는 프로그래밍 기법을 말합니다. 
-즉, 프로그램이 자기 자신이나 다른 프로그램의 구조와 동작을 분석하고 수정할 수 있게 해주는 기술입니다.
-Java에서는 Reflection API가 대표적인 메타프로그래밍 도구로, 런타임에 클래스, 메서드, 필드 등의 
-정보를 검사하고 조작할 수 있게 해줍니다. 이를 통해 코드를 직접 작성하지 않고도 동적으로 
-프로그램의 동작을 제어할 수 있습니다.
--->
-
 ### 4.2 인프라: Kubernetes on AWS EKS
 Feature Flag 시스템을 위한 별도의 인프라를 구축하지 않고, 회사에 이미 구축되어 있던 실험 분기 API에 새로운 엔드포인트를 추가하는 방식으로 개발했다. 이 접근 방식은 빠른 개발과 배포를 가능하게 했지만, 지금 돌이켜보면 독립적인 서비스로 분리했어야 했다는 아쉬움이 남는다. 기존 API에 기능을 추가하면서 Flag 값 변경이 모든 클라이언트에 빠르게 전파되어야 한다는 요구사항을 충족시키기 위해 캐싱 전략과 업데이트 메커니즘을 최적화했다. 이 과정에서 API 설계와 확장성에 대한 중요한 교훈을 얻었으며, 향후에는 처음부터 독립적인 마이크로서비스로 설계하여 Feature Flag 시스템만의 특성에 맞게 최적화된 인프라를 구축하는 것이 더 나은 선택이었을 것이다.
 
@@ -164,7 +157,7 @@ Feature Flag 시스템을 위한 별도의 인프라를 구축하지 않고, 회
 배포 과정에서 가장 큰 고민은 빌드 시간 단축과 안정적인 배포 파이프라인 구축이었다. 기존 Docker 기반 배포에서는 매번 전체 이미지를 다시 빌드하는 비효율이 있었고, 이로 인해 작은 코드 변경에도 배포 시간이 길어지는 문제가 있었다. Jib을 도입함으로써 변경된 클래스 파일만 효율적으로 업데이트하는 방식으로 빌드 시간을 크게 단축할 수 있었다. 또한 Jenkins 파이프라인을 구성하면서 단순 자동화를 넘어 각 단계별 검증 과정을 추가했다. 특히 단위 테스트를 실행하고, 코드 커버리지가 일정 수준 이상일 때만 배포가 진행되도록 설정했다. 이 과정에서 CI/CD 파이프라인의 중요성과 테스트 자동화의 가치를 실감할 수 있었다.
 
 ### 4.4 데이터 저장소: AWS DynamoDB
-데이터 저장소 선택은 Feature Flag 시스템의 성능과 직결되는 중요한 결정이었다. 실험 플랫폼이 SQL과 DynamoDB를 모두 사용하고 있어 어떤 저장소를 선택할지 고민했다. 조사 결과, Feature Flag의 특성상 읽기 작업이 압도적으로 많고 일관된 응답 시간이 중요하다는 점에서 DynamoDB가 더 적합하다고 판단했다. DynamoDB는 읽기 작업에 최적화된 구조를 가지고 있으며, 밀리초 단위의 일관된 응답 시간과 자동 스케일링 기능을 제공한다. 특히 Flag 값을 조회하는 API는 서비스의 핵심 로직 실행 전에 호출되므로, 낮은 지연 시간이 필수적이었기에 DynamoDB를 선택했다.
+데이터 저장소 선택에서 가장 큰 고민은 SQL과 NoSQL 중 어떤 것을 사용할지였다. SQL은 스키마 변경이 어렵고 확장성이 제한적이지만 데이터 일관성과 트랜잭션 지원이 강점이었다. NoSQL은 유연한 스키마와 수평적 확장이 용이하지만 강력한 일관성 보장이 어려웠다. 결국 NoSQL 중에서도 DynamoDB를 선택했는데, 이는 회사 인프라팀에서 이미 DynamoDB를 지원하고 있었기 때문이다. 이를 통해 운영 부담을 크게 줄일 수 있었고, 특히 Flag 값 조회 API가 서비스의 핵심 로직 실행 전에 호출되는 만큼 안정적인 운영이 가능했다.
 
 코드 내에서 DynamoDB를 연결하고, 특히 unit test에서 local DynamoDB로 테스트 환경 구축하는게 꽤 어려웠지만, 이 과정에서 많은 것을 배울 수 있었다. (이 부분은 feature flag 자체가 아니라, 실험 플랫폼인 admin 페이지와 연결된 API에서 구현한 것이다.) AWS SDK를 사용해 DynamoDB 클라이언트를 구성하고, 테스트 환경에서는 DynamoDBLocal 라이브러리를 활용해 인메모리 데이터베이스를 구축했다. 특히 테스트 코드에서 DynamoDB 테이블을 자동으로 생성하고 삭제하는 과정을 JUnit의 @Before, @After 어노테이션을 활용해 구현했는데, 이 부분이 가장 까다로웠다. 테스트 환경에서 실제 AWS 리소스를 사용하지 않고도 DynamoDB 기능을 테스트할 수 있게 된 것은 큰 성과였다.
 
@@ -225,18 +218,21 @@ Feature Flag 시스템 개발 과정에서 가장 큰 아쉬움은 회사 구조
 이 시스템이 단순히 기능을 켜고 끄는 도구를 넘어, 전사적 데이터 기반 의사결정의 핵심 인프라로 자리매김하는 모습을 기대해본다. 로깅 시스템과 트래픽 세그먼테이션 같은 기능이 추가된다면, 이 Feature Flag 시스템은 훨씬 더 강력하고 가치 있는 도구로 발전할 수 있을 것이다.
 
 ## 9. 용어 설명
-- **어노테이션(Annotation)**: 자바 코드에 메타데이터를 추가하는 방법으로, 컴파일러나 런타임에 특별한 처리를 위한 지시사항 제공
-- **서킷 브레이커 패턴(Circuit Breaker Pattern)**: 장애 발생 후 서비스 호출을 일시적으로 중단하고 대체 로직을 실행함으로써 연쇄적인 장애 방지하는 설계 패턴
+
+- **Annotation(어노테이션)**: 자바 코드에 메타데이터를 추가하는 방법으로, 컴파일러나 런타임에 특별한 처리를 위한 지시사항 제공
+- **Circuit Breaker Pattern(서킷 브레이커 패턴)**: 장애 발생 후 서비스 호출을 일시적으로 중단하고 대체 로직을 실행함으로써 연쇄적인 장애 방지하는 설계 패턴
 - **ConcurrentHashMap**: 세그먼트 수준의 잠금을 사용하여 동시성 성능을 최적화하는 스레드 안전한 HashMap 구현체
-- **인메모리 데이터베이스(In-memory Database)**: 모든 데이터를 디스크가 아닌 주 메모리(RAM)에 저장하여 더 빠른 응답 시간을 제공하는 데이터베이스 시스템
-- **인스턴스 필드(Instance Field)**: 클래스의 각 인스턴스(객체)마다 별도로 존재하는 변수로, 객체가 생성될 때 메모리에 할당
-- **자바 리플렉션(Java Reflection)**: 런타임에 클래스, 메서드, 필드를 검사하고 조작할 수 있게 해주는 자바 API
-- **젠킨스(Jenkins)**: 지속적 통합 및 배포(CI/CD)를 지원하는 오픈소스 자동화 서버
-- **락(Lock)**: 다중 스레드 환경에서 공유 자원에 대한 접근을 제어하는 동기화 메커니즘
-- **메타프로그래밍(Metaprogramming)**: 코드가 다른 코드를 생성하거나 조작할 수 있게 하는 프로그래밍 기법으로, 프로그램이 자체 구조와 동작을 분석하고 수정 가능
-- **마이크로서비스(Microservice)**: 대규모 애플리케이션을 작고 독립적인 서비스 모음으로 개발하는 아키텍처 스타일
+- **In-memory Database(인메모리 데이터베이스)**: 모든 데이터를 디스크가 아닌 주 메모리(RAM)에 저장하여 더 빠른 응답 시간을 제공하는 데이터베이스 시스템
+- **Instance Field(인스턴스 필드)**: 클래스의 각 인스턴스(객체)마다 별도로 존재하는 변수로, 객체가 생성될 때 메모리에 할당
+- **Java Reflection(자바 리플렉션)**: 런타임에 클래스, 메서드, 필드를 검사하고 조작할 수 있게 해주는 자바 API
+- **Jenkins(젠킨스)**: 지속적 통합 및 배포(CI/CD)를 지원하는 오픈소스 자동화 서버
+- **Lock(락)**: 다중 스레드 환경에서 공유 자원에 대한 접근을 제어하는 동기화 메커니즘
+- **Metaprogramming(메타프로그래밍)**: 코드가 다른 코드를 생성하거나 조작할 수 있게 하는 프로그래밍 기법으로, 프로그램이 자체 구조와 동작을 분석하고 수정 가능
+- **Microservice(마이크로서비스)**: 대규모 애플리케이션을 작고 독립적인 서비스 모음으로 개발하는 아키텍처 스타일
 - **ScheduledExecutorService**: 지정된 시간 간격으로 백그라운드 스레드에서 주기적인 작업 실행을 관리하는 자바 서비스
-- **싱글톤 패턴(Singleton Pattern)**: 애플리케이션 전체에서 클래스의 인스턴스가 하나만 존재하도록 보장하는 설계 패턴
-- **정적 필드(Static Field)**: 클래스의 모든 인스턴스 간에 공유되는 변수로, 클래스가 로드될 때 메모리에 한 번만 할당
+- **Server-Sent Events(SSE)**: 서버에서 클라이언트로 단방향 실시간 데이터를 전송할 수 있는 HTTP 기반 기술로, 실시간 알림이나 업데이트에 적합
+- **Singleton Pattern(싱글톤 패턴)**: 애플리케이션 전체에서 클래스의 인스턴스가 하나만 존재하도록 보장하는 설계 패턴
+- **Static Field(정적 필드)**: 클래스의 모든 인스턴스 간에 공유되는 변수로, 클래스가 로드될 때 메모리에 한 번만 할당
 - **SynchronizedMap**: Collections 클래스에서 제공하는 메서드로, 일반 Map을 동기화된 Map으로 변환하지만 모든 작업에 단일 잠금을 사용하여 성능 제한
 - **Volatile**: 다중 스레드 환경에서 변수의 가시성을 보장하기 위해 주 메모리에 직접 읽고 쓰도록 하는 자바 키워드
+- **WebSocket**: HTTP 기반의 양방향 실시간 통신 프로토콜로, 서버와 클라이언트 간 지속적인 연결을 유지하며 실시간 데이터 교환을 가능하게 하는 기술
