@@ -15,15 +15,20 @@
         useMaxWidth: true,
         showSequenceNumbers: false,
         wrap: true,
-        width: 600,
-        height: 400,
-        actorMargin: 30,
-        boxMargin: 8,
-        messageMargin: 25,
+        width: 500,
+        height: 300,
+        actorMargin: 50,
+        boxMargin: 5,
+        messageMargin: 20,
         mirrorActors: false,
-        bottomMarginAdj: 10,
-        noteMargin: 10,
-        messageAlign: 'center'
+        bottomMarginAdj: 5,
+        noteMargin: 5,
+        messageAlign: 'center',
+        diagramMarginX: 20,
+        diagramMarginY: 10,
+        boxTextMargin: 3,
+        activationWidth: 8,
+        fontSize: 12
       },
       gantt: {
         useMaxWidth: true,
@@ -54,11 +59,11 @@
 <style>
 .mermaid {
   width: 100%;
-  max-width: 900px;
-  margin: 30px auto;
+  max-width: 800px;
+  margin: 20px auto;
   text-align: center;
   background-color: white;
-  padding: 15px;
+  padding: 10px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -66,14 +71,45 @@
 .mermaid svg {
   max-width: 100%;
   height: auto !important;
-  font-size: 14px;
+  font-size: 12px;
+}
+
+.mermaid .actor {
+  fill: #f8f9fa !important;
+  stroke: #dee2e6 !important;
+  stroke-width: 1px !important;
+}
+
+.mermaid .messageText {
+  font-size: 11px !important;
+  stroke: none !important;
+}
+
+.mermaid line, .mermaid .messageLine0 {
+  stroke: #666 !important;
+  stroke-width: 1px !important;
+}
+
+.mermaid .activation0 {
+  fill: #f8f9fa !important;
+  stroke: #dee2e6 !important;
+}
+
+.mermaid .note {
+  fill: #fff3cd !important;
+  stroke: #ffeeba !important;
+  stroke-width: 1px !important;
 }
 
 @media screen and (max-width: 767px) {
   .mermaid {
-    padding: 10px;
-    margin: 15px auto;
-    font-size: 12px;
+    padding: 5px;
+    margin: 10px auto;
+    font-size: 10px;
+  }
+  
+  .mermaid .messageText {
+    font-size: 10px !important;
   }
 }
 </style>
