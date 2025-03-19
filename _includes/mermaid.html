@@ -15,12 +15,15 @@
         useMaxWidth: true,
         showSequenceNumbers: false,
         wrap: true,
-        width: 800,
-        height: 600,
-        actorMargin: 50,
-        boxMargin: 10,
-        messageMargin: 35,
-        mirrorActors: true
+        width: 600,
+        height: 400,
+        actorMargin: 30,
+        boxMargin: 8,
+        messageMargin: 25,
+        mirrorActors: false,
+        bottomMarginAdj: 10,
+        noteMargin: 10,
+        messageAlign: 'center'
       },
       gantt: {
         useMaxWidth: true,
@@ -51,11 +54,11 @@
 <style>
 .mermaid {
   width: 100%;
-  max-width: 1200px;
-  margin: 40px auto;
+  max-width: 900px;
+  margin: 30px auto;
   text-align: center;
   background-color: white;
-  padding: 20px;
+  padding: 15px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -63,12 +66,14 @@
 .mermaid svg {
   max-width: 100%;
   height: auto !important;
+  font-size: 14px;
 }
 
 @media screen and (max-width: 767px) {
   .mermaid {
     padding: 10px;
-    margin: 20px auto;
+    margin: 15px auto;
+    font-size: 12px;
   }
 }
 </style>
