@@ -17,6 +17,44 @@ Feature Flag는 코드 수정이나 재배포 없이 특정 기능을 켜거나 
 
 시스템의 데이터 흐름과 주요 컴포넌트 간의 상호작용은 다음 시퀀스 다이어그램과 같다:
 
+<div class="mermaid">
+sequenceDiagram
+    participant Client
+    participant Manager
+    participant API
+    participant Admin
+    participant DB
+    participant Cache
+
+    Client->>Manager: Flags declared via Annotation (Reflection)
+    Manager->>API: Register declared flags (initial execution)
+    API->>DB: Store flag definitions
+    DB-->>API: Acknowledge storage
+    API->>Admin: Send flag registration
+    Admin-->>API: Acknowledge registration
+    API-->>Manager: Respond with registration acknowledgment
+
+    loop Periodic Update
+        Manager->>API: Request latest Flag Treatments
+        API->>DB: Query latest flag values
+        DB-->>API: Return flag data
+        API->>Admin: Fetch latest Treatment values
+        Admin-->>API: Return latest Treatment values
+        API-->>Manager: Respond with latest Flag values
+        Manager->>Cache: Update cache
+    end
+
+    Client->>Manager: Request Flag value
+    Manager->>Cache: Retrieve cached Flag
+    Cache-->>Manager: Return cached value
+    Manager-->>Client: Provide Flag value
+
+    Note over Admin,DB: Admin changes are persisted to DynamoDB
+    Admin->>API: Update flag value
+    API->>DB: Store updated value
+    DB-->>API: Acknowledge update
+</div>
+
 아키텍처 설계 시 중앙집중식과 분산식 접근법을 비교했다. 중앙집중식은 모든 Flag 결정을 중앙 서버에서 처리하는 방식으로, 즉각적인 업데이트와 일관된 제어가 가능하지만 네트워크 지연과 의존성이 증가한다. 분산식은 각 클라이언트가 로컬에서 결정을 내리는 방식으로, 성능은 좋지만 상태 동기화가 어렵다.
 
 최종적으로 하이브리드 접근법을 채택했다. 클라이언트는 로컬에서 Flag 결정을 처리하지만 주기적으로 중앙 서버와 동기화하여 분산 시스템의 성능 이점과 중앙 관리의 일관성을 균형 있게 조합했다. 이 선택은 특히 네트워크 장애 시에도 기본값으로 작동하는 견고한 시스템을 구축하는 데 중요했다.
