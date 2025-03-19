@@ -16,11 +16,8 @@ Feature Flag는 코드 수정이나 재배포 없이 특정 기능을 켜거나 
 
 시스템의 데이터 흐름과 주요 컴포넌트 간의 상호작용은 다음 시퀀스 다이어그램과 같다:
 
-{% raw %}
+
 ```mermaid
----
-title: Feature Flag 시스템 데이터 흐름
----
 sequenceDiagram
     participant Client as 클라이언트
     participant Manager as Flag Manager
@@ -60,7 +57,6 @@ sequenceDiagram
     API->>DB: 변경값 저장
     DB-->>API: 저장 완료
 ```
-{% endraw %}
 
 아키텍처 설계 시 중앙집중식과 분산식 접근법을 비교했다. 중앙집중식은 모든 Flag 결정을 중앙 서버에서 처리하는 방식으로, 즉각적인 업데이트와 일관된 제어가 가능하지만 네트워크 지연과 의존성이 증가한다. 분산식은 각 클라이언트가 로컬에서 결정을 내리는 방식으로, 성능은 좋지만 상태 동기화가 어렵다.
 

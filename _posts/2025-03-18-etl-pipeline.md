@@ -93,33 +93,32 @@ mermaid: true
 
 - **Parquet (데이터 저장 형식)**: 데이터를 효율적으로 압축하고 빠르게 읽을 수 있는 파일 형식으로, 데이터의 구조 정보도 함께 저장하여 일관성을 유지한다.
 
-<div class="mermaid">
+```mermaid
 flowchart LR
-    classDef storage fill:#f9f7ed,stroke:#d4b483,stroke-width:2px
-    classDef process fill:#e1f0fa,stroke:#4a6fa5,stroke-width:2px
-    classDef data fill:#ebf5ee,stroke:#58a4b0,stroke-width:2px
-    
-    S3["AWS S3<br><small>데이터 저장소</small>"]:::storage
-    DB["Databricks<br><small>처리 환경</small>"]:::process
-    PS["PySpark<br><small>데이터 처리</small>"]:::process
-    ML["ML 모델<br><small>가격 최적화</small>"]:::data
-    
+    S3[("AWS S3\n저장소")]
+    DB["Databricks\n처리 환경"]
+    PS["PySpark\n처리"]
+    ML["ML 모델"]
+
     S3 --> |"원본 데이터"| DB
     DB --> |"처리"| PS
     PS --> |"변환된 데이터"| S3
     S3 --> |"학습 데이터"| ML
-    
-    style S3 font-size:18px,font-weight:bold
-    style DB font-size:18px,font-weight:bold
-    style PS font-size:18px,font-weight:bold
-    style ML font-size:18px,font-weight:bold
+
+    classDef storage fill:#f9f7ed,stroke:#d4b483,stroke-width:2px
+    classDef process fill:#e1f0fa,stroke:#4a6fa5,stroke-width:2px
+    classDef data fill:#ebf5ee,stroke:#58a4b0,stroke-width:2px
+
+    class S3 storage
+    class DB,PS process
+    class ML data
 </div>
 
 *ETL 파이프라인의 주요 구성 요소(AWS S3, Databricks, PySpark, ML 모델) 간의 데이터 흐름과 각 구성 요소별 역할의 시각화.*
 
 ### 2.2 데이터 흐름도
 
-{% raw %}
+
 ```mermaid
 timeline
     title ETL 파이프라인 처리 흐름
@@ -137,7 +136,7 @@ timeline
         분석 : 분석 쿼리 지원
         ML 모델 : 가격 최적화 모델 학습
 ```
-{% endraw %}
+
 
 *ETL 과정의 주요 단계(데이터 수집, 처리, 저장, 활용)의 시간 순서별 표현.*
 
@@ -170,7 +169,7 @@ timeline
 
 데이터 품질을 보장하기 위해 4단계로 구성된 체계적인 검증 과정을 구현한다:
 
-{% raw %}
+
 ```mermaid
 stateDiagram-v2
     [*] --> 기본검증
@@ -215,7 +214,7 @@ stateDiagram-v2
     
     문제대응 --> [*]
 ```
-{% endraw %}
+
 
 *데이터 검증 프로세스의 4단계(기본 검증, 업종 특화 검증, 이상 패턴 감지, 문제 대응)와 각 단계별 세부 작업의 도식화.*
 
@@ -251,7 +250,7 @@ def validate_pricing_pattern(df):
     
     # 주중/주말 구분
     weekday_prices = df[df['day_of_week'].isin([0,1,2,3,4])['price']
-    weekend_prices = df[df['day_of_week'].isin([5,6])]['price']
+    weekend_prices = df[df['day_of_week'].isin([5,6])['price']
     
     # 평균 가격 계산
     avg_weekday = weekday_prices.mean()
@@ -303,7 +302,7 @@ def validate_pricing_pattern(df):
 
 ### 4.2 ETL 파이프라인 운영 프로세스
 
-{% raw %}
+
 ```mermaid
 flowchart LR
     classDef extract fill:#f9d5e5,stroke:#d64161,stroke-width:2px
@@ -331,7 +330,7 @@ flowchart LR
     style 추출단계 fill:#fef6f8,stroke:#d64161,stroke-width:2px
     style 변환단계 fill:#f0f9f6,stroke:#20b2aa,stroke-width:2px
     style 적재단계 fill:#f5f5fd,stroke:#6a5acd,stroke-width:2px
-{% endraw %}
+
 
 *ETL 파이프라인의 주요 단계와 세부 작업의 시각화. 추출(분홍색), 변환(민트색), 적재(보라색) 단계 구분과 세부 작업 내용의 표현.*
 
@@ -354,7 +353,6 @@ ETL 파이프라인의 운영은 크게 세 단계로 나뉘며, 각 단계별�
 
 ### 4.3 개발 로드맵
 
-{% raw %}
 ```mermaid
 gantt
     title ETL 파이프라인 개발 로드맵
@@ -376,7 +374,6 @@ gantt
     section 장기 계획
     ML 파이프라인 연동      :task8, 2025-10-01, 90d
 ```
-{% endraw %}
 
 *ETL 파이프라인 개발의 타임라인 시각화. 2025년 2월부터 시작된 프로젝트의 완료된 작업(회색), 진행 중인 작업(주황색), 단기 계획 및 장기 계획의 시간순 정렬.*
 
