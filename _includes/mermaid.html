@@ -15,20 +15,25 @@
         useMaxWidth: true,
         showSequenceNumbers: false,
         wrap: true,
-        width: 400,
-        height: 600,
-        actorMargin: 40,
-        boxMargin: 8,
-        messageMargin: 30,
+        width: 350,
+        height: 800,
+        actorMargin: 50,
+        boxMargin: 10,
+        messageMargin: 35,
         mirrorActors: false,
-        bottomMarginAdj: 10,
-        noteMargin: 8,
+        bottomMarginAdj: 20,
+        noteMargin: 10,
         messageAlign: 'center',
-        diagramMarginX: 15,
-        diagramMarginY: 20,
-        boxTextMargin: 5,
-        activationWidth: 10,
-        fontSize: 14
+        diagramMarginX: 50,
+        diagramMarginY: 30,
+        boxTextMargin: 8,
+        activationWidth: 15,
+        fontSize: 16,
+        boxMargin: 10,
+        numberFormat: '> %',
+        wrapPadding: 10,
+        actorFontWeight: 600,
+        messageFontWeight: 400
       },
       gantt: {
         useMaxWidth: true,
@@ -59,64 +64,85 @@
 <style>
 .mermaid {
   width: 100%;
-  max-width: 600px;
-  margin: 20px auto;
+  max-width: 700px;
+  margin: 30px auto;
   text-align: center;
   background-color: white;
-  padding: 15px;
+  padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .mermaid svg {
   max-width: 100%;
   height: auto !important;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .mermaid .actor {
-  fill: #f8f9fa !important;
-  stroke: #666 !important;
-  stroke-width: 1.5px !important;
-}
-
-.mermaid .messageText {
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  stroke: none !important;
-}
-
-.mermaid line, .mermaid .messageLine0 {
-  stroke: #666 !important;
-  stroke-width: 1.5px !important;
+  fill: white !important;
+  stroke: #000 !important;
+  stroke-width: 1px !important;
+  rx: 0 !important;
+  ry: 0 !important;
 }
 
 .mermaid .actor text {
+  font-size: 16px !important;
+  font-weight: normal !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+.mermaid line, .mermaid .messageLine0 {
+  stroke: #000 !important;
+  stroke-width: 1px !important;
+  stroke-dasharray: none !important;
+}
+
+.mermaid .messageText {
   font-size: 14px !important;
-  font-weight: 600 !important;
+  font-weight: normal !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  fill: #000 !important;
+}
+
+.mermaid .loopLine, .mermaid .actor-line {
+  stroke: #666 !important;
+  stroke-width: 1px !important;
+  stroke-dasharray: 4 !important;
 }
 
 .mermaid .activation0 {
-  fill: #f8f9fa !important;
-  stroke: #666 !important;
-  stroke-width: 1.5px !important;
+  fill: white !important;
+  stroke: #000 !important;
+  stroke-width: 1px !important;
 }
 
 .mermaid .note {
-  fill: #fff3cd !important;
-  stroke: #ffd97d !important;
-  stroke-width: 1.5px !important;
+  fill: white !important;
+  stroke: #000 !important;
+  stroke-width: 1px !important;
+  rx: 0 !important;
+  ry: 0 !important;
 }
 
 .mermaid .noteText {
-  font-size: 13px !important;
-  font-weight: 500 !important;
+  font-size: 14px !important;
+  font-weight: normal !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+.mermaid .rect {
+  fill: white !important;
+  stroke: #000 !important;
+  stroke-width: 1px !important;
+  rx: 0 !important;
+  ry: 0 !important;
 }
 
 @media screen and (max-width: 767px) {
   .mermaid {
-    padding: 10px;
-    margin: 15px auto;
+    padding: 15px;
+    margin: 20px auto;
   }
   
   .mermaid .messageText,
@@ -125,7 +151,7 @@
   }
   
   .mermaid .actor text {
-    font-size: 13px !important;
+    font-size: 14px !important;
   }
 }
 </style>
