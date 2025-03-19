@@ -4,7 +4,6 @@ title: "Feature Flag 시스템 설계와 운영 분석"
 date: 2025-03-16 12:00:00 +0900
 categories: [개발, 시스템설계]
 tags: [feature-flag, system-design, architecture]
-mermaid: true
 ---
 ## 1. Feature Flag 시스템 개요
 
@@ -16,35 +15,43 @@ Feature Flag는 코드 수정이나 재배포 없이 특정 기능을 켜거나 
 
 시스템의 데이터 흐름과 주요 컴포넌트 간의 상호작용은 다음 시퀀스 다이어그램과 같다:
 
+<style>
+.mermaid svg {
+  max-width: 20% !important;
+  width: auto !important;
+  height: auto !important;
+}
+</style>
+
 ```mermaid
 sequenceDiagram
-    participant Client as 클라이언트
-    participant Manager as Flag Manager
-    participant API as API 서버
-    participant Admin as Admin UI
-    participant DB as DynamoDB
-    participant Cache as 로컬 캐시
+    participant C as Client
+    participant M as Manager
+    participant A as API Server
+    participant U as Admin UI
+    participant D as DynamoDB
+    participant L as Local Cache
 
-    Note over Client,Cache: 초기화 및 등록 과정
-    Client->>Manager: Flags declared via Annotation (Reflection)
-    Manager->>API: Register declared flags (initial execution)
-    API->>Admin: Send flag registration
-    Admin-->>API: Acknowledge registration
-    API-->>Manager: Respond with registration acknowledgment
+    Note over C,L: 초기화 및 등록
+    C->>M: Flag 선언 (어노테이션)
+    M->>A: Flag 등록 (초기 실행)
+    A->>U: 등록 정보 전달
+    U-->>A: 등록 승인
+    A-->>M: 등록 완료 응답
 
-    Note over Manager,Cache: 주기적 업데이트
-    loop Periodic Update
-        Manager->>API: Request latest Flag Treatments
-        API->>Admin: Fetch latest Treatment values
-        Admin-->>API: Return latest Treatment values
-        API-->>Manager: Respond with latest Flag values
-        Manager->>Cache: Update cache
+    Note over M,L: 주기적 업데이트
+    loop 정기 갱신
+        M->>A: Flag 상태 요청
+        A->>U: 최신 상태 조회
+        U-->>A: 상태 값 반환
+        A-->>M: Flag 값 응답
+        M->>L: 캐시 갱신
     end
 
-    Client->>Manager: Request Flag value
-    Manager->>Cache: Retrieve cached Flag
-    Cache-->>Manager: Return cached value
-    Manager-->>Client: Provide Flag value
+    C->>M: Flag 값 요청
+    M->>L: 캐시 조회
+    L-->>M: 캐시 값 반환
+    M-->>C: Flag 값 제공
 ```
 
 *시스템의 주요 컴포넌트 간 상호작용을 보여주는 시퀀스 다이어그램*
