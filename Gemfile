@@ -15,13 +15,7 @@ group :jekyll_plugins do
   gem "jekyll-seo-tag"
   gem "jekyll-sitemap"
   gem "jekyll-remote-theme"
-  gem 'jekyll-incremental'
-  gem 'jekyll-livereload'
 end
-
-# Fix version conflicts
-gem 'forwardable-extended', '~> 2.6.0'
-gem 'liquid-tag-parser', '~> 1.9.0'
 
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem
 platforms :mingw, :x64_mingw, :mswin, :jruby do

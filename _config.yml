@@ -92,4 +92,4 @@ mermaid: true
 mermaid_version: "10.2.3"  # 최신 버전으로 업데이트 
 
 # 성능 최적화 설정
-incremental: true 
+# incremental: true 
