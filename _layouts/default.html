@@ -128,22 +128,17 @@
   {% endif %}
   
   {% if site.mermaid or page.mermaid %}
-  <script type="text/javascript">
-    var config = {
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@{{ site.mermaid_version }}/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
       startOnLoad: true,
       theme: 'default',
       flowchart: {
-        useMaxWidth: false,
-        htmlLabels: true
+        useMaxWidth: true,
+        htmlLabels: true,
+        curve: 'basis'
       },
       securityLevel: 'loose'
-    };
-    mermaid.initialize(config);
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@{{ site.mermaid_version }}/dist/mermaid.min.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      mermaid.init(undefined, '.language-mermaid');
     });
   </script>
   {% endif %}

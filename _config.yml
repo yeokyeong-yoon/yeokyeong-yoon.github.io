@@ -84,4 +84,4 @@ kramdown:
 
 # Mermaid 설정
 mermaid: true
-mermaid_version: "9.4.3" # 최신 버전 사용 가능 
+mermaid_version: "10.2.3"  # 최신 버전으로 업데이트 
