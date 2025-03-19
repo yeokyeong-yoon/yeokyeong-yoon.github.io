@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Specify Ruby version
-ruby "3.2.7"
+ruby "3.1.4"
 
 # Use GitHub Pages gem for compatibility
 gem "github-pages", group: :jekyll_plugins
