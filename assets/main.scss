@@ -844,4 +844,45 @@ button {
       }
     }
   }
+}
+
+// 마크다운 콘텐츠 스타일링 개선
+.post-content {
+  // 기본 들여쓰기 조정
+  ul, ol {
+    padding-left: 1.2em;
+  }
+  
+  // 중첩된 리스트 들여쓰기
+  ul ul, ul ol, ol ul, ol ol {
+    padding-left: 1em;
+  }
+  
+  // 코드 블록 스타일링
+  pre {
+    margin: 1em -1em;
+    padding: 1em;
+    border-radius: 8px;
+    background: #f8f9fa;
+    overflow-x: auto;
+  }
+  
+  // 테이블 반응형 처리
+  table {
+    width: 100%;
+    overflow-x: auto;
+    display: block;
+    
+    @media (min-width: 768px) {
+      display: table;
+    }
+  }
+  
+  // 이미지 반응형 처리
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1.5em auto;
+  }
 } 
