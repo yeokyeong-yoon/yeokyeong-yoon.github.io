@@ -20,35 +20,30 @@
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script>
-    // Log Firebase initialization
-    window.addEventListener('load', function() {
-      console.log('Window loaded, Firebase available:', typeof firebase !== 'undefined');
-    });
-  </script>
   
   <!-- Highlight.js for syntax highlighting -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
   
-  <!-- Mermaid JS for diagrams -->
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.2.3/dist/mermaid.min.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      mermaid.initialize({
-        startOnLoad: true,
-        theme: 'default',
-        securityLevel: 'loose',
-        flowchart: {
-          useMaxWidth: false,
-          htmlLabels: true
-        }
-      });
-      
-      // Initialize code syntax highlighting
-      document.querySelectorAll('pre code').forEach((el) => {
-        hljs.highlightElement(el);
-      });
+  <!-- Mermaid -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'default',
+      securityLevel: 'loose',
+      flowchart: {
+        useMaxWidth: true,
+        htmlLabels: true,
+        curve: 'basis'
+      },
+      sequence: {
+        useMaxWidth: true,
+        showSequenceNumbers: false,
+        wrap: true,
+        width: 800,
+        height: 600
+      }
     });
   </script>
 </head>
@@ -69,7 +64,6 @@
           </label>
 
           <div class="trigger">
-            <!-- Simplified navigation with just Blog, Tags, and About -->
             <a class="page-link" href="{{ '/blog' | relative_url }}">Blog</a>
             <a class="page-link" href="{{ '/tags' | relative_url }}">Categories & Tags</a>
           </div>
@@ -110,15 +104,5 @@
   {% if jekyll.environment != 'production' %}
   <script src="{{ '/assets/js/counter-debug.js' | relative_url }}"></script>
   {% endif %}
-  
-  <!-- Mermaid 스크립트 -->
-  <script type="module">
-    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10.2.3/dist/mermaid.esm.min.mjs';
-    mermaid.initialize({ 
-      startOnLoad: true,
-      theme: 'default',
-      securityLevel: 'loose'
-    });
-  </script>
 </body>
 </html> 

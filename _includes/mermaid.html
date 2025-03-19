@@ -1,6 +1,6 @@
 <!-- Mermaid configuration and initialization -->
 <script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10.2.3/dist/mermaid.esm.min.mjs';
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.esm.min.mjs';
   
   mermaid.initialize({
     startOnLoad: true,
@@ -16,16 +16,50 @@
       showSequenceNumbers: false,
       wrap: true,
       width: 800,
-      height: 600
+      height: 600,
+      actorMargin: 50,
+      boxMargin: 10,
+      messageMargin: 35,
+      mirrorActors: true
+    },
+    gantt: {
+      useMaxWidth: true,
+      titleTopMargin: 25,
+      barHeight: 20,
+      barGap: 4,
+      topPadding: 50,
+      sidePadding: 50
     }
+  });
+
+  // Wait for the document to be fully loaded
+  document.addEventListener('DOMContentLoaded', function() {
+    // Re-render all Mermaid diagrams
+    mermaid.init(undefined, '.mermaid');
   });
 </script>
 
 <style>
 .mermaid {
+  width: 100%;
+  max-width: 1200px;
+  margin: 40px auto;
+  text-align: center;
   background-color: white;
-  padding: 1em;
+  padding: 20px;
   border-radius: 8px;
-  margin: 1em 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.mermaid svg {
+  max-width: 100%;
+  height: auto !important;
+}
+
+@media screen and (max-width: 767px) {
+  .mermaid {
+    padding: 10px;
+    margin: 20px auto;
+  }
 }
 </style>
