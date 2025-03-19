@@ -1,5 +1,8 @@
 source "https://rubygems.org"
 
+# Specify Ruby version
+ruby "3.1.4"
+
 # Use GitHub Pages gem for compatibility
 gem "github-pages", group: :jekyll_plugins
 
@@ -14,8 +17,12 @@ group :jekyll_plugins do
   gem "jekyll-remote-theme"
   gem 'jekyll-incremental'
   gem 'jekyll-livereload'
-  gem 'jekyll-assets'
+  gem 'jekyll-assets', '~> 3.0.12'
 end
+
+# Fix version conflicts
+gem 'forwardable-extended', '~> 2.6.0'
+gem 'liquid-tag-parser', '~> 1.9.0'
 
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem
 platforms :mingw, :x64_mingw, :mswin, :jruby do
