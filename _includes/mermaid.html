@@ -2,40 +2,48 @@
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.esm.min.mjs';
   
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'default',
-    securityLevel: 'loose',
-    flowchart: {
-      useMaxWidth: true,
-      htmlLabels: true,
-      curve: 'basis'
-    },
-    sequence: {
-      useMaxWidth: true,
-      showSequenceNumbers: false,
-      wrap: true,
-      width: 800,
-      height: 600,
-      actorMargin: 50,
-      boxMargin: 10,
-      messageMargin: 35,
-      mirrorActors: true
-    },
-    gantt: {
-      useMaxWidth: true,
-      titleTopMargin: 25,
-      barHeight: 20,
-      barGap: 4,
-      topPadding: 50,
-      sidePadding: 50
-    }
-  });
-
   // Wait for the document to be fully loaded
   document.addEventListener('DOMContentLoaded', function() {
-    // Re-render all Mermaid diagrams
-    mermaid.init(undefined, '.mermaid');
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'default',
+      securityLevel: 'loose',
+      flowchart: {
+        useMaxWidth: true,
+        htmlLabels: true,
+        curve: 'basis'
+      },
+      sequence: {
+        useMaxWidth: true,
+        showSequenceNumbers: false,
+        wrap: true,
+        width: 800,
+        height: 600,
+        actorMargin: 50,
+        boxMargin: 10,
+        messageMargin: 35,
+        mirrorActors: true
+      },
+      gantt: {
+        useMaxWidth: true,
+        titleTopMargin: 25,
+        barHeight: 20,
+        barGap: 4,
+        topPadding: 50,
+        sidePadding: 50
+      }
+    });
+
+    // Force re-render all Mermaid diagrams
+    document.querySelectorAll('.mermaid').forEach(async (element) => {
+      try {
+        const graphDefinition = element.textContent;
+        const { svg } = await mermaid.render('mermaid-svg-' + Math.random(), graphDefinition);
+        element.innerHTML = svg;
+      } catch (error) {
+        console.error('Error rendering Mermaid diagram:', error);
+      }
+    });
   });
 </script>
 

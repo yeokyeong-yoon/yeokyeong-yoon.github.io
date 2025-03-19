@@ -315,8 +315,8 @@ layout: default
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Initialize code syntax highlighting
-      document.querySelectorAll('pre code').forEach((el) => {
+      // Initialize code syntax highlighting, excluding mermaid code blocks
+      document.querySelectorAll('pre code:not(.language-mermaid)').forEach((el) => {
         hljs.highlightElement(el);
       });
     });
