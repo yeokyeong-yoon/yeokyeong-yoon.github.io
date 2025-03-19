@@ -6,6 +6,97 @@ categories: [개발, 시스템설계]
 tags: [feature-flag, system-design, architecture]
 mermaid: true
 ---
+<style>
+  /* Custom styles to override theme */
+  .post {
+    width: 100%;
+    max-width: 900px;  /* 데스크톱에서의 최대 너비 */
+    margin: 0 auto;
+    padding: 20px;     /* 기본 패딩 */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  
+  // ... existing code ...
+
+  .mermaid {
+    width: 100%;
+    max-width: 800px;  /* 최대 너비 축소 */
+    margin: 20px auto;
+    text-align: center;
+    background-color: white;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    overflow-x: auto;
+  }
+  
+  .mermaid svg {
+    width: 100% !important;
+    max-width: 700px !important;  /* SVG 최대 너비 축소 */
+    height: auto !important;
+  }
+
+  /* 모바일 최적화 */
+  @media screen and (max-width: 767px) {
+    .post {
+      padding: 15px 10px;
+    }
+    
+    .mermaid {
+      padding: 5px;
+      margin: 10px auto;
+      max-width: 100%;
+    }
+    
+    .mermaid svg {
+      max-width: 100% !important;
+    }
+  }
+</style>
+
+<!-- Mermaid configuration and initialization -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'default',
+      securityLevel: 'loose',
+      sequence: {
+        diagramMarginX: 10,     // 좌우 여백 축소
+        diagramMarginY: 10,     // 상하 여백 약간 증가
+        actorMargin: 50,        // 액터 간 여백 증가
+        messageMargin: 35,      // 메시지 간 여백 증가
+        boxMargin: 10,          // 박스 여백 증가
+        noteMargin: 10,         // 노트 여백 증가
+        width: 500,             // 기본 너비 더 축소
+        height: 600,            // 높이 명시적 설정
+        useMaxWidth: true,
+        wrap: true,
+        mirrorActors: false,    // 하단 액터 미러링 비활성화로 세로 공간 확보
+        bottomMarginAdj: 5,     // 하단 여백 조정
+        boxTextMargin: 8,       // 박스 텍스트 여백 증가
+        messageAlign: 'center', // 메시지 중앙 정렬
+        fontSize: 12,           // 기본 폰트 크기 약간 증가
+        actorFontSize: 14,      // 액터 폰트 크기 증가
+        noteFontSize: 12,       // 노트 폰트 크기 증가
+        messageFontSize: 12,    // 메시지 폰트 크기 증가
+        actorFontWeight: 'bold' // 액터 텍스트 굵게
+      }
+    });
+
+    // Initialize all mermaid diagrams
+    document.querySelectorAll('.language-mermaid').forEach(function(element) {
+      const diagram = document.createElement('div');
+      diagram.classList.add('mermaid');
+      diagram.textContent = element.textContent;
+      element.parentElement.replaceWith(diagram);
+    });
+
+    mermaid.init();
+  });
+</script>
+
 ## 1. Feature Flag 시스템 개요
 
 Feature Flag는 코드 수정이나 재배포 없이 특정 기능을 켜거나 끌 수 있는 기법으로, A/B 테스트, 점진적 기능 출시, 긴급 롤백 상황에서 활용되었다. 인턴으로 입사했을 당시, 회사는 단순한 롤아웃/롤백 작업에도 이전 버전 재배포나 새로운 실험 생성이 필요했다. 이 문제를 해결하기 위해 Java 기반의 Feature Flag SDK를 개발했다.
