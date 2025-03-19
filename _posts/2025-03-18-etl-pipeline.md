@@ -330,7 +330,7 @@ flowchart LR
     style 추출단계 fill:#fef6f8,stroke:#d64161,stroke-width:2px
     style 변환단계 fill:#f0f9f6,stroke:#20b2aa,stroke-width:2px
     style 적재단계 fill:#f5f5fd,stroke:#6a5acd,stroke-width:2px
-
+```
 
 *ETL 파이프라인의 주요 단계와 세부 작업의 시각화. 추출(분홍색), 변환(민트색), 적재(보라색) 단계 구분과 세부 작업 내용의 표현.*
 
