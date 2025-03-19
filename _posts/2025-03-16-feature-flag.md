@@ -65,32 +65,31 @@ mermaid: true
     mermaid.initialize({
       startOnLoad: true,
       theme: 'default',
-      securityLevel: 'loose',
       sequence: {
-        diagramMarginX: 2,
-        diagramMarginY: 2,
-        actorMargin: 10,        // 더 작게 조정
-        messageMargin: 15,
+        diagramMarginX: 1,
+        diagramMarginY: 1,
+        actorMargin: 5,           // 액터 간 마진 감소
+        messageMargin: 10,
         boxMargin: 1,
         noteMargin: 1,
         boxTextMargin: 1,
-        width: 250,            // 더 작은 너비
-        height: 250,           // 더 작은 높이
+        width: 200,
+        height: 180,              // 전체 높이 감소
         useMaxWidth: true,
         wrap: true,
-        mirrorActors: false,
-        bottomMarginAdj: 1,
+        mirrorActors: true,
+        bottomMarginAdj: 1,       // 하단 여백 감소
         messageAlign: 'center',
         boxPadding: 1,
-        fontSize: 10,          // 더 작은 폰트
-        actorFontSize: 11,
-        noteFontSize: 10,
-        messageFontSize: 10,
+        fontSize: 9,
+        actorFontSize: 9,         // 액터 폰트 크기 감소
+        noteFontSize: 9,
+        messageFontSize: 9,
         actorFontWeight: 'normal',
         noteTextAlignment: 'center',
-        actorFontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-        noteFontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-        messageFontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
+        actorFontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        noteFontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        messageFontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
       }
     });
 
@@ -129,35 +128,41 @@ Feature Flag는 코드 수정이나 재배포 없이 특정 기능을 켜거나 
 
 ```mermaid
 sequenceDiagram
-    participant C as Client
-    participant M as Manager
-    participant A as API Server
-    participant U as Admin UI
-    participant D as DynamoDB
-    participant L as Local Cache
+    participant Client as Client Application
+    participant Manager as Feature Flag Manager
+    participant Cache as LRU Cache
+    participant API as Splitter API
+    participant Admin as Admin Page
+    participant DB as DynamoDB
 
-    Note over C,L: 초기화 및 등록
-    C->>M: Flag 선언 (어노테이션)
-    M->>A: Flag 등록 (초기 실행)
-    A->>U: 등록 정보 전달
-    U-->>A: 등록 승인
-    A-->>M: 등록 완료 응답
+    Client->>Manager: Flags declared via Annotation (Reflection)
+    Manager->>API: Register declared flags (initial execution)
+    API->>DB: Store flag definitions
+    DB-->>API: Acknowledge storage
+    API->>Admin: Send flag registration
+    Admin-->>API: Acknowledge registration
+    API-->>Manager: Respond with registration acknowledgment
 
-    Note over M,L: 주기적 업데이트
-    loop 정기 갱신
-        M->>A: Flag 상태 요청
-        A->>U: 최신 상태 조회
-        U-->>A: 상태 값 반환
-        A-->>M: Flag 값 응답
-        M->>L: 캐시 갱신
+    loop Periodic Update
+        Manager->>API: Request latest Flag Treatments
+        API->>DB: Query latest flag values
+        DB-->>API: Return flag data
+        API->>Admin: Fetch latest Treatment values
+        Admin-->>API: Return latest Treatment values
+        API-->>Manager: Respond with latest Flag values
+        Manager->>Cache: Update cache
     end
 
-    C->>M: Flag 값 요청
-    M->>L: 캐시 조회
-    L-->>M: 캐시 값 반환
-    M-->>C: Flag 값 제공
-```
+    Client->>Manager: Request Flag value
+    Manager->>Cache: Retrieve cached Flag
+    Cache-->>Manager: Return cached value
+    Manager-->>Client: Provide Flag value
 
+    Note over Admin,DB: Admin changes are persisted to DynamoDB
+    Admin->>API: Update flag value
+    API->>DB: Store updated value
+    DB-->>API: Acknowledge update
+```
 *시스템의 주요 컴포넌트 간 상호작용을 보여주는 시퀀스 다이어그램*
 
 아키텍처 설계 시 중앙집중식과 분산식 접근법을 비교했다. 중앙집중식은 모든 Flag 결정을 중앙 서버에서 처리하는 방식으로, 즉각적인 업데이트와 일관된 제어가 가능하지만 네트워크 지연과 의존성이 증가한다. 분산식은 각 클라이언트가 로컬에서 결정을 내리는 방식으로, 성능은 좋지만 상태 동기화가 어렵다.
