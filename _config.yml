@@ -60,6 +60,10 @@ exclude:
   - vendor
   - .gitignore
   - README.md
+  - _site
+  - .sass-cache
+  - .jekyll-cache
+  - .jekyll-metadata
 
 kramdown:
   parse_block_html: true
@@ -81,7 +85,11 @@ kramdown:
   header_offset: 0
   line_width: 80
   indent: 2
+  math_engine: mathjax
 
 # Mermaid 설정
 mermaid: true
 mermaid_version: "10.2.3"  # 최신 버전으로 업데이트 
+
+# 성능 최적화 설정
+incremental: true 

@@ -12,6 +12,9 @@ group :jekyll_plugins do
   gem "jekyll-seo-tag"
   gem "jekyll-sitemap"
   gem "jekyll-remote-theme"
+  gem 'jekyll-incremental'
+  gem 'jekyll-livereload'
+  gem 'jekyll-assets'
 end
 
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem
@@ -24,4 +27,9 @@ end
 gem "wdm", "~> 0.1.1", :platforms => [:mingw, :x64_mingw, :mswin]
 
 # Webrick is no longer bundled with Ruby 3.0+
-gem "webrick", "~> 1.8" 
+gem "webrick", "~> 1.8"
+
+gem "jekyll", "~> 3.9.5"
+gem "jekyll-theme-minima"
+gem "kramdown-parser-gfm"
+gem "faraday-retry" 

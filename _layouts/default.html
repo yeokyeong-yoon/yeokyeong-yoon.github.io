@@ -34,30 +34,14 @@
   <!-- Mermaid JS for diagrams -->
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10.2.3/dist/mermaid.min.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      // Initialize Mermaid with improved settings
+    document.addEventListener('DOMContentLoaded', function() {
       mermaid.initialize({
         startOnLoad: true,
-        theme: 'neutral',
+        theme: 'default',
         securityLevel: 'loose',
-        flowchart: { 
+        flowchart: {
           useMaxWidth: false,
-          curve: 'basis'
-        },
-        sequence: {
-          actorMargin: 80,
-          mirrorActors: false,
-          bottomMarginAdj: 10,
-          noteMargin: 10,
-          messageMargin: 35
-        },
-        themeVariables: {
-          primaryColor: '#A3A3BD',
-          primaryTextColor: '#37352f',
-          primaryBorderColor: '#BEBFCB',
-          lineColor: '#A3A3BD',
-          secondaryColor: '#F7F6F3',
-          tertiaryColor: '#fff'
+          htmlLabels: true
         }
       });
       
@@ -127,20 +111,14 @@
   <script src="{{ '/assets/js/counter-debug.js' | relative_url }}"></script>
   {% endif %}
   
-  {% if site.mermaid or page.mermaid %}
+  <!-- Mermaid 스크립트 -->
   <script type="module">
-    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@{{ site.mermaid_version }}/dist/mermaid.esm.min.mjs';
-    mermaid.initialize({
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10.2.3/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ 
       startOnLoad: true,
       theme: 'default',
-      flowchart: {
-        useMaxWidth: true,
-        htmlLabels: true,
-        curve: 'basis'
-      },
       securityLevel: 'loose'
     });
   </script>
-  {% endif %}
 </body>
 </html> 
