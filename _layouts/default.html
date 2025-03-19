@@ -127,6 +127,25 @@
   <script src="{{ '/assets/js/counter-debug.js' | relative_url }}"></script>
   {% endif %}
   
-  {% include mermaid.html %}
+  {% if site.mermaid or page.mermaid %}
+  <script type="text/javascript">
+    var config = {
+      startOnLoad: true,
+      theme: 'default',
+      flowchart: {
+        useMaxWidth: false,
+        htmlLabels: true
+      },
+      securityLevel: 'loose'
+    };
+    mermaid.initialize(config);
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@{{ site.mermaid_version }}/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      mermaid.init(undefined, '.language-mermaid');
+    });
+  </script>
+  {% endif %}
 </body>
 </html> 

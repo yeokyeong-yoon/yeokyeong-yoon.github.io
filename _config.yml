@@ -80,4 +80,8 @@ kramdown:
   # 들여쓰기 관련 설정
   header_offset: 0
   line_width: 80
-  indent: 2 
+  indent: 2
+
+# Mermaid 설정
+mermaid: true
+mermaid_version: "9.4.3" # 최신 버전 사용 가능 

@@ -885,4 +885,19 @@ button {
     display: block;
     margin: 1.5em auto;
   }
+}
+
+// Mermaid 다이어그램 스타일링
+.mermaid {
+  background-color: white;
+  padding: 1em;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 1.5em 0;
+  
+  // 모바일 최적화
+  @media screen and (max-width: 767px) {
+    font-size: 14px;
+    padding: 0.5em;
+  }
 } 
