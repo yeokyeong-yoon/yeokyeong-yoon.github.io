@@ -119,7 +119,8 @@ flowchart LR
 
 ### 2.2 데이터 흐름도
 
-<div class="mermaid">
+{% raw %}
+```mermaid
 timeline
     title ETL 파이프라인 처리 흐름
     section 데이터 수집
@@ -135,7 +136,8 @@ timeline
     section 데이터 활용
         분석 : 분석 쿼리 지원
         ML 모델 : 가격 최적화 모델 학습
-</div>
+```
+{% endraw %}
 
 *ETL 과정의 주요 단계(데이터 수집, 처리, 저장, 활용)의 시간 순서별 표현.*
 
@@ -168,7 +170,8 @@ timeline
 
 데이터 품질을 보장하기 위해 4단계로 구성된 체계적인 검증 과정을 구현한다:
 
-<div class="mermaid">
+{% raw %}
+```mermaid
 stateDiagram-v2
     [*] --> 기본검증
     
@@ -211,7 +214,8 @@ stateDiagram-v2
     }
     
     문제대응 --> [*]
-</div>
+```
+{% endraw %}
 
 *데이터 검증 프로세스의 4단계(기본 검증, 업종 특화 검증, 이상 패턴 감지, 문제 대응)와 각 단계별 세부 작업의 도식화.*
 
@@ -299,7 +303,8 @@ def validate_pricing_pattern(df):
 
 ### 4.2 ETL 파이프라인 운영 프로세스
 
-<div class="mermaid">
+{% raw %}
+```mermaid
 flowchart LR
     classDef extract fill:#f9d5e5,stroke:#d64161,stroke-width:2px
     classDef transform fill:#dcf2e9,stroke:#20b2aa,stroke-width:2px
@@ -326,7 +331,7 @@ flowchart LR
     style 추출단계 fill:#fef6f8,stroke:#d64161,stroke-width:2px
     style 변환단계 fill:#f0f9f6,stroke:#20b2aa,stroke-width:2px
     style 적재단계 fill:#f5f5fd,stroke:#6a5acd,stroke-width:2px
-</div>
+{% endraw %}
 
 *ETL 파이프라인의 주요 단계와 세부 작업의 시각화. 추출(분홍색), 변환(민트색), 적재(보라색) 단계 구분과 세부 작업 내용의 표현.*
 
@@ -349,7 +354,8 @@ ETL 파이프라인의 운영은 크게 세 단계로 나뉘며, 각 단계별�
 
 ### 4.3 개발 로드맵
 
-<div class="mermaid">
+{% raw %}
+```mermaid
 gantt
     title ETL 파이프라인 개발 로드맵
     dateFormat  YYYY-MM-DD
@@ -369,7 +375,8 @@ gantt
     
     section 장기 계획
     ML 파이프라인 연동      :task8, 2025-10-01, 90d
-</div>
+```
+{% endraw %}
 
 *ETL 파이프라인 개발의 타임라인 시각화. 2025년 2월부터 시작된 프로젝트의 완료된 작업(회색), 진행 중인 작업(주황색), 단기 계획 및 장기 계획의 시간순 정렬.*
 

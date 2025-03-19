@@ -4,9 +4,8 @@ title: "Feature Flag 설계와 운영 기술 분석"
 date: 2025-03-16 12:00:00 +0900
 categories: [개발, 시스템설계]
 tags: [feature-flag, java, aws, kubernetes, dynamodb]
+mermaid: true
 ---
-# Feature Flag 설계와 운영 기술 분석
-
 ## 1. Feature Flag 시스템 개요
 
 Feature Flag는 코드 수정이나 재배포 없이 특정 기능을 켜거나 끌 수 있는 기법으로, A/B 테스트, 점진적 기능 출시, 긴급 롤백 상황에서 활용되었다. 인턴으로 입사했을 당시, 회사는 단순한 롤아웃/롤백 작업에도 이전 버전 재배포나 새로운 실험 생성이 필요했다. 이 문제를 해결하기 위해 Java 기반의 Feature Flag SDK를 개발했다.
@@ -17,6 +16,7 @@ Feature Flag는 코드 수정이나 재배포 없이 특정 기능을 켜거나 
 
 시스템의 데이터 흐름과 주요 컴포넌트 간의 상호작용은 다음 시퀀스 다이어그램과 같다:
 
+{% raw %}
 ```mermaid
 ---
 title: Feature Flag 시스템 데이터 흐름
@@ -60,6 +60,7 @@ sequenceDiagram
     API->>DB: 변경값 저장
     DB-->>API: 저장 완료
 ```
+{% endraw %}
 
 아키텍처 설계 시 중앙집중식과 분산식 접근법을 비교했다. 중앙집중식은 모든 Flag 결정을 중앙 서버에서 처리하는 방식으로, 즉각적인 업데이트와 일관된 제어가 가능하지만 네트워크 지연과 의존성이 증가한다. 분산식은 각 클라이언트가 로컬에서 결정을 내리는 방식으로, 성능은 좋지만 상태 동기화가 어렵다.
 
