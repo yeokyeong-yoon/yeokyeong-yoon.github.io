@@ -81,15 +81,20 @@ mermaid: true
         bottomMarginAdj: 1,       // 하단 여백 감소
         messageAlign: 'center',
         boxPadding: 1,
-        fontSize: 9,
-        actorFontSize: 9,         // 액터 폰트 크기 감소
-        noteFontSize: 9,
-        messageFontSize: 9,
-        actorFontWeight: 'normal',
+        fontSize: 11,                // 기본 폰트 크기 증가
+        actorFontSize: 11,          // 액터 폰트 크기 증가
+        noteFontSize: 11,           // 노트 폰트 크기 증가
+        messageFontSize: 11,        // 메시지 폰트 크기 증가
+        actorFontWeight: 'bold',    // 액터 텍스트 볼드 처리
+        noteFontWeight: 'bold',     // 노트 텍스트 볼드 처리
+        messageFontWeight: 'bold',  // 메시지 텍스트 볼드 처리
         noteTextAlignment: 'center',
         actorFontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         noteFontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        messageFontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+        messageFontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        messageLineWidth: 2,        // 메시지 선 두께 증가
+        actorLineWidth: 2,          // 액터 박스 선 두께 증가
+        noteLineWidth: 2            // 노트 박스 선 두께 증가
       }
     });
 
