@@ -17,7 +17,6 @@ group :jekyll_plugins do
   gem "jekyll-remote-theme"
   gem 'jekyll-incremental'
   gem 'jekyll-livereload'
-  gem 'jekyll-assets', '~> 3.0.12'
 end
 
 # Fix version conflicts
