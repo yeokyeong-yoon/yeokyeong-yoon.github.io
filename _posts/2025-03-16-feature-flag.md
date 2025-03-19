@@ -16,14 +16,6 @@ Feature Flag는 코드 수정이나 재배포 없이 특정 기능을 켜거나 
 
 시스템의 데이터 흐름과 주요 컴포넌트 간의 상호작용은 다음 시퀀스 다이어그램과 같다:
 
-<style>
-.mermaid svg {
-  max-width: 20% !important;
-  width: auto !important;
-  height: auto !important;
-}
-</style>
-
 ```mermaid
 sequenceDiagram
     participant C as Client
