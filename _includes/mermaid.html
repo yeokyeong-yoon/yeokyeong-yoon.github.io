@@ -1,16 +1,31 @@
-{% if page.mermaid %}
-<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    mermaid.initialize({
-      startOnLoad: true,
-      // Try themes at: https://mermaid.live/
-      theme: 'neutral', // Available themes: default, forest, dark, neutral, base
-      flowchart: { 
-        useMaxWidth: true,
-        curve: 'rough'
-      }
-    });
+<!-- Mermaid configuration and initialization -->
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10.2.3/dist/mermaid.esm.min.mjs';
+  
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'default',
+    securityLevel: 'loose',
+    flowchart: {
+      useMaxWidth: true,
+      htmlLabels: true,
+      curve: 'basis'
+    },
+    sequence: {
+      useMaxWidth: true,
+      showSequenceNumbers: false,
+      wrap: true,
+      width: 800,
+      height: 600
+    }
   });
 </script>
-{% endif %}
+
+<style>
+.mermaid {
+  background-color: white;
+  padding: 1em;
+  border-radius: 8px;
+  margin: 1em 0;
+}
+</style>

@@ -1,9 +1,9 @@
 ---
 layout: post
-title: "Feature Flag 설계와 운영 기술 분석"
+title: "Feature Flag 시스템 설계와 운영 분석"
 date: 2025-03-16 12:00:00 +0900
 categories: [개발, 시스템설계]
-tags: [feature-flag, java, aws, kubernetes, dynamodb]
+tags: [feature-flag, system-design, architecture]
 mermaid: true
 ---
 ## 1. Feature Flag 시스템 개요
@@ -15,7 +15,6 @@ Feature Flag는 코드 수정이나 재배포 없이 특정 기능을 켜거나 
 ## 2. 시스템 아키텍처
 
 시스템의 데이터 흐름과 주요 컴포넌트 간의 상호작용은 다음 시퀀스 다이어그램과 같다:
-
 
 ```mermaid
 sequenceDiagram
@@ -31,7 +30,7 @@ sequenceDiagram
     Manager->>API: Flag 정의 등록 (초기 실행)
     API->>DB: Flag 정의 저장
     DB-->>API: 저장 완료
-    API->>Admin: Flag 등록 알림
+    API-->>Admin: Flag 등록 알림
     Admin-->>API: 등록 확인
     API-->>Manager: 등록 완료 응답
 
@@ -40,23 +39,13 @@ sequenceDiagram
         Manager->>API: 최신 Flag 값 요청
         API->>DB: 최신 Flag 조회
         DB-->>API: Flag 데이터 반환
-        API->>Admin: 최신 처리값 조회
+        API-->>Admin: 최신 처리값 조회
         Admin-->>API: 최신값 반환
         API-->>Manager: 최신 Flag 값 응답
-        Manager->>Cache: 캐시 업데이트
     end
-
-    Note over Client,Cache: Flag 값 조회
-    Client->>Manager: Flag 값 요청
-    Manager->>Cache: 캐시된 Flag 조회
-    Cache-->>Manager: 캐시값 반환
-    Manager-->>Client: Flag 값 제공
-
-    Note over Admin,DB: 관리자 변경
-    Admin->>API: Flag 값 업데이트
-    API->>DB: 변경값 저장
-    DB-->>API: 저장 완료
 ```
+
+*시스템의 주요 컴포넌트 간 상호작용을 보여주는 시퀀스 다이어그램*
 
 아키텍처 설계 시 중앙집중식과 분산식 접근법을 비교했다. 중앙집중식은 모든 Flag 결정을 중앙 서버에서 처리하는 방식으로, 즉각적인 업데이트와 일관된 제어가 가능하지만 네트워크 지연과 의존성이 증가한다. 분산식은 각 클라이언트가 로컬에서 결정을 내리는 방식으로, 성능은 좋지만 상태 동기화가 어렵다.
 

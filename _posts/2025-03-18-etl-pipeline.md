@@ -112,12 +112,11 @@ flowchart LR
     class S3 storage
     class DB,PS process
     class ML data
-</div>
+```
 
 *ETL 파이프라인의 주요 구성 요소(AWS S3, Databricks, PySpark, ML 모델) 간의 데이터 흐름과 각 구성 요소별 역할의 시각화.*
 
 ### 2.2 데이터 흐름도
-
 
 ```mermaid
 timeline
@@ -136,7 +135,6 @@ timeline
         분석 : 분석 쿼리 지원
         ML 모델 : 가격 최적화 모델 학습
 ```
-
 
 *ETL 과정의 주요 단계(데이터 수집, 처리, 저장, 활용)의 시간 순서별 표현.*
 
@@ -168,7 +166,6 @@ timeline
 ### 3.2 데이터 검증 프로세스
 
 데이터 품질을 보장하기 위해 4단계로 구성된 체계적인 검증 과정을 구현한다:
-
 
 ```mermaid
 stateDiagram-v2
@@ -214,7 +211,6 @@ stateDiagram-v2
     
     문제대응 --> [*]
 ```
-
 
 *데이터 검증 프로세스의 4단계(기본 검증, 업종 특화 검증, 이상 패턴 감지, 문제 대응)와 각 단계별 세부 작업의 도식화.*
 
@@ -301,7 +297,6 @@ def validate_pricing_pattern(df):
 - **상세한 설명**: 코드 내 주석과 마크다운을 활용한 풍부한 문서화
 
 ### 4.2 ETL 파이프라인 운영 프로세스
-
 
 ```mermaid
 flowchart LR
