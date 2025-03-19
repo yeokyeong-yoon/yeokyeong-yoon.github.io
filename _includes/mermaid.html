@@ -12,25 +12,25 @@
         wrap: true,
         width: 'auto',
         height: 'auto',
-        actorMargin: 50,
-        boxMargin: 8,
-        messageMargin: 35,
+        actorMargin: 40,
+        boxMargin: 6,
+        messageMargin: 30,
         mirrorActors: false,
-        bottomMarginAdj: 20,
-        noteMargin: 10,
+        bottomMarginAdj: 15,
+        noteMargin: 8,
         messageAlign: 'center',
-        diagramMarginX: 30,
-        diagramMarginY: 20,
-        boxTextMargin: 8,
-        activationWidth: 12,
-        fontSize: 14,
-        actorFontSize: 15,
-        noteFontSize: 13,
-        messageFontSize: 13,
-        wrapPadding: 10,
+        diagramMarginX: 20,
+        diagramMarginY: 15,
+        boxTextMargin: 6,
+        activationWidth: 10,
+        fontSize: 13,
+        actorFontSize: 14,
+        noteFontSize: 12,
+        messageFontSize: 12,
+        wrapPadding: 8,
         actorFontWeight: 500,
         messageFontWeight: 400,
-        noteWidth: 150,
+        noteWidth: 120,
         messageAlign: 'center'
       }
     });
@@ -43,7 +43,6 @@
       element.parentElement.replaceWith(diagram);
     });
 
-    // 다이어그램 초기화
     mermaid.init();
   });
 </script>
@@ -52,19 +51,26 @@
 .mermaid {
   width: 100% !important;
   max-width: 100% !important;
-  margin: 30px 0;
+  margin: 2rem auto;
   text-align: center;
   background-color: white;
-  padding: 20px 0;
+  padding: 1rem 0;
   box-sizing: border-box;
   overflow-x: hidden;
+  font-size: 13px;
 }
 
 .mermaid svg {
   width: 100% !important;
-  max-width: 100% !important;
+  max-width: 800px !important;
   height: auto !important;
   display: block;
+  margin: 0 auto;
+}
+
+.mermaid > div {
+  width: 100% !important;
+  max-width: 800px !important;
   margin: 0 auto;
 }
 
@@ -77,7 +83,7 @@
 }
 
 .mermaid .actor text {
-  font-size: 15px !important;
+  font-size: 14px !important;
   font-weight: 500 !important;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
@@ -89,7 +95,7 @@
 }
 
 .mermaid .messageText {
-  font-size: 13px !important;
+  font-size: 12px !important;
   font-weight: 400 !important;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
   fill: #333 !important;
@@ -116,7 +122,7 @@
 }
 
 .mermaid .noteText {
-  font-size: 13px !important;
+  font-size: 12px !important;
   font-weight: 400 !important;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
@@ -129,19 +135,32 @@
   ry: 0 !important;
 }
 
+@media screen and (max-width: 1024px) {
+  .mermaid svg,
+  .mermaid > div {
+    max-width: 700px !important;
+  }
+}
+
 @media screen and (max-width: 767px) {
   .mermaid {
-    padding: 10px 0;
-    margin: 20px 0;
+    padding: 0.5rem 0;
+    margin: 1rem auto;
+    font-size: 11px;
+  }
+  
+  .mermaid svg,
+  .mermaid > div {
+    max-width: 100% !important;
   }
   
   .mermaid .messageText,
   .mermaid .noteText {
-    font-size: 12px !important;
+    font-size: 11px !important;
   }
   
   .mermaid .actor text {
-    font-size: 13px !important;
+    font-size: 12px !important;
   }
 }
 </style>
