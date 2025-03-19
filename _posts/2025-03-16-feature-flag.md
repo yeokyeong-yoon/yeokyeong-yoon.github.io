@@ -26,23 +26,25 @@ sequenceDiagram
     participant Cache as 로컬 캐시
 
     Note over Client,Cache: 초기화 및 등록 과정
-    Client->>Manager: Flags 선언 (어노테이션/리플렉션)
-    Manager->>API: Flag 정의 등록 (초기 실행)
-    API->>DB: Flag 정의 저장
-    DB-->>API: 저장 완료
-    API-->>Admin: Flag 등록 알림
-    Admin-->>API: 등록 확인
-    API-->>Manager: 등록 완료 응답
+    Client->>Manager: Flags declared via Annotation (Reflection)
+    Manager->>API: Register declared flags (initial execution)
+    API->>Admin: Send flag registration
+    Admin-->>API: Acknowledge registration
+    API-->>Manager: Respond with registration acknowledgment
 
     Note over Manager,Cache: 주기적 업데이트
-    loop 정기 갱신
-        Manager->>API: 최신 Flag 값 요청
-        API->>DB: 최신 Flag 조회
-        DB-->>API: Flag 데이터 반환
-        API-->>Admin: 최신 처리값 조회
-        Admin-->>API: 최신값 반환
-        API-->>Manager: 최신 Flag 값 응답
+    loop Periodic Update
+        Manager->>API: Request latest Flag Treatments
+        API->>Admin: Fetch latest Treatment values
+        Admin-->>API: Return latest Treatment values
+        API-->>Manager: Respond with latest Flag values
+        Manager->>Cache: Update cache
     end
+
+    Client->>Manager: Request Flag value
+    Manager->>Cache: Retrieve cached Flag
+    Cache-->>Manager: Return cached value
+    Manager-->>Client: Provide Flag value
 ```
 
 *시스템의 주요 컴포넌트 간 상호작용을 보여주는 시퀀스 다이어그램*
