@@ -1,11 +1,9 @@
 <!-- Mermaid configuration and initialization -->
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.esm.min.mjs';
-  
-  // Wait for the document to be fully loaded
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+<script>
   document.addEventListener('DOMContentLoaded', function() {
     mermaid.initialize({
-      startOnLoad: true,
+      startOnLoad: false,
       theme: 'default',
       securityLevel: 'loose',
       flowchart: {
@@ -34,16 +32,19 @@
       }
     });
 
-    // Force re-render all Mermaid diagrams
-    document.querySelectorAll('.mermaid').forEach(async (element) => {
-      try {
-        const graphDefinition = element.textContent;
-        const { svg } = await mermaid.render('mermaid-svg-' + Math.random(), graphDefinition);
-        element.innerHTML = svg;
-      } catch (error) {
-        console.error('Error rendering Mermaid diagram:', error);
-      }
+    // Initialize all mermaid diagrams
+    document.querySelectorAll('.language-mermaid').forEach(function(element) {
+      // Create a new div for the diagram
+      const diagram = document.createElement('div');
+      diagram.classList.add('mermaid');
+      diagram.textContent = element.textContent;
+      
+      // Replace the pre element with our new div
+      element.parentElement.replaceWith(diagram);
     });
+
+    // Run mermaid
+    mermaid.init();
   });
 </script>
 
