@@ -29,7 +29,14 @@ if (typeof firebase !== 'undefined' && !firebase.apps.length) {
     
     // Initialize Analytics
     if (firebase.analytics) {
-      firebase.analytics();
+      const analytics = firebase.analytics();
+      // Log page view event
+      analytics.logEvent('page_view', {
+        page_title: document.title,
+        page_location: window.location.href,
+        page_path: window.location.pathname
+      });
+      console.log('Analytics page_view event logged');
     }
   } catch (error) {
     console.error("Firebase initialization error:", error);
