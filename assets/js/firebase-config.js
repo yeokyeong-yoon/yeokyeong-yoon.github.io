@@ -1,7 +1,7 @@
 // Firebase configuration
 // Using a more secure approach to load Firebase configuration
 const firebaseConfig = {
-  apiKey: "FIREBASE_API_KEY", // This will be replaced at build time
+  apiKey: "AIzaSyAIsy3C4aRzIBXOvF3HbRjMNPk7FR3a1fZwEXkMI6dEE",
   authDomain: "yeokyeongyy.firebaseapp.com",
   projectId: "yeokyeongyy",
   storageBucket: "yeokyeongyy.firebasestorage.app",
@@ -13,11 +13,7 @@ const firebaseConfig = {
 // Initialize Firebase
 if (typeof firebase !== 'undefined' && !firebase.apps.length) {
   try {
-    // Replace the placeholder with the actual API key
-    // Important: The actual key is "EEd6IMXkEwZf1a3RF7kPNMjRbH3FvOXBIzRa4C3ysAIa"
-    // but we're storing it reversed for security
-    const actualKey = "aISAsy3C4aRzIBXOvF3HbRjMNPk7FR3a1fZwEXkMI6dEE";
-    firebaseConfig.apiKey = actualKey.split('').reverse().join('');
+    // API key is now directly included in the config object for reliability
     
     console.log('Initializing Firebase with config:', {
       ...firebaseConfig,
@@ -33,12 +29,6 @@ if (typeof firebase !== 'undefined' && !firebase.apps.length) {
       
       // Enable analytics data collection
       analytics.setAnalyticsCollectionEnabled(true);
-      
-      // Initialize gtag
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-TP6F1R7FD3');
       
       // Log page view event
       analytics.logEvent('page_view', {
