@@ -30,6 +30,16 @@ if (typeof firebase !== 'undefined' && !firebase.apps.length) {
     // Initialize Analytics
     if (firebase.analytics) {
       const analytics = firebase.analytics();
+      
+      // Enable analytics data collection
+      analytics.setAnalyticsCollectionEnabled(true);
+      
+      // Initialize gtag
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-TP6F1R7FD3');
+      
       // Log page view event
       analytics.logEvent('page_view', {
         page_title: document.title,
