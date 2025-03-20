@@ -1,7 +1,7 @@
 // Firebase configuration
 // Using a more secure approach to load Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAIsy3C4aRzIBXOvF3HbRjMNPk7FR3a1fZwEXkMI6dEE",
+  apiKey: "AIzaSyC4XvOHbMnPNyjR3IbU0fZkNWKExMI6dEE",
   authDomain: "yeokyeongyy.firebaseapp.com",
   projectId: "yeokyeongyy",
   storageBucket: "yeokyeongyy.firebasestorage.app",
