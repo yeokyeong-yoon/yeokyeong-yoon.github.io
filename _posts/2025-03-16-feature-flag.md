@@ -497,7 +497,7 @@ DynamoDB를 선택한 핵심 이유:
 
 특히 Feature Flag 시스템의 데이터 액세스 패턴이 단순하고 예측 가능했기 때문에(주로 키 기반 조회), DynamoDB의 키-값 저장소 모델이 이상적이었다. 복잡한 관계형 쿼리가 거의 필요하지 않았고, 읽기 작업이 압도적으로 많은 워크로드 특성상 DynamoDB의 읽기 확장성과 캐싱 기능이 큰 이점이었다.
 
-코드 내에서 DynamoDB를 연결하고, 특히 unit test에서 local DynamoDB로 테스트 환경 구축하는게 꽤 어려웠지만, 이 과정에서 많은 것을 배울 수 있었다. (이 부분은 feature flag 자체가 아니라, 실험 플랫폼인 admin 페이지와 연결된 API에서 구현한 것이다.) AWS SDK를 사용해 DynamoDB 클라이언트를 구성하고, 테스트 환경에서는 DynamoDBLocal 라이브러리를 활용해 인메모리 데이터베이스를 구축했다. 특히 테스트 코드에서 DynamoDB 테이블을 자동으로 생성하고 삭제하는 과정을 JUnit의 @Before, @After 어노테이션을 활용해 구현했는데, 이 부분이 가장 까다로웠다. 테스트 환경에서 실제 AWS 리소스를 사용하지 않고도 DynamoDB 기능을 테스트할 수 있게 된 것은 큰 성과였다.
+코드 내에서 DynamoDB를 연결하고, 특히 unit test에서 local DynamoDB로 테스트 환경 구축하는게 꽤 어려웠지만, 이 과정에서 많은 것을 배울 수 있었다. (이 부분은 feature flag 자체가 아니라, 실험 플랫폼인 admin 페이지와 연결된 API에서 구현한 것이다.) AWS SDK를 사용해 DynamoDB 클라이언트를 구성하고, 테스트 환경에서는 DynamoDBLocal 라이브러리를 활용해 인메모리 데이터베이스를 구축했다. 특히 테스트 환경에서 실제 AWS 리소스를 사용하지 않고도 DynamoDB 기능을 테스트할 수 있게 된 것은 큰 성과였다.
 
 ## 5. 시스템 활용
 
@@ -839,11 +839,14 @@ graph TD
 
 다음은 Spring Boot Executable JAR에서의 클래스 이름 변환 과정을 보여주는 예시이다:
 
-| 원래 클래스 이름 | Executable JAR에서의 클래스 이름 |
-|-----------------|--------------------------------|
-| com.company.service.SearchService | BOOT-INF.classes.com.company.service.SearchService |
-| com.company.flag.FeatureManager | BOOT-INF.classes.com.company.flag.FeatureManager |
-| org.springframework.core.io.Resource | org.springframework.boot.loader.jar.JarFileEntries |
+**원래 클래스 이름**: `com.company.service.SearchService`  
+**Executable JAR에서의 클래스 이름**: `BOOT-INF.classes.com.company.service.SearchService`
+
+**원래 클래스 이름**: `com.company.flag.FeatureManager`  
+**Executable JAR에서의 클래스 이름**: `BOOT-INF.classes.com.company.flag.FeatureManager`
+
+**원래 클래스 이름**: `org.springframework.core.io.Resource`  
+**Executable JAR에서의 클래스 이름**: `org.springframework.boot.loader.jar.JarFileEntries`
 
 이러한 클래스 이름 변환은 Spring Boot의 LaunchedURLClassLoader가 수행하며, `Class.forName()`이나 패키지 스캔 시 이러한 변환된 이름을 고려하지 않으면 클래스를 찾지 못하게 된다.
 
@@ -1054,7 +1057,7 @@ FeatureFlagManager.getInstance().registerModuleFlags(ServiceFeatureFlags.class);
 
 ## 8. 개선 필요사항 및 기술적 아쉬움
 
-회사 합병/분사 과정에서 팀이 바뀌고 프로젝트가 인수인계 되기로 결정되면서 여러 핵심 기능을 구현하지 못했다. 현재는 기본적인 관리 운영만 담당하고 있으며, 다음과 같은 개선이 필요하다:
+회사 합병/분사 과정에서 팀이 바뀌고 프로젝트가 인수인계 되면서 여러 핵심 기능을 구현하지 못했다. 현재는 기본적인 관리 운영만 담당하고 있으며, 다음과 같은 개선이 필요하다:
 
 1. **분석 및 로깅 시스템 구축**: 현재 Feature Flag 변경에 대한 로깅 기능이 없어 Flag 변경의 영향을 분석할 수 없는 상황이다. 이벤트 기반 알림 시스템(EventListener)과 AWS의 모니터링 서비스(CloudWatch)를 통합하여 변경 이력을 추적하고, 이를 실험 플랫폼과 연동하여 비즈니스 지표에 미치는 영향을 정량적으로 분석할 수 있는 시스템이 필요하다.
 
@@ -1098,36 +1101,89 @@ FeatureFlagManager.getInstance().registerModuleFlags(ServiceFeatureFlags.class);
 
 ## 10. 용어 정리
 
-| 용어 | 설명 |
-|-----|-----|
-| Feature Flag | 코드 변경 없이 기능을 켜고 끌 수 있게 해주는 설정 값. 마치 전등 스위치처럼 언제든 기능을 활성화하거나 비활성화할 수 있다. |
-| Feature Toggle | Feature Flag와 동의어로, 기능을 켜고 끄는 스위치 역할을 한다. |
-| A/B Testing | 두 가지 이상의 변형을 비교하여 더 효과적인 것을 결정하는 실험. 사용자를 A그룹과 B그룹으로 나누어 다른 경험을 제공하고 어떤 것이 더 좋은 결과를 내는지 측정한다. |
-| Canary Release | 새 기능을 일부 사용자에게만 점진적으로 배포하는 방식. 마치 광부들이 유독가스를 감지하기 위해 카나리아 새를 사용했던 것처럼, 일부 사용자를 통해 위험을 먼저 감지한다. |
-| SDK(Software Development Kit) | 특정 소프트웨어를 개발하기 위한 도구 모음. 라이브러리, 문서, 예제 코드 등을 포함한다. |
-| Reflection | Java에서 실행 중인 프로그램이 자신의 구조(클래스, 메서드, 필드 등)를 검사하고 조작할 수 있는 능력. 런타임에 클래스의 내부 구조를 살펴보고 동적으로 사용할 수 있게 해준다. |
-| Java Annotation | 코드에 메타데이터를 추가하는 Java의 기능. `@FeatureFlag`와 같이 '@' 기호로 시작하며, 컴파일러나 실행 환경에 추가 정보를 제공한다. |
-| Static Field | 클래스의 모든 인스턴스가 공유하는 필드. 객체를 생성하지 않고도 접근할 수 있으며, 해당 클래스의 모든 객체에 동일한 값이 적용된다. |
-| Thread-safe | 여러 스레드(동시에 실행되는 작업)가 동시에 접근해도 안전하게 동작하는 코드나 데이터 구조. 경쟁 상태나 데이터 오염 없이 정확한 결과를 보장한다. |
-| JVM(Java Virtual Machine) | Java 코드를 실행하는 가상 머신. Java는 플랫폼 독립적인 바이트코드로 컴파일되고, JVM이 이를 실행 환경에 맞게 해석하여 실행한다. |
-| Method Area | JVM 메모리 영역 중 하나로, 클래스 정보와 static 변수, 상수 등을 저장하는 공간. 모든 스레드가 공유한다. |
-| Heap | JVM 메모리 영역 중 하나로, 객체가 할당되는 영역. 애플리케이션에서 생성하는 모든 객체 인스턴스가 이곳에 저장된다. |
-| ConcurrentHashMap | Java에서 제공하는 멀티스레드 환경에서 안전하게 사용할 수 있는 해시 맵(키-값 저장소) 구현체. 여러 스레드가 동시에 읽고 쓸 때 발생할 수 있는 문제를 방지한다. |
-| Primitive Type | Java의 기본 데이터 타입(int, boolean, double 등). 객체가 아닌 값 자체를 저장하며, 메모리 효율성과 성능 면에서 유리하다. |
-| MVP(Minimum Viable Product) | 최소한의 기능을 갖춘 제품. 핵심 기능만 구현하여 빠르게 출시하고 사용자 피드백을 받아 개선하는 개발 전략이다. |
-| ClassLoader | JVM에서 클래스 파일을 메모리에 로드하는 컴포넌트. 필요할 때 클래스를 동적으로 로드하고 링크하는 역할을 한다. |
-| Executable JAR | 직접 실행 가능한 Java 아카이브 파일. 모든 의존성과 실행에 필요한 메타데이터를 포함하고 있어 별도의 설치 없이 `java -jar` 명령으로 실행할 수 있다. |
-| Spring Boot | Java 기반 애플리케이션 개발을 단순화하는 프레임워크. 복잡한 설정 없이 빠르게 독립 실행형 애플리케이션을 만들 수 있게 해준다. |
-| Node.js | JavaScript를 서버 측에서 실행할 수 있게 해주는 런타임 환경. 웹 서버, CLI 도구, 백엔드 API 등을 JavaScript로 개발할 수 있다. |
-| Isomorphic JavaScript | 서버와 클라이언트에서 동일한 코드로 실행되는 JavaScript. 코드 재사용성을 높이고 일관된 동작을 보장한다. |
-| TypeScript | Microsoft가 개발한 JavaScript의 정적 타입 확장 언어. 컴파일 시점에 타입 검사를 통해 오류를 미리 발견할 수 있다. |
-| REST API | 웹 서비스를 위한 아키텍처 스타일. HTTP 프로토콜의 기본 메서드(GET, POST, PUT, DELETE 등)를 활용하여 리소스를 표현하고 상태를 전송한다. |
-| Circuit Breaker | 장애 확산을 방지하는 소프트웨어 디자인 패턴. 전기 회로의 차단기처럼, 서비스 호출이 계속 실패하면 일정 시간 동안 호출을 차단하여 시스템 과부하를 방지한다. |
-| Progressive Rollout | 새 기능을 점진적으로 더 많은 사용자에게 배포하는 전략. 초기에는 소수의 사용자에게만 제공하고, 안정성이 확인되면 점차 확대한다. |
-| Runtime Control | 프로그램이 실행 중에 동적으로 동작을 변경할 수 있는 기능. 재시작 없이 설정이나 기능을 변경할 수 있다. |
-| Cache Invalidation | 캐시된 데이터를 무효화하는 과정. 원본 데이터가 변경되었을 때 캐시된 데이터도 갱신하거나 제거하여 일관성을 유지한다. |
-| Dynamic Reflection | 애플리케이션 실행 중에 클래스와 메서드 구조를 검사하고 조작하는 기능. 실행 시점에 유연하게 코드 동작을 변경할 수 있다. |
-| Type Safety | 데이터 타입이 올바르게 사용되는지 확인하는 컴파일러 검사. 잘못된 타입 사용으로 인한 오류를 사전에 방지한다. |
+**Feature Flag**
+: 코드 변경 없이 기능을 켜고 끌 수 있게 해주는 설정 값. 마치 전등 스위치처럼 언제든 기능을 활성화하거나 비활성화할 수 있다.
+
+**Feature Toggle**
+: Feature Flag와 동의어로, 기능을 켜고 끄는 스위치 역할을 한다.
+
+**A/B Testing**
+: 두 가지 이상의 변형을 비교하여 더 효과적인 것을 결정하는 실험. 사용자를 A그룹과 B그룹으로 나누어 다른 경험을 제공하고 어떤 것이 더 좋은 결과를 내는지 측정한다.
+
+**Canary Release**
+: 새 기능을 일부 사용자에게만 점진적으로 배포하는 방식. 마치 광부들이 유독가스를 감지하기 위해 카나리아 새를 사용했던 것처럼, 일부 사용자를 통해 위험을 먼저 감지한다.
+
+**SDK(Software Development Kit)**
+: 특정 소프트웨어를 개발하기 위한 도구 모음. 라이브러리, 문서, 예제 코드 등을 포함한다.
+
+**Reflection**
+: Java에서 실행 중인 프로그램이 자신의 구조(클래스, 메서드, 필드 등)를 검사하고 조작할 수 있는 능력. 런타임에 클래스의 내부 구조를 살펴보고 동적으로 사용할 수 있게 해준다.
+
+**Java Annotation**
+: 코드에 메타데이터를 추가하는 Java의 기능. `@FeatureFlag`와 같이 '@' 기호로 시작하며, 컴파일러나 실행 환경에 추가 정보를 제공한다.
+
+**Static Field**
+: 클래스의 모든 인스턴스가 공유하는 필드. 객체를 생성하지 않고도 접근할 수 있으며, 해당 클래스의 모든 객체에 동일한 값이 적용된다.
+
+**Thread-safe**
+: 여러 스레드(동시에 실행되는 작업)가 동시에 접근해도 안전하게 동작하는 코드나 데이터 구조. 경쟁 상태나 데이터 오염 없이 정확한 결과를 보장한다.
+
+**JVM(Java Virtual Machine)**
+: Java 코드를 실행하는 가상 머신. Java는 플랫폼 독립적인 바이트코드로 컴파일되고, JVM이 이를 실행 환경에 맞게 해석하여 실행한다.
+
+**Method Area**
+: JVM 메모리 영역 중 하나로, 클래스 정보와 static 변수, 상수 등을 저장하는 공간. 모든 스레드가 공유한다.
+
+**Heap**
+: JVM 메모리 영역 중 하나로, 객체가 할당되는 영역. 애플리케이션에서 생성하는 모든 객체 인스턴스가 이곳에 저장된다.
+
+**ConcurrentHashMap**
+: Java에서 제공하는 멀티스레드 환경에서 안전하게 사용할 수 있는 해시 맵(키-값 저장소) 구현체. 여러 스레드가 동시에 읽고 쓸 때 발생할 수 있는 문제를 방지한다.
+
+**Primitive Type**
+: Java의 기본 데이터 타입(int, boolean, double 등). 객체가 아닌 값 자체를 저장하며, 메모리 효율성과 성능 면에서 유리하다.
+
+**MVP(Minimum Viable Product)**
+: 최소한의 기능을 갖춘 제품. 핵심 기능만 구현하여 빠르게 출시하고 사용자 피드백을 받아 개선하는 개발 전략이다.
+
+**ClassLoader**
+: JVM에서 클래스 파일을 메모리에 로드하는 컴포넌트. 필요할 때 클래스를 동적으로 로드하고 링크하는 역할을 한다.
+
+**Executable JAR**
+: 직접 실행 가능한 Java 아카이브 파일. 모든 의존성과 실행에 필요한 메타데이터를 포함하고 있어 별도의 설치 없이 `java -jar` 명령으로 실행할 수 있다.
+
+**Spring Boot**
+: Java 기반 애플리케이션 개발을 단순화하는 프레임워크. 복잡한 설정 없이 빠르게 독립 실행형 애플리케이션을 만들 수 있게 해준다.
+
+**Node.js**
+: JavaScript를 서버 측에서 실행할 수 있게 해주는 런타임 환경. 웹 서버, CLI 도구, 백엔드 API 등을 JavaScript로 개발할 수 있다.
+
+**Isomorphic JavaScript**
+: 서버와 클라이언트에서 동일한 코드로 실행되는 JavaScript. 코드 재사용성을 높이고 일관된 동작을 보장한다.
+
+**TypeScript**
+: Microsoft가 개발한 JavaScript의 정적 타입 확장 언어. 컴파일 시점에 타입 검사를 통해 오류를 미리 발견할 수 있다.
+
+**REST API**
+: 웹 서비스를 위한 아키텍처 스타일. HTTP 프로토콜의 기본 메서드(GET, POST, PUT, DELETE 등)를 활용하여 리소스를 표현하고 상태를 전송한다.
+
+**Circuit Breaker**
+: 장애 확산을 방지하는 소프트웨어 디자인 패턴. 전기 회로의 차단기처럼, 서비스 호출이 계속 실패하면 일정 시간 동안 호출을 차단하여 시스템 과부하를 방지한다.
+
+**Progressive Rollout**
+: 새 기능을 점진적으로 더 많은 사용자에게 배포하는 전략. 초기에는 소수의 사용자에게만 제공하고, 안정성이 확인되면 점차 확대한다.
+
+**Runtime Control**
+: 프로그램이 실행 중에 동적으로 동작을 변경할 수 있는 기능. 재시작 없이 설정이나 기능을 변경할 수 있다.
+
+**Cache Invalidation**
+: 캐시된 데이터를 무효화하는 과정. 원본 데이터가 변경되었을 때 캐시된 데이터도 갱신하거나 제거하여 일관성을 유지한다.
+
+**Dynamic Reflection**
+: 애플리케이션 실행 중에 클래스와 메서드 구조를 검사하고 조작하는 기능. 실행 시점에 유연하게 코드 동작을 변경할 수 있다.
+
+**Type Safety**
+: 데이터 타입이 올바르게 사용되는지 확인하는 컴파일러 검사. 잘못된 타입 사용으로 인한 오류를 사전에 방지한다.
 
 ## 참고자료
 

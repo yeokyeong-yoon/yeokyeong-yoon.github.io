@@ -10,11 +10,11 @@ mermaid: true
 <style>
 .mermaid {
   width: 100%;
-  max-width: 1200px;
-  margin: 40px auto;
-  font-size: 18px;
+  max-width: 100%;
+  margin: 20px auto;
+  font-size: 14px;
   font-family: 'Arial', sans-serif;
-  overflow: visible;
+  overflow: hidden;
 }
 .mermaid .node rect, 
 .mermaid .node circle, 
@@ -26,13 +26,13 @@ mermaid: true
   stroke-width: 1.5px;
 }
 .mermaid .node text {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 500;
 }
 .mermaid .edgeLabel {
-  font-size: 16px;
+  font-size: 12px;
   background-color: white;
-  padding: 4px 8px;
+  padding: 2px 4px;
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
@@ -44,15 +44,37 @@ mermaid: true
   ry: 8px;
 }
 .mermaid .label {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: bold;
 }
 .mermaid .timeline-event {
-  font-size: 16px;
+  font-size: 14px;
 }
 .mermaid .journey-section {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: bold;
+}
+
+/* 모바일 최적화를 위한 미디어 쿼리 */
+@media screen and (max-width: 768px) {
+  .mermaid {
+    font-size: 12px;
+    margin: 15px 0;
+  }
+  .mermaid .node text {
+    font-size: 12px;
+  }
+  .mermaid .edgeLabel {
+    font-size: 10px;
+    padding: 1px 2px;
+  }
+  .mermaid .label {
+    font-size: 14px;
+  }
+  .mermaid .timeline-event,
+  .mermaid .journey-section {
+    font-size: 12px;
+  }
 }
 </style>
 
