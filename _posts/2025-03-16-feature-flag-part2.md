@@ -20,24 +20,24 @@ mermaid: true
   }
 
   .mermaid {
-    width: 100%;
-    max-width: 300px !important;  /* 최대 너비 더 축소 */
-    margin: 10px auto;
-    text-align: center;
-    background-color: white;
-    padding: 5px;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    overflow-x: auto;
+    width: 100% !important;
+    max-width: 200px !important;  /* 최대 너비 더 축소 */
+    margin: 10px auto !important;
+    text-align: center !important;
+    background-color: white !important;
+    padding: 5px !important;
+    border-radius: 4px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+    overflow-x: auto !important;
   }
   
   .mermaid svg {
-    width: auto !important;
-    max-width: 250px !important;  /* SVG 최대 너비 더 축소 */
+    width: 100% !important;
+    max-width: 180px !important;  /* SVG 최대 너비 더 축소 */
     height: auto !important;
     display: inline-block !important;
-    transform: scale(0.7);  /* SVG 크기를 70%로 축소 */
-    transform-origin: center center;
+    transform: scale(0.5) !important;  /* SVG 크기를 50%로 축소 */
+    transform-origin: center center !important;
   }
 
   /* 모바일 최적화 */
@@ -47,13 +47,13 @@ mermaid: true
     }
     
     .mermaid {
-      max-width: 250px !important;  /* 모바일에서는 더 작게 */
-      padding: 2px;
+      max-width: 180px !important;  /* 모바일에서는 더 작게 */
+      padding: 2px !important;
     }
     
     .mermaid svg {
-      max-width: 200px !important;
-      transform: scale(0.6);  /* 모바일에서는 60%로 축소 */
+      max-width: 150px !important;
+      transform: scale(0.4) !important;  /* 모바일에서는 40%로 축소 */
     }
   }
 </style>

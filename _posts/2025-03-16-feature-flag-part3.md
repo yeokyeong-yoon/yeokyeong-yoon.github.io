@@ -20,24 +20,24 @@ mermaid: true
   }
 
   .mermaid {
-    width: 100%;
-    max-width: 300px !important;  /* 최대 너비 더 축소 */
-    margin: 10px auto;
-    text-align: center;
-    background-color: white;
-    padding: 5px;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    overflow-x: auto;
+    width: 100% !important;
+    max-width: 200px !important;  /* 최대 너비 더 축소 */
+    margin: 10px auto !important;
+    text-align: center !important;
+    background-color: white !important;
+    padding: 5px !important;
+    border-radius: 4px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+    overflow-x: auto !important;
   }
   
   .mermaid svg {
-    width: auto !important;
-    max-width: 250px !important;  /* SVG 최대 너비 더 축소 */
+    width: 100% !important;
+    max-width: 180px !important;  /* SVG 최대 너비 더 축소 */
     height: auto !important;
     display: inline-block !important;
-    transform: scale(0.7);  /* SVG 크기를 70%로 축소 */
-    transform-origin: center center;
+    transform: scale(0.5) !important;  /* SVG 크기를 50%로 축소 */
+    transform-origin: center center !important;
   }
 
   /* 모바일 최적화 */
@@ -47,13 +47,13 @@ mermaid: true
     }
     
     .mermaid {
-      max-width: 250px !important;  /* 모바일에서는 더 작게 */
-      padding: 2px;
+      max-width: 180px !important;  /* 모바일에서는 더 작게 */
+      padding: 2px !important;
     }
     
     .mermaid svg {
-      max-width: 200px !important;
-      transform: scale(0.6);  /* 모바일에서는 60%로 축소 */
+      max-width: 150px !important;
+      transform: scale(0.4) !important;  /* 모바일에서는 40%로 축소 */
     }
   }
 </style>
@@ -69,8 +69,7 @@ Feature Flag 시스템의 핵심 동작 원리를 JVM 메모리 관리 관점에
 ### 6.1 시스템 구성 및 목적
 
 **목적**
-- 기능별 ON/OFF 상태를 동적으로 관리하고,
-- 배포 없이 플래그 값을 변경할 수 있는 유연한 런타임 Feature Toggle 시스템 구축
+- 기능별 ON/OFF 상태를 동적으로 관리하고, 배포 없이 플래그 값을 변경할 수 있는 유연한 런타임 Feature Toggle 시스템 구축
 **핵심 구성 요소**
 
 - `@FeatureFlag`: static primitive 필드에 부착되어, 해당 필드가 기능 플래그임을 선언

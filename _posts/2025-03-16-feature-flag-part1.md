@@ -22,24 +22,24 @@ mermaid: true
   }
 
   .mermaid {
-    width: 100%;
-    max-width: 300px !important;  /* 최대 너비 더 축소 */
-    margin: 10px auto;
-    text-align: center;
-    background-color: white;
-    padding: 5px;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    overflow-x: auto;
+    width: 100% !important;
+    max-width: 200px !important;  /* 최대 너비 더 축소 */
+    margin: 10px auto !important;
+    text-align: center !important;
+    background-color: white !important;
+    padding: 5px !important;
+    border-radius: 4px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+    overflow-x: auto !important;
   }
   
   .mermaid svg {
-    width: auto !important;
-    max-width: 250px !important;  /* SVG 최대 너비 더 축소 */
+    width: 100% !important;
+    max-width: 180px !important;  /* SVG 최대 너비 더 축소 */
     height: auto !important;
     display: inline-block !important;
-    transform: scale(0.7);  /* SVG 크기를 70%로 축소 */
-    transform-origin: center center;
+    transform: scale(0.5) !important;  /* SVG 크기를 50%로 축소 */
+    transform-origin: center center !important;
   }
 
   /* 모바일 최적화 */
@@ -49,13 +49,13 @@ mermaid: true
     }
     
     .mermaid {
-      max-width: 250px !important;  /* 모바일에서는 더 작게 */
-      padding: 2px;
+      max-width: 180px !important;  /* 모바일에서는 더 작게 */
+      padding: 2px !important;
     }
     
     .mermaid svg {
-      max-width: 200px !important;
-      transform: scale(0.6);  /* 모바일에서는 60%로 축소 */
+      max-width: 150px !important;
+      transform: scale(0.4) !important;  /* 모바일에서는 40%로 축소 */
     }
   }
 </style>
@@ -183,7 +183,7 @@ private static boolean useNewSearchAlgorithm = true;
    - 단점: 스프링 의존성 발생, 비스프링 환경 지원 어려움
    - 기각 이유: 프레임워크 중립성 손상, 레거시 시스템 지원 제한
 
-Reflection 기반 접근법은 이러한 대안들과 비교했을 때 가장 균형 잡힌 선택이었다. 런타임에 약간의 오버헤드가 있지만, 개발자 경험을 최우선으로 고려했을 때 코드에 어노테이션만 추가하면 되는 간편함이 큰 장점이었다. 다만 Reflection 스캔 범위가 넓을수록 초기화 시간과 메모리 사용량이 증가하므로, 가이드에서는 Feature Flag가 사용되는 패키지 범위를 명시적으로 지정하도록 권장했다. 이를 통해 프레임워크 의존성 없이 순수 Java로 구현하면서도 효율적인 SDK를 만들 수 있었다.
+Reflection 기반 접근법은 이러한 대안들과 비교했을 때 가장 균형 잡힌 선택이었다. 런타임에 약간의 오버헤드가 있지만, 개발자 경험을 최우선으로 고려했을 때 코드에 어노테이션만 추가하면 되는 간편함이 큰 장점이었다. 다만 Reflection 스캐닝 범위가 넓을수록 초기화 시간과 메모리 사용량이 증가하므로, 가이드에서는 Feature Flag가 사용되는 패키지 범위를 명시적으로 지정하도록 권장했다. 이를 통해 프레임워크 의존성 없이 순수 Java로 구현하면서도 효율적인 SDK를 만들 수 있었다.
 
 중요한 제약사항으로, Feature Flag 필드는 반드시 `static`으로 선언해야 했다. 여기서 Java의 주요 키워드들을 구분해보면:
 
