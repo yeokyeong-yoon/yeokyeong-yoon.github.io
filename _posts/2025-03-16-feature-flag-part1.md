@@ -23,7 +23,7 @@ mermaid: true
 
   .mermaid {
     width: 100%;
-    max-width: 400px !important;  /* 더 작은 최대 너비로 조정 */
+    max-width: 300px !important;  /* 최대 너비 더 축소 */
     margin: 10px auto;
     text-align: center;
     background-color: white;
@@ -35,10 +35,10 @@ mermaid: true
   
   .mermaid svg {
     width: auto !important;
-    max-width: 350px !important;  /* SVG 최대 너비 더 축소 */
+    max-width: 250px !important;  /* SVG 최대 너비 더 축소 */
     height: auto !important;
     display: inline-block !important;
-    transform: scale(0.9);  /* SVG 크기를 90%로 축소 */
+    transform: scale(0.7);  /* SVG 크기를 70%로 축소 */
     transform-origin: center center;
   }
 
@@ -49,14 +49,13 @@ mermaid: true
     }
     
     .mermaid {
+      max-width: 250px !important;  /* 모바일에서는 더 작게 */
       padding: 2px;
-      margin: 5px auto;
-      max-width: 100%;
     }
     
     .mermaid svg {
-      max-width: 100% !important;
-      transform: scale(0.8);  /* 모바일에서는 더 작게 */
+      max-width: 200px !important;
+      transform: scale(0.6);  /* 모바일에서는 60%로 축소 */
     }
   }
 </style>

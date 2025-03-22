@@ -21,7 +21,7 @@ mermaid: true
 
   .mermaid {
     width: 100%;
-    max-width: 400px !important;  /* 더 작은 최대 너비로 조정 */
+    max-width: 300px !important;  /* 최대 너비 더 축소 */
     margin: 10px auto;
     text-align: center;
     background-color: white;
@@ -33,10 +33,10 @@ mermaid: true
   
   .mermaid svg {
     width: auto !important;
-    max-width: 350px !important;  /* SVG 최대 너비 더 축소 */
+    max-width: 250px !important;  /* SVG 최대 너비 더 축소 */
     height: auto !important;
     display: inline-block !important;
-    transform: scale(0.9);  /* SVG 크기를 90%로 축소 */
+    transform: scale(0.7);  /* SVG 크기를 70%로 축소 */
     transform-origin: center center;
   }
 
@@ -47,14 +47,13 @@ mermaid: true
     }
     
     .mermaid {
+      max-width: 250px !important;  /* 모바일에서는 더 작게 */
       padding: 2px;
-      margin: 5px auto;
-      max-width: 100%;
     }
     
     .mermaid svg {
-      max-width: 100% !important;
-      transform: scale(0.8);  /* 모바일에서는 더 작게 */
+      max-width: 200px !important;
+      transform: scale(0.6);  /* 모바일에서는 60%로 축소 */
     }
   }
 </style>
@@ -572,7 +571,7 @@ FeatureFlagManager.getInstance().registerModuleFlags(ServiceFeatureFlags.class);
 
 1. **사용성 중심 설계**: 기술적으로 완벽한 시스템보다 사용자(개발자)가 쉽게 이해하고 활용할 수 있는 시스템이 더 가치 있다. API 설계 시 개발자 경험(DX)을 최우선으로 고려해야 한다.
 
-2. **점진적 확장 계획**: 처음부터 완벽한 시스템을 구축하기보다는 MVP(Minimum Viable Product)로 시작하고 사용자 피드백을 바탕으로 점진적으로 확장하는 것이 중요하다. 이 과정에서 올바른 추상화 계층을 구축하면 확장이 용이해진다.
+2. **점진적 확장 계획**: 처음부터 완벽한 시스템을 구축하기보다는 MVP(Minimum Viable Product)로 시작하고 사용자 피드백을 받아 개선하는 개발 전략이다. 이 과정에서 올바른 추상화 계층을 구축하면 확장이 용이해진다.
 
 3. **문서화와 교육의 중요성**: 시스템 사용법에 대한 명확한 문서와 코드 예제가 도입 속도를 높인다. 기술 세미나, 코드랩, 가이드 문서 등 다양한 방식으로 사용자 교육을 진행해야 한다.
 
