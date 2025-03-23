@@ -147,21 +147,21 @@ public static double boostFactor = 1.5;
 
 <!-- Feature Flag 시스템 초기화 다이어그램 -->
 <div style="text-align:center; margin:20px auto;">
-  <div class="mermaid" style="max-width:450px; margin:0 auto; transform:scale(0.8); transform-origin:center;">
-  flowchart TD
-    A[Bootstrap ClassLoader] --> B[Extension ClassLoader]
-    B --> C[Application ClassLoader]
-    C --> D[Custom ClassLoader]
-    C --> E[WebApp ClassLoader]
-    C --> F[Plugin ClassLoader]
-    style A fill:#f9f,stroke:#333
-    style B fill:#bbf,stroke:#333
-    style C fill:#bfb,stroke:#333
-    style D fill:#fbb,stroke:#333
-    style E fill:#fbf,stroke:#333
-    style F fill:#bff,stroke:#333
-  </div>
-  <p style="text-align:center;"><small><i>Java ClassLoader 계층 구조 - 다양한 배포 환경에서 추가 ClassLoader가 생성될 수 있음</i></small></p>
+```mermaid
+flowchart TD
+  A[Bootstrap ClassLoader] --> B[Extension ClassLoader]
+  B --> C[Application ClassLoader]
+  C --> D[Custom ClassLoader]
+  C --> E[WebApp ClassLoader]
+  C --> F[Plugin ClassLoader]
+  style A fill:#f9f,stroke:#333
+  style B fill:#bbf,stroke:#333
+  style C fill:#bfb,stroke:#333
+  style D fill:#fbb,stroke:#333
+  style E fill:#fbf,stroke:#333
+  style F fill:#bff,stroke:#333
+```
+<p style="text-align:center;"><small><i>Java ClassLoader 계층 구조 - 다양한 배포 환경에서 추가 ClassLoader가 생성될 수 있음</i></small></p>
 </div>
 
 각 항목별 JVM 저장 위치는 다음과 같다:
@@ -328,21 +328,21 @@ private Class<?>[] getClasses(String packageName) throws Exception {
 
 <!-- ClassLoader 계층 구조 다이어그램 -->
 <div style="text-align:center; margin:20px auto;">
-  <div class="mermaid" style="max-width:450px; margin:0 auto; transform:scale(0.8); transform-origin:center;">
-  flowchart TD
-    A[Bootstrap ClassLoader] --> B[Extension ClassLoader]
-    B --> C[Application ClassLoader]
-    C --> D[Custom ClassLoader]
-    C --> E[WebApp ClassLoader]
-    C --> F[Plugin ClassLoader]
-    style A fill:#f9f,stroke:#333
-    style B fill:#bbf,stroke:#333
-    style C fill:#bfb,stroke:#333
-    style D fill:#fbb,stroke:#333
-    style E fill:#fbf,stroke:#333
-    style F fill:#bff,stroke:#333
-  </div>
-  <p style="text-align:center;"><small><i>Java ClassLoader 계층 구조 - 다양한 배포 환경에서 추가 ClassLoader가 생성될 수 있음</i></small></p>
+```mermaid
+flowchart TD
+  A[Bootstrap ClassLoader] --> B[Extension ClassLoader]
+  B --> C[Application ClassLoader]
+  C --> D[Custom ClassLoader]
+  C --> E[WebApp ClassLoader]
+  C --> F[Plugin ClassLoader]
+  style A fill:#f9f,stroke:#333
+  style B fill:#bbf,stroke:#333
+  style C fill:#bfb,stroke:#333
+  style D fill:#fbb,stroke:#333
+  style E fill:#fbf,stroke:#333
+  style F fill:#bff,stroke:#333
+```
+<p style="text-align:center;"><small><i>Java ClassLoader 계층 구조 - 다양한 배포 환경에서 추가 ClassLoader가 생성될 수 있음</i></small></p>
 </div>
 
 이러한 클래스 이름 변환은 Spring Boot의 LaunchedURLClassLoader가 수행하며, `Class.forName()`이나 패키지 스캔 시 이러한 변환된 이름을 고려하지 않으면 클래스를 찾지 못하게 된다.
@@ -690,25 +690,25 @@ Martin Fowler의 ["Feature Toggles (Feature Flags)"](https://martinfowler.com/ar
 
 <!-- Feature Flag 시스템 흐름도 -->
 <div style="text-align:center; margin:20px auto;">
-  <div class="mermaid" style="max-width:600px; margin:0 auto; transform:scale(0.8); transform-origin:center;">
-  flowchart TD
-    A[Feature Flag 선언] --> B["@FeatureFlag 어노테이션 스캐닝"]
-    B --> C["Flag 등록 (초기화 과정)"]
-    C --> D["중앙 저장소에 저장"]
-    D --> E[Admin 페이지에서 Flag 제어]
-    D --> F[Flag 값 조회 (서비스 런타임)]
-    E --> D
-    F --> G[비즈니스 로직에서 Flag 값 사용]
-    F --> H[LRU 캐시에서 로컬 관리]
-    H --> F
-    style A fill:#f9f,stroke:#333
-    style B fill:#bbf,stroke:#333
-    style C fill:#bfb,stroke:#333
-    style D fill:#fbb,stroke:#333
-    style E fill:#fbf,stroke:#333
-    style F fill:#bff,stroke:#333
-    style G fill:#ff9,stroke:#333
-    style H fill:#f99,stroke:#333
-  </div>
-  <p style="text-align:center;"><small><i>Feature Flag 시스템의 전체 흐름도 - 어노테이션 선언부터 값 조회까지</i></small></p>
+```mermaid
+flowchart TD
+  A[Feature Flag 선언] --> B["@FeatureFlag 어노테이션 스캐닝"]
+  B --> C["Flag 등록 (초기화 과정)"]
+  C --> D["중앙 저장소에 저장"]
+  D --> E[Admin 페이지에서 Flag 제어]
+  D --> F[Flag 값 조회 (서비스 런타임)]
+  E --> D
+  F --> G[비즈니스 로직에서 Flag 값 사용]
+  F --> H[LRU 캐시에서 로컬 관리]
+  H --> F
+  style A fill:#f9f,stroke:#333
+  style B fill:#bbf,stroke:#333
+  style C fill:#bfb,stroke:#333
+  style D fill:#fbb,stroke:#333
+  style E fill:#fbf,stroke:#333
+  style F fill:#bff,stroke:#333
+  style G fill:#ff9,stroke:#333
+  style H fill:#f99,stroke:#333
+```
+<p style="text-align:center;"><small><i>Feature Flag 시스템의 전체 흐름도 - 어노테이션 선언부터 값 조회까지</i></small></p>
 </div>

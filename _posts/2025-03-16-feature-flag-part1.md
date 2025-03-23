@@ -90,7 +90,7 @@ Feature Flag(기능 플래그)는 코드를 변경하지 않고도 기능을 켜
 시스템의 데이터 흐름과 주요 컴포넌트 간의 상호작용은 다음과 같습니다:
 
 <div style="text-align:center; margin:20px auto;">
-  <div class="mermaid" style="max-width:600px; margin:0 auto; transform:scale(0.8); transform-origin:center;">
+```mermaid
 sequenceDiagram
     participant Client as Client App
     participant FManager as Feature Flag Manager 
@@ -124,7 +124,7 @@ sequenceDiagram
         Splitter-->>FManager: Return all flags
         FManager->>LRU: Update cache
     end
-  </div>
+```
   <p><small><i>Sequence diagram showing interactions between major system components</i></small></p>
 </div>
 
