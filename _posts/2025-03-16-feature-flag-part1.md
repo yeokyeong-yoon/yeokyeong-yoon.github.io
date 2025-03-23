@@ -35,7 +35,7 @@ mermaid: true
     font-size: 110% !important;
   }
 
-  /* 다이어그램 스타일 간소화 - mermaid 사용 대신 이미지 스타일만 정의 */
+  /* 다이어그램 스타일 조정 */
   .alternative-diagram {
     text-align: center !important;
     margin: 20px auto !important;
@@ -48,11 +48,30 @@ mermaid: true
     border-radius: 4px !important;
   }
 
+  /* mermaid 다이어그램 스타일 조정 */
+  .mermaid {
+    display: block !important;
+    max-width: 600px !important;
+    margin: 0 auto !important;
+    text-align: center !important;
+    font-size: 0.8em !important;
+    transform: scale(0.8) !important;
+    transform-origin: center !important;
+  }
+
+  .mermaid svg {
+    max-width: 100% !important;
+  }
+
   /* 모바일 최적화 */
   @media screen and (max-width: 767px) {
     .post {
       padding: 10px 5px;
       font-size: 16px !important;
+    }
+    
+    .mermaid {
+      transform: scale(0.7) !important;
     }
   }
 </style>
@@ -68,15 +87,44 @@ Feature Flag(기능 플래그)는 코드를 변경하지 않고도 기능을 켜
 
 시스템의 데이터 흐름과 주요 컴포넌트 간의 상호작용은 다음과 같습니다:
 
-<!-- mermaid 다이어그램을 제거하고 대체 이미지만 사용 -->
-<div class="alternative-diagram" style="text-align:center; margin:20px auto;">
-  <img src="https://i.imgur.com/KP4LW8f.png" 
-       alt="Feature Flag 시스템 시퀀스 다이어그램" 
-       style="max-width:100%; height:auto; border:1px solid #ddd; border-radius:4px;">
+<div style="text-align:center; margin:20px auto;">
+  <div class="mermaid" style="max-width:600px; margin:0 auto; transform:scale(0.8); transform-origin:center;">
+  sequenceDiagram
+    participant Client as 클라이언트 애플리케이션
+    participant FManager as Feature Flag 매니저
+    participant LRU as LRU 캐시
+    participant Splitter as Splitter API
+    participant Admin as 어드민 페이지
+    participant DB as DynamoDB
+    
+    Client->>FManager: Flag 값 요청
+    FManager->>LRU: 캐시된 값 조회
+    
+    alt 캐시 히트
+      LRU-->>FManager: 캐시된 Flag 값 반환
+    else 캐시 미스
+      FManager->>Splitter: Flag 값 요청
+      Splitter->>DB: Flag 정보 조회
+      DB-->>Splitter: Flag 정보 반환
+      Splitter-->>FManager: Flag 값 반환
+      FManager->>LRU: 캐시에 값 저장
+    end
+    
+    FManager-->>Client: Flag 값 반환
+    
+    Admin->>Splitter: Flag 등록/수정
+    Splitter->>DB: Flag 정보 업데이트
+    
+    loop 주기적 업데이트 (30초)
+      FManager->>Splitter: 모든 Flag 값 일괄 조회
+      Splitter->>DB: Flag 정보 조회
+      DB-->>Splitter: Flag 정보 반환
+      Splitter-->>FManager: 모든 Flag 값 반환
+      FManager->>LRU: 캐시 일괄 갱신
+    end
+  </div>
   <p><small><i>시스템의 주요 컴포넌트 간 상호작용을 보여주는 시퀀스 다이어그램</i></small></p>
 </div>
-
-*시스템의 주요 컴포넌트 간 상호작용을 보여주는 시퀀스 다이어그램*
 
 아키텍처 설계 시 중앙집중식과 분산식 접근법을 비교했다. 중앙집중식은 모든 Flag 결정을 중앙 서버에서 처리하는 방식으로, 즉각적인 업데이트와 일관된 제어가 가능하지만 네트워크 지연과 의존성이 증가한다. 분산식은 각 클라이언트가 로컬에서 결정을 내리는 방식으로, 성능은 좋지만 상태 동기화가 어렵다.
 

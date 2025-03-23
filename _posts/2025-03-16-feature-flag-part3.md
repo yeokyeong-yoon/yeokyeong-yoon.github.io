@@ -33,7 +33,7 @@ mermaid: true
     font-size: 110% !important;
   }
 
-  /* 다이어그램 스타일 간소화 - mermaid 사용 대신 이미지 스타일만 정의 */
+  /* 다이어그램 스타일 조정 */
   .alternative-diagram {
     text-align: center !important;
     margin: 20px auto !important;
@@ -46,11 +46,30 @@ mermaid: true
     border-radius: 4px !important;
   }
 
+  /* mermaid 다이어그램 스타일 조정 */
+  .mermaid {
+    display: block !important;
+    max-width: 600px !important;
+    margin: 0 auto !important;
+    text-align: center !important;
+    font-size: 0.8em !important;
+    transform: scale(0.8) !important;
+    transform-origin: center !important;
+  }
+
+  .mermaid svg {
+    max-width: 100% !important;
+  }
+
   /* 모바일 최적화 */
   @media screen and (max-width: 767px) {
     .post {
       padding: 10px 5px;
       font-size: 16px !important;
+    }
+    
+    .mermaid {
+      transform: scale(0.7) !important;
     }
   }
 </style>
@@ -125,11 +144,22 @@ public static double boostFactor = 1.5;
 ### 6.4 전체 동작 흐름: 서비스 시작 시점
 
 <!-- Feature Flag 시스템 초기화 다이어그램 -->
-<div class="alternative-diagram">
-  <img src="https://mermaid.ink/img/pako:eNp1kl9v2jAUxb9K5MeNSaO0TJBAB9J4GNOkPmxPe3Gcm2DBsTPbAVZV3323QKftobwk55z7O_4TLlBlmUhAvNZGrY1ckoZ3JY4Kb42hUiHYvEFjFBltQ2-gtKxXNAeF57x71oDBn1t_A_TyZQxivGN2Mupoi4yD3wdrrHA3VjUVBEK12j1dXZXLw1braGXbvkAHg_ZWEHt-oyqlPaJmkTqK5ZGATzwM5QQ4e3glTSV5W9uKJDxFd8vOYVVSQc6cpeeXdDQGJ2ubDt1OdNhR4jLMaNe8k1Zat0ow0jOPLSUujTT4gc6i6UZ_6uqL6V91-zHUOJaz_f49PC2i_gL3koQ5" 
-       alt="Feature Flag 시스템 초기화 과정" 
-       style="max-width:600px; display:block; margin:0 auto;">
-  <p style="text-align:center;"><small><i>Feature Flag 시스템 초기화 시 클래스 로딩과 플래그 등록 과정</i></small></p>
+<div style="text-align:center; margin:20px auto;">
+  <div class="mermaid" style="max-width:450px; margin:0 auto; transform:scale(0.8); transform-origin:center;">
+  flowchart TD
+    A[Bootstrap ClassLoader] --> B[Extension ClassLoader]
+    B --> C[Application ClassLoader]
+    C --> D[Custom ClassLoader]
+    C --> E[WebApp ClassLoader]
+    C --> F[Plugin ClassLoader]
+    style A fill:#f9f,stroke:#333
+    style B fill:#bbf,stroke:#333
+    style C fill:#bfb,stroke:#333
+    style D fill:#fbb,stroke:#333
+    style E fill:#fbf,stroke:#333
+    style F fill:#bff,stroke:#333
+  </div>
+  <p style="text-align:center;"><small><i>Java ClassLoader 계층 구조 - 다양한 배포 환경에서 추가 ClassLoader가 생성될 수 있음</i></small></p>
 </div>
 
 각 항목별 JVM 저장 위치는 다음과 같다:
@@ -294,11 +324,22 @@ private Class<?>[] getClasses(String packageName) throws Exception {
 
 3. **멀티 모듈 프로젝트 문제**: 추가 조사를 통해 다른 팀의 멀티 모듈 프로젝트에서도 모듈 간 ClassLoader 차이로 어노테이션 스캔이 실패하는 유사한 문제가 있음을 확인했다.
 
-<!-- ClassLoader 계층 구조 다이어그램 - 대체 이미지 사용 -->
-<div class="alternative-diagram">
-  <img src="https://i.imgur.com/Qbm8LdY.png" 
-       alt="Java ClassLoader 계층 구조" 
-       style="max-width:450px; display:block; margin:0 auto;">
+<!-- ClassLoader 계층 구조 다이어그램 -->
+<div style="text-align:center; margin:20px auto;">
+  <div class="mermaid" style="max-width:450px; margin:0 auto; transform:scale(0.8); transform-origin:center;">
+  flowchart TD
+    A[Bootstrap ClassLoader] --> B[Extension ClassLoader]
+    B --> C[Application ClassLoader]
+    C --> D[Custom ClassLoader]
+    C --> E[WebApp ClassLoader]
+    C --> F[Plugin ClassLoader]
+    style A fill:#f9f,stroke:#333
+    style B fill:#bbf,stroke:#333
+    style C fill:#bfb,stroke:#333
+    style D fill:#fbb,stroke:#333
+    style E fill:#fbf,stroke:#333
+    style F fill:#bff,stroke:#333
+  </div>
   <p style="text-align:center;"><small><i>Java ClassLoader 계층 구조 - 다양한 배포 환경에서 추가 ClassLoader가 생성될 수 있음</i></small></p>
 </div>
 
@@ -645,10 +686,27 @@ FeatureFlagManager.getInstance().registerModuleFlags(ServiceFeatureFlags.class);
 
 Martin Fowler의 ["Feature Toggles (Feature Flags)"](https://martinfowler.com/articles/feature-toggles.html) - Feature Flag의 개념과 사용 패턴
 
-<!-- Feature Flag 시스템 흐름도 - 대체 이미지 -->
-<div class="alternative-diagram">
-  <img src="https://i.imgur.com/HnJfnGF.png" 
-       alt="Feature Flag 시스템 흐름도" 
-       style="max-width:600px; display:block; margin:0 auto;">
+<!-- Feature Flag 시스템 흐름도 -->
+<div style="text-align:center; margin:20px auto;">
+  <div class="mermaid" style="max-width:600px; margin:0 auto; transform:scale(0.8); transform-origin:center;">
+  flowchart TD
+    A[Feature Flag 선언] --> B["@FeatureFlag 어노테이션 스캐닝"]
+    B --> C["Flag 등록 (초기화 과정)"]
+    C --> D["중앙 저장소에 저장"]
+    D --> E["Admin 페이지에서 Flag 제어"]
+    D --> F["Flag 값 조회 (서비스 런타임)"]
+    E --> D
+    F --> G["비즈니스 로직에서 Flag 값 사용"]
+    F --> H["LRU 캐시에서 로컬 관리"]
+    H --> F
+    style A fill:#f9f,stroke:#333
+    style B fill:#bbf,stroke:#333
+    style C fill:#bfb,stroke:#333
+    style D fill:#fbb,stroke:#333
+    style E fill:#fbf,stroke:#333
+    style F fill:#bff,stroke:#333
+    style G fill:#ff9,stroke:#333
+    style H fill:#f99,stroke:#333
+  </div>
   <p style="text-align:center;"><small><i>Feature Flag 시스템의 전체 흐름도 - 어노테이션 선언부터 값 조회까지</i></small></p>
 </div>
