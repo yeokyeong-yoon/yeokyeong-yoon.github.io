@@ -87,19 +87,28 @@ Feature Flag(기능 플래그)는 코드를 변경하지 않고도 기능을 켜
 ## 1.1 시스템 아키텍처 개요
 
 ```mermaid
-graph TD
-    Client[Client Application] -->|Declare Flag| Manager[Feature Flag Manager]
-    Manager -->|Register Flag| Splitter[Splitter API]
-    Splitter -->|Store Definition| DB[DynamoDB]
-    Splitter -->|Notify| Admin[Admin Page]
-    Admin -->|Confirm Registration| Manager
-    Manager -->|Periodic Update| DB
-    DB -->|Retrieve Latest Values| Manager
-    Admin -->|Change Flag Value| Splitter
-    Splitter -->|Update DB| DB
-    DB -->|Update Manager Cache| Manager
-    Manager -->|Store in Cache| Cache[ConcurrentHashMap]
-    Cache -->|Retrieve Flag Value| Manager
+sequenceDiagram
+    participant Client as Client Application
+    participant Manager as Feature Flag Manager
+    participant Splitter as Splitter API
+    participant DB as DynamoDB
+    participant Admin as Admin Page
+    participant Cache as ConcurrentHashMap
+
+    Client->>Manager: Declare Flag
+    Manager->>Splitter: Register Flag
+    Splitter->>DB: Store Definition
+    Splitter->>Admin: Notify
+    Admin->>Manager: Confirm Registration
+    loop Periodic Update
+        Manager->>DB: Retrieve Latest Values
+        DB->>Manager: Return Latest Values
+        Manager->>Cache: Store in Cache
+    end
+    Admin->>Splitter: Change Flag Value
+    Splitter->>DB: Update DB
+    DB->>Manager: Update Manager Cache
+    Cache->>Manager: Retrieve Flag Value
 ```
 
 *Feature Flag 시스템의 전체 아키텍처를 보여주는 다이어그램*
