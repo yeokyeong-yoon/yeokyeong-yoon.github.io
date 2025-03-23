@@ -84,6 +84,19 @@ Feature Flag(기능 플래그)는 코드를 변경하지 않고도 기능을 켜
 
 시스템 개발 초기에는 Feature Flag 도입 여부를 두고 많은 고민이 있었다. 기존 배포 프로세스를 개선하자는 의견도 있었지만, 이는 여러 팀과의 협업이 필요한 큰 변화였고 당장의 문제 해결이 어려웠다. 또한 Hackle과 같은 국내 Feature Flag 솔루션 도입도 검토했으나, 회사의 특수한 요구사항과 보안 정책 등을 고려했을 때 자체 개발이 더 적합하다고 판단했다. 결국 Feature Flag 방식을 선택한 이유는 코드 배포와 기능 출시를 완전히 분리하여 비즈니스 부서가 개발팀에 의존하지 않고도 기능을 제어할 수 있게 하기 위함이었다.
 
+## 1.1 시스템 아키텍처 개요
+
+```mermaid
+graph TD
+    Client[Client Application] -->|Declare Flag| Manager[Feature Flag Manager]
+    Manager -->|Register Flag| Splitter[Splitter API]
+    Splitter -->|Store Definition| DB[DynamoDB]
+    Splitter -->|Notify| Admin[Admin Page]
+    Admin -->|Confirm Registration| Manager
+```
+
+*Feature Flag 시스템의 전체 아키텍처를 보여주는 다이어그램*
+
 ## 2. 시스템 아키텍처
 
 시스템의 데이터 흐름과 주요 컴포넌트는 크게 4가지 프로세스로 구성됩니다:
