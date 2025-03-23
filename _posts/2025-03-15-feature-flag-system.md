@@ -6,29 +6,6 @@ categories: [개발, 시스템설계]
 tags: [feature-flag, system-design, architecture]
 mermaid: true
 ---
-## 목차
-
-1. [Feature Flag 시스템 개요](#feature-flag-시스템-개요)
-2. [시스템 아키텍처](#시스템-아키텍처)
-3. [핵심 설계 원칙과 기술적 구현](#핵심-설계-원칙과-기술적-구현)
-   1. [Annotation 기반 설계 이유 및 대안](#annotation-기반-설계-이유-및-대안)
-   2. [Reflection 기반 자동 수집과 성능 고려](#reflection-기반-자동-수집과-성능-고려)
-   3. [싱글톤 패턴과 동시성 제어](#싱글톤-패턴과-동시성-제어)
-4. [기술 스택 상세](#기술-스택-상세)
-   1. [SDK: Java 8, Reflection API](#sdk-java-8-reflection-api)
-   2. [Infra: AWS EKS + DynamoDB + Jenkins & Jib](#infra-aws-eks--dynamodb--jenkins--jib)
-5. [시스템 활용 예시](#시스템-활용-예시)
-   1. [REST API 구성](#rest-api-구성)
-   2. [SDK 사용 예시](#sdk-사용-예시)
-6. [내부 동작 원리와 JVM 구조](#내부-동작-원리와-jvm-구조)
-7. [트러블슈팅 및 ClassLoader 이슈](#트러블슈팅-및-classloader-이슈)
-8. [개선 필요사항 및 아쉬운 점](#개선-필요사항-및-아쉬운-점)
-9. [다음 시스템에 적용할 교훈](#다음-시스템에-적용할-교훈)
-10. [용어 정리](#용어-정리)
-11. [참고자료](#참고자료)
-
----
-
 
 ## 1. Feature Flag 시스템 개요
 
@@ -1097,3 +1074,74 @@ FeatureFlagManager.getInstance().registerModuleFlags(ServiceFeatureFlags.class);
 ## 참고자료
 
 Martin Fowler의 ["Feature Toggles (Feature Flags)"](https://martinfowler.com/articles/feature-toggles.html) - Feature Flag의 개념과 사용 패턴
+
+<style>
+.mermaid {
+  width: 100%;
+  max-width: 100%;
+  margin: 20px auto;
+  font-size: 14px;
+  font-family: 'Arial', sans-serif;
+  overflow: hidden;
+}
+.mermaid .node rect, 
+.mermaid .node circle, 
+.mermaid .node ellipse, 
+.mermaid .node polygon, 
+.mermaid .node path {
+  fill: #f5f9ff;
+  stroke: #4a6da7;
+  stroke-width: 1.5px;
+}
+.mermaid .node text {
+  font-size: 14px;
+  font-weight: 500;
+}
+.mermaid .edgeLabel {
+  font-size: 12px;
+  background-color: white;
+  padding: 2px 4px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.mermaid .cluster rect {
+  fill: #f0f8ff;
+  stroke: #4a6da7;
+  stroke-width: 1px;
+  rx: 8px;
+  ry: 8px;
+}
+.mermaid .label {
+  font-size: 16px;
+  font-weight: bold;
+}
+.mermaid .timeline-event {
+  font-size: 14px;
+}
+.mermaid .journey-section {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* 모바일 최적화를 위한 미디어 쿼리 */
+@media screen and (max-width: 768px) {
+  .mermaid {
+    font-size: 12px;
+    margin: 15px 0;
+  }
+  .mermaid .node text {
+    font-size: 12px;
+  }
+  .mermaid .edgeLabel {
+    font-size: 10px;
+    padding: 1px 2px;
+  }
+  .mermaid .label {
+    font-size: 14px;
+  }
+  .mermaid .timeline-event,
+  .mermaid .journey-section {
+    font-size: 12px;
+  }
+}
+</style>
