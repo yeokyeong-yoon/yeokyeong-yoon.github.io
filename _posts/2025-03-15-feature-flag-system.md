@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Feature Flag 시스템 설계와 운영 분석"
-date: 2025-03-16 12:00:00 +0900
+date: 2025-03-15 12:00:00 +0900
 categories: [개발, 시스템설계]
 tags: [feature-flag, system-design, architecture]
 mermaid: true
