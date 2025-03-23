@@ -83,6 +83,7 @@ mermaid: true
 Feature Flag(기능 플래그)는 코드를 변경하지 않고도 기능을 켜고 끌 수 있게 해주는 소프트웨어 개발 기법이다. 마치 집안의 전등 스위치처럼, 개발자는 기능의 활성화 여부를 간단히 '스위치'로 제어할 수 있다. 이 기법은 코드 배포와 기능 출시를 분리함으로써, 새로운 기능을 안전하게 테스트하고 점진적으로 사용자에게 제공할 수 있게 해준다.
 
 시스템 개발 초기에는 Feature Flag 도입 여부를 두고 많은 고민이 있었다. 기존 배포 프로세스를 개선하자는 의견도 있었지만, 이는 여러 팀과의 협업이 필요한 큰 변화였고 당장의 문제 해결이 어려웠다. 또한 Hackle과 같은 국내 Feature Flag 솔루션 도입도 검토했으나, 회사의 특수한 요구사항과 보안 정책 등을 고려했을 때 자체 개발이 더 적합하다고 판단했다. 결국 Feature Flag 방식을 선택한 이유는 코드 배포와 기능 출시를 완전히 분리하여 비즈니스 부서가 개발팀에 의존하지 않고도 기능을 제어할 수 있게 하기 위함이었다.
+
 ## 2. 시스템 아키텍처
 
 시스템의 데이터 흐름과 주요 컴포넌트는 크게 4가지 프로세스로 구성됩니다:
@@ -251,6 +252,7 @@ Feature Flag Manager는 싱글톤 패턴으로 구현하여 애플리케이션 �
 3. **코드 복잡성 감소**: 명시적인 락 메커니즘을 구현하려면 읽기/쓰기 락, 데드락 방지 등 복잡한 동시성 제어 로직이 필요하다. `ConcurrentHashMap`을 사용함으로써 이러한 복잡성을 크게 줄일 수 있었다.
 
 4. **원자적 연산 지원**: `ConcurrentHashMap`은 `putIfAbsent`, `computeIfAbsent` 등의 원자적 연산을 제공하여 락 없이도 안전한 업데이트가 가능하다.
+
 동시성 제어를 위해 다른 방법들도 검토해보았다:
 
 1. **Synchronized Collections** 
@@ -301,6 +303,7 @@ Feature Flag Manager는 싱글톤 패턴으로 구현하여 애플리케이션 �
 
 ### 4.1 코어 SDK: Java 8 (Vanilla Java)
 Java 8을 선택한 이유는 회사의 기존 코드베이스와의 호환성도 있었지만, 더 중요한 것은 SDK의 확장성과 유지보수성이었다. 프레임워크 의존성이 가져올 수 있는 문제점을 고민했다. Spring과 같은 프레임워크를 사용할 경우 버전 충돌이 발생할 수 있고, 사용자들이 SDK를 도입할 때 추가적인 설정이 필요해질 수 있다고 판단했다. 순수 Java만으로 구현함으로써 어떤 환경에서도 쉽게 통합될 수 있는 유연성을 확보했고, 이는 실제로 레거시 시스템에서도 문제없이 작동하는 결과로 이어졌다. 특히 Reflection API를 활용한 어노테이션 처리 부분에서는 외부 라이브러리 없이 직접 구현하는 과정이 도전적이었지만, 이를 통해 Java의 메타프로그래밍 기능에 대한 이해도를 크게 높일 수 있었다.
+
 ### 4.2 인프라: Kubernetes on AWS EKS
 Feature Flag 시스템의 인프라는 회사의 기존 실험 분기 API에 새로운 엔드포인트를 추가하는 방식으로 구현했다. 이 접근 방식은 빠른 개발과 배포를 가능하게 했지만, 실제 운영 중 심각한 문제가 발생했다. 지난 분기에 실험 API 서버에서 메모리 누수로 인한 장애가 발생했고, 이로 인해 Feature Flag 시스템까지 영향을 받아 일부 기능이 정상적으로 동작하지 않는 사고가 있었다. 이 사건은 Feature Flag와 같은 핵심 인프라를 다른 서비스에 종속시키는 것의 위험성을 명확하게 보여주었다.
 
@@ -450,6 +453,7 @@ public static double boostFactor = 1.5;
 - 해당 필드는 런타임에 값을 바꿀 수 있다(`final`이 아님)
 - 다양한 primitive 타입(boolean, int, long, double 등)을 지원한다
 - `@FeatureFlag`가 부착되어 있으면, 애플리케이션 시작 시 `FeatureFlagManager`가 이를 인식한다
+
 ### 6.3 Primitive 타입을 사용하는 이유
 
 시스템 설계 시 primitive 타입과 객체 타입의 비교:
@@ -482,10 +486,9 @@ flowchart TD
 | 구성 요소 | 예시 | JVM 저장 위치 | 설명 |
 |---------|------|--------------|------|
 | static primitive 필드 | useNewSearchAlgorithm, maxSearchResults | Method Area (필드 참조)<br>Heap (값 저장) | 기능 플래그의 실제 값을 저장하는 필드 |
-| Annotation 메타데이터 | @FeatureFlag(...) | Method Area | 클래스 메타정보의 일부로 저장되는 어노테이션 정보 |
-| ConcurrentHashMap | Map&lt;String, FlagMeta&gt; | Heap | 런타임에 플래그 상태를 관리하는 중앙 저장소 |
-| ConcurrentHashMap | Map<String, FlagMeta> | Heap | 런타임에 플래그 상태를 관리하는 중앙 저장소 |
-| 리플렉션 참조 객체 | Field, Annotation | Heap | 리플렉션 API 사용 시 생성되는 임시 객체들 |
+| Annotation 메타데이터 | `@FeatureFlag(...)` | Method Area | 클래스 메타정보의 일부로 저장되는 어노테이션 정보 |
+| ConcurrentHashMap | `Map<String, FlagMeta>` | Heap | 런타임에 플래그 상태를 관리하는 중앙 저장소 |
+| 리플렉션 참조 객체 | `Field`, `Annotation` | Heap | 리플렉션 API 사용 시 생성되는 임시 객체들 |
 
 ### 6.5 FeatureFlagManager의 동작 방식 (예시 코드 기반)
 
@@ -515,7 +518,9 @@ public class FeatureFlagManager {
     ...
 }
 ```
+
 ### 6.6 핵심 기술 요소 설명
+
 **Annotation과 Reflection의 기본 개념**
 - Java에서 Annotation은 코드에 메타데이터를 추가하는 방법이다
 - 예를 들어 `@FeatureFlag`라는 어노테이션을 만들면, 이 정보는 컴파일 시 `.class` 파일에 저장된다
@@ -549,6 +554,7 @@ public class FeatureFlagManager {
 | 다양한 타입 지원 | boolean 뿐만 아니라 int, long, double 등 다양한 primitive 타입 지원 |
 | Annotation 기반 선언적 관리 | 코드에 명시적으로 어떤 클래스/필드가 플래그 대상인지 드러남 |
 | Thread-safe 관리 | ConcurrentHashMap으로 멀티스레드 환경에서도 안전한 접근 보장 |
+
 ### 6.8 요약
 
 이 Feature Flag 시스템은 클래스의 static primitive 필드를 중심으로, 어노테이션과 리플렉션을 활용하여 기능 플래그를 선언적이고 동적으로 제어할 수 있게 구현되었다. 서비스 시작 시 모든 플래그를 탐색하고 ConcurrentHashMap에 저장하여 이후 런타임에서 플래그 값을 조회하고 변경할 수 있다. 이 구현은 Java의 Method Area, Reflection, Annotation, static 필드, Heap 구조를 활용하여 동작한다.
@@ -700,6 +706,7 @@ manager.registerModule("web", WebFeatureFlags.class);
 이러한 접근 방식을 통해 복잡한 멀티 모듈 프로젝트에서도 Feature Flag가 안정적으로 작동할 수 있게 되었다.
 
 ### 7.5 배운 점
+
 이 트러블슈팅 경험을 통해 많은 것을 배웠다. 솔직히 Java와 Spring, JVM 생태계는 이번 프로젝트가 처음이라 초반에는 상당히 어려웠다. ClassLoader나 리플렉션 같은 개념들이 생소했고, 클라이언트 환경인 Spring Boot의 실행 구조를 이해하는 데도 시간이 걸렸다. 하지만 문제를 하나씩 해결해나가면서 점차 이해도가 높아졌고, 결국 안정적인 시스템을 만들어낼 수 있었다는 점이 매우 뿌듯했다.
 
 특히 개발 환경과 프로덕션 환경의 차이를 직접 경험하면서, 이론적인 지식을 넘어 실제 운영 환경에서 발생할 수 있는 다양한 문제들을 배울 수 있었다. 처음에는 단순히 API만 사용하던 수준에서, 이제는 JVM의 내부 동작 원리까지 이해하게 된 것이 가장 큰 성장이었다고 생각한다.
@@ -733,6 +740,7 @@ Feature Flag 시스템은 현재 안정적으로 운영되고 있으며, 많은 
 이러한 개선 사항들은 프로젝트 진행 중 식별되었으나 조직 변경으로 인해 구현하지 못했다. 그럼에도 이 경험을 통해 얻은 교훈은 다음 프로젝트에 큰 도움이 되었다.
 
 ## 9. 용어 정리
+
 **Feature Flag**
 : 코드 변경 없이 기능을 켜고 끌 수 있게 해주는 설정 값. 마치 전등 스위치처럼 언제든 기능을 활성화하거나 비활성화할 수 있다.
 
