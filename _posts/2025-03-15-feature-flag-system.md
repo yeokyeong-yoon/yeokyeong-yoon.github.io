@@ -9,12 +9,12 @@ mermaid: true
 
 <style>
 .mermaid {
-  width: 80%; /* Adjust the width to make the diagram smaller */
-  max-width: 80%; /* Ensure it doesn't exceed a certain width */
-  margin: 20px auto;
-  font-size: 12px; /* Reduce the font size */
-  font-family: 'Arial', sans-serif;
-  overflow: hidden;
+  width: 60% !important; /* Force the width to be smaller */
+  max-width: 60% !important; /* Ensure it doesn't exceed a certain width */
+  margin: 20px auto !important;
+  font-size: 10px !important; /* Reduce the font size */
+  font-family: 'Arial', sans-serif !important;
+  overflow: hidden !important;
 }
 .mermaid .node rect, 
 .mermaid .node circle, 
@@ -26,10 +26,10 @@ mermaid: true
   stroke-width: 1.5px;
 }
 .mermaid .node text {
-  font-size: 12px; /* Adjust node text size */
+  font-size: 10px !important; /* Adjust node text size */
 }
 .mermaid .edgeLabel {
-  font-size: 10px; /* Adjust edge label size */
+  font-size: 8px !important; /* Adjust edge label size */
 }
 .mermaid .cluster rect {
   fill: #f0f8ff;
@@ -39,7 +39,7 @@ mermaid: true
   ry: 8px;
 }
 .mermaid .label {
-  font-size: 14px; /* Adjust label size */
+  font-size: 12px !important; /* Adjust label size */
 }
 .mermaid .timeline-event {
   font-size: 14px;
