@@ -6,7 +6,6 @@ categories: [개발, 아키텍처]
 tags: [feature-flag, java, 시스템설계]
 series: feature-flag
 series_order: 3
-mermaid: true
 ---
 
 <style>
@@ -51,19 +50,6 @@ mermaid: true
     border-radius: 4px !important;
   }
 
-  /* mermaid 다이어그램 스타일 조정 */
-  .mermaid {
-    display: block !important;
-    max-width: 600px !important;
-    margin: 20px auto !important;
-    text-align: center !important;
-    font-size: 14px !important;
-  }
-
-  .mermaid svg {
-    max-width: 100% !important;
-  }
-
   /* 모바일 최적화 */
   @media screen and (max-width: 767px) {
     .post {
@@ -74,10 +60,6 @@ mermaid: true
     h1 { font-size: 26px; }
     h2 { font-size: 22px; }
     h3 { font-size: 19px; }
-    
-    .mermaid {
-      font-size: 12px !important;
-    }
   }
 </style>
 
