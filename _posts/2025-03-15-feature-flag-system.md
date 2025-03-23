@@ -89,43 +89,33 @@ Feature Flag(기능 플래그)는 코드를 변경하지 않고도 기능을 켜
 시스템의 데이터 흐름과 주요 컴포넌트 간의 상호작용은 다음 시퀀스 다이어그램과 같다:
 
 ```mermaid
-sequenceDiagram
-    participant Client as Client Application
-    participant Manager as Feature Flag Manager
-    participant Cache as LRU Cache
-    participant API as Splitter API
-    participant Admin as Admin Page
-    participant DB as DynamoDB
+flowchart TD
+    Client[Client Application] -->|Flags declared via Annotation| Manager[Feature Flag Manager]
+    Manager -->|Register declared flags| API[Splitter API]
+    API -->|Store flag definitions| DB[DynamoDB]
+    API -->|Send flag registration| Admin[Admin Page]
+    Admin -->|Acknowledge registration| API
+    API -->|Respond with registration acknowledgment| Manager
 
-    Client->>Manager: Flags declared via Annotation (Reflection)
-    Manager->>API: Register declared flags (initial execution)
-    API->>DB: Store flag definitions
-    DB-->>API: Acknowledge storage
-    API->>Admin: Send flag registration
-    Admin-->>API: Acknowledge registration
-    API-->>Manager: Respond with registration acknowledgment
-
-    loop Periodic Update
-        Manager->>API: Request latest Flag Treatments
-        API->>DB: Query latest flag values
-        DB-->>API: Return flag data
-        API->>Admin: Fetch latest Treatment values
-        Admin-->>API: Return latest Treatment values
-        API-->>Manager: Respond with latest Flag values
-        Manager->>Cache: Update cache
+    subgraph Periodic Update
+        Manager -->|Request latest Flag Treatments| API
+        API -->|Query latest flag values| DB
+        API -->|Fetch latest Treatment values| Admin
+        Admin -->|Return latest Treatment values| API
+        API -->|Respond with latest Flag values| Manager
+        Manager -->|Update cache| Cache[LRU Cache]
     end
 
-    Client->>Manager: Request Flag value
-    Manager->>Cache: Retrieve cached Flag
-    Cache-->>Manager: Return cached value
-    Manager-->>Client: Provide Flag value
+    Client -->|Request Flag value| Manager
+    Manager -->|Retrieve cached Flag| Cache
+    Cache -->|Return cached value| Manager
+    Manager -->|Provide Flag value| Client
 
-    Note over Admin,DB: Admin changes are persisted to DynamoDB
-    Admin->>API: Update flag value
-    API->>DB: Store updated value
-    DB-->>API: Acknowledge update
+    Admin -->|Update flag value| API
+    API -->|Store updated value| DB
+    DB -->|Acknowledge update| API
 ```
-*시스템의 주요 컴포넌트 간 상호작용을 보여주는 시퀀스 다이어그램*
+*시스템의 주요 컴포넌트 간 상호작용을 보여주는 플로우차트*
 
 아키텍처 설계 시 중앙집중식과 분산식 접근법을 비교했다. 중앙집중식은 모든 Flag 결정을 중앙 서버에서 처리하는 방식으로, 즉각적인 업데이트와 일관된 제어가 가능하지만 네트워크 지연과 의존성이 증가한다. 분산식은 각 클라이언트가 로컬에서 결정을 내리는 방식으로, 성능은 좋지만 상태 동기화가 어렵다.
 
