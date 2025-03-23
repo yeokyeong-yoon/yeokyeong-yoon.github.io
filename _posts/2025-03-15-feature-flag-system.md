@@ -454,31 +454,21 @@ public static double boostFactor = 1.5;
 
 ```mermaid
 flowchart TD
-    App[Application] -->|클래스 로딩| Loader[JVM ClassLoader]
-    Loader -->|클래스 및 필드 + Annotation 저장| JVM[JVM (Method Area + Heap)]
-    App -->|애플리케이션 초기화| FFManager[FeatureFlagManager]
-    FFManager -->|모든 클래스 탐색| JVM
-    FFManager -->|@FeatureFlag 필드 탐색 (reflection)| Code[클래스 with @FeatureFlag]
-    Code -->|static primitive 필드 + 어노테이션 값| FFManager
-    FFManager -->|플래그 정보 저장| FFManager
+    App[Application] --클래스 로딩--> Loader[JVM ClassLoader]
+    Loader --클래스 및 필드 Annotation 저장--> JVM[JVM Method Area Heap]
+    App --애플리케이션 초기화--> FFManager[FeatureFlagManager]
+    FFManager --모든 클래스 탐색--> JVM
+    FFManager --FeatureFlag 필드 탐색 reflection--> Code[클래스 with FeatureFlag]
+    Code --static primitive 필드 어노테이션 값--> FFManager
+    FFManager --플래그 정보 저장--> FFManager
 ```
 *서비스 시작 시점의 전체 동작 흐름을 보여주는 플로우차트*
-
-• static primitive 필드
-  - 예시: useNewSearchAlgorithm, maxSearchResults
-  - JVM 저장 위치: Method Area (필드 참조) + 값은 Heap 내부 primitive
-
-• Annotation 메타데이터
-  - 예시: @FeatureFlag(...)
-  - JVM 저장 위치: Method Area (클래스 메타정보로 저장됨)
-
-• ConcurrentHashMap
-  - 예시: Map<String, FlagMeta>
-  - JVM 저장 위치: Heap (런타임 상태 저장)
-
-• 리플렉션 조회 시 참조 객체
-  - 예시: Field, Annotation
-  - JVM 저장 위치: Heap (reflection 시 생성되는 객체들)
+| 구성 요소 | 예시 | JVM 저장 위치 | 설명 |
+|---------|------|--------------|------|
+| static primitive 필드 | useNewSearchAlgorithm, maxSearchResults | Method Area (필드 참조)<br>Heap (값 저장) | 기능 플래그의 실제 값을 저장하는 필드 |
+| Annotation 메타데이터 | @FeatureFlag(...) | Method Area | 클래스 메타정보의 일부로 저장되는 어노테이션 정보 |
+| ConcurrentHashMap | Map<String, FlagMeta> | Heap | 런타임에 플래그 상태를 관리하는 중앙 저장소 |
+| 리플렉션 참조 객체 | Field, Annotation | Heap | 리플렉션 API 사용 시 생성되는 임시 객체들 |
 
 ### 6.5 FeatureFlagManager의 동작 방식 (예시 코드 기반)
 
