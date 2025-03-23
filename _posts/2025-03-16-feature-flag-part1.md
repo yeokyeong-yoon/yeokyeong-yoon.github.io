@@ -70,7 +70,7 @@ Feature Flag(기능 플래그)는 코드를 변경하지 않고도 기능을 켜
 
 <!-- mermaid 다이어그램을 제거하고 대체 이미지만 사용 -->
 <div class="alternative-diagram" style="text-align:center; margin:20px auto;">
-  <img src="https://mermaid.ink/img/pako:eNptkctuwjAQRX9l5CWgiiJCEktYUG-7qyq1C7opC5NMwOBHZEwlQvj3OhBI6cLLeOfcuTMPh9BREQc01pvkeee5xycuMTyjIaManI5otCVO3aMntEyWmjOU4jl73gm0f7nGInr5MBpxvLLqbTjRGhn7uM3OWOEerK4MBDLS9eJxVeb5wKiodNNcQJFOtaXAXj6oTNCd0FEIFRlaE-CG-VjOQWfbIyks0Z9rK-Iwoj9nI5hIaEjZczvrA9LS4m4D8aDfiapHBS6joozonZTCOFKEkZFnmkLMMaXG9-T77kcfsvhi6jtdvWkqH8vZen0JT8Vq_wA57HHs?type=png" 
+  <img src="https://i.imgur.com/KP4LW8f.png" 
        alt="Feature Flag 시스템 시퀀스 다이어그램" 
        style="max-width:100%; height:auto; border:1px solid #ddd; border-radius:4px;">
   <p><small><i>시스템의 주요 컴포넌트 간 상호작용을 보여주는 시퀀스 다이어그램</i></small></p>

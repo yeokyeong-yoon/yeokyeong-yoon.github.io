@@ -296,10 +296,10 @@ private Class<?>[] getClasses(String packageName) throws Exception {
 
 <!-- ClassLoader 계층 구조 다이어그램 - 대체 이미지 사용 -->
 <div class="alternative-diagram">
-  <img src="https://mermaid.ink/img/pako:eNptkctuwjAQRX9l5CUgBFJCEktYUKhUddNdVYkuuikLk0zA4EdkTCVC-Pc6QEjpwss5d-7LI_TgqOABjPU6eNlH_vwqJYZXsJBRBUFHMNoSp-7RQ2iZdTonKEF2_rJXYP_yvS3Q2bfRgOOVbT6HE62R0c_7GKwVYc_qqoBAQbpeP83dfF8Y5ZVt2g500qm2GbBX7pRF-BGapFCeIxsCbJmP2RTobHsijSX6c22FH0YMZ-0QKgklFDTtXvoDaaFw2EB86HfS1aMGmzFRRgxKSiEciMNIy1NNPsYYQuN7cn33ow-afDH2na4_NI2P4Wy1eguvJK__AMMjcPw?type=png" 
+  <img src="https://i.imgur.com/Qbm8LdY.png" 
        alt="Java ClassLoader 계층 구조" 
-       style="max-width:450px;">
-  <p><small><i>Java ClassLoader 계층 구조 - 다양한 배포 환경에서 추가 ClassLoader가 생성될 수 있음</i></small></p>
+       style="max-width:450px; display:block; margin:0 auto;">
+  <p style="text-align:center;"><small><i>Java ClassLoader 계층 구조 - 다양한 배포 환경에서 추가 ClassLoader가 생성될 수 있음</i></small></p>
 </div>
 
 이러한 클래스 이름 변환은 Spring Boot의 LaunchedURLClassLoader가 수행하며, `Class.forName()`이나 패키지 스캔 시 이러한 변환된 이름을 고려하지 않으면 클래스를 찾지 못하게 된다.
@@ -647,7 +647,7 @@ Martin Fowler의 ["Feature Toggles (Feature Flags)"](https://martinfowler.com/ar
 
 <!-- Feature Flag 시스템 흐름도 - 대체 이미지 -->
 <div class="alternative-diagram">
-  <img src="https://mermaid.ink/img/pako:eNptkLFugzAQhl_l5DEpA5UKSSxkSFy1VaRm6pIFk1MwPmQMiaTi3WsPEEUpveS-_7777_wcSCtFHNBYZ5LnXc6eXrjEsEZDRjE4HdAoS5y6QU9omCw1pyjFnL3uCrT_q-0S0Mu70YjxlVVf04nWyNj7e3TGCvdkdVVAoEjWi8djmW8OWkWl67YXaKFTbQmxl3cqE7QnVBRCRb6sCXDPfCpnwNnLkRSW6N-1FXHo0d-yEUwkNKTM2dR8QFoaHKytOvQ7UfWowKVXlBG9kVIYR4ow0jKPKUQfQ-p9T6PRtONPWXwx9ZOuPzSVT-Vst30JT8Vo_wAeGnCb?type=png" 
+  <img src="https://i.imgur.com/HnJfnGF.png" 
        alt="Feature Flag 시스템 흐름도" 
        style="max-width:600px; display:block; margin:0 auto;">
   <p style="text-align:center;"><small><i>Feature Flag 시스템의 전체 흐름도 - 어노테이션 선언부터 값 조회까지</i></small></p>
