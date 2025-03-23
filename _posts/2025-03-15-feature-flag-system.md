@@ -93,6 +93,11 @@ graph TD
     Splitter -->|Store Definition| DB[DynamoDB]
     Splitter -->|Notify| Admin[Admin Page]
     Admin -->|Confirm Registration| Manager
+    Manager -->|Periodic Update| DB
+    DB -->|Retrieve Latest Values| Manager
+    Admin -->|Change Flag Value| Splitter
+    Splitter -->|Update DB| DB
+    DB -->|Update Manager Cache| Manager
 ```
 
 *Feature Flag 시스템의 전체 아키텍처를 보여주는 다이어그램*
