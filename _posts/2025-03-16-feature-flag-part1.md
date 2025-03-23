@@ -35,9 +35,12 @@ mermaid: true
     font-size: 110% !important;
   }
 
+  /* 다이어그램 문제 해결을 위한 직접적인 스타일 지정 */
   .mermaid {
+    display: block !important;
     width: 100% !important;
-    max-width: 150px !important;  /* 최대 너비 대폭 축소 */
+    max-width: 120px !important;
+    height: auto !important;
     margin: 10px auto !important;
     text-align: center !important;
     background-color: white !important;
@@ -45,16 +48,17 @@ mermaid: true
     border-radius: 4px !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
     overflow-x: auto !important;
-    transform: scale(0.7) !important;  /* 전체 크기 70%로 축소 */
+    transform: scale(0.5) !important;
     transform-origin: center center !important;
   }
   
+  /* SVG 요소에 직접 스타일 지정 */
   .mermaid svg {
-    width: 100% !important;
-    max-width: 140px !important;  /* SVG 최대 너비 더 축소 */
-    height: auto !important;
     display: inline-block !important;
-    transform: scale(0.4) !important;  /* SVG 크기를 40%로 축소 */
+    width: 100% !important;
+    max-width: 100px !important;
+    height: auto !important;
+    transform: scale(0.4) !important;
     transform-origin: center center !important;
   }
 
@@ -66,15 +70,46 @@ mermaid: true
     }
     
     .mermaid {
-      max-width: 120px !important;  /* 모바일에서는 더 작게 */
+      max-width: 100px !important;
       padding: 2px !important;
-      transform: scale(0.5) !important;  /* 전체 크기 50%로 축소 */
+      transform: scale(0.4) !important;
     }
     
     .mermaid svg {
-      max-width: 100px !important;
-      transform: scale(0.3) !important;  /* 모바일에서는 30%로 축소 */
+      max-width: 80px !important;
+      transform: scale(0.3) !important;
     }
+  }
+
+  /* 추가 mermaid 요소 스타일 수정 */
+  .mermaid .node rect,
+  .mermaid .node circle,
+  .mermaid .node ellipse,
+  .mermaid .node polygon,
+  .mermaid .node path {
+    fill: #fff !important;
+    stroke: #333 !important;
+    stroke-width: 1px !important;
+  }
+
+  .mermaid .edgePath .path {
+    stroke: #333 !important;
+    stroke-width: 1px !important;
+  }
+
+  .mermaid .edgeLabel {
+    background-color: #fff !important;
+    font-size: 10px !important;
+  }
+
+  .mermaid .cluster rect {
+    fill: #f9f9f9 !important;
+    stroke: #ddd !important;
+    stroke-width: 1px !important;
+  }
+
+  .mermaid .label {
+    font-size: 10px !important;
   }
 </style>
 
@@ -126,6 +161,15 @@ sequenceDiagram
     API->>DB: Store updated value
     DB-->>API: Acknowledge update
 ```
+
+<!-- 대체 다이어그램 이미지 -->
+<div class="alternative-diagram" style="text-align:center; margin:20px auto; max-width:400px;">
+  <img src="https://www.plantuml.com/plantuml/svg/hLJBRjim4BppAnRk8JIaUsLP1Lj5i3Tfa70OKjuXPGIPsj0QQPUeAKmMstt6k_HKn3Kgq-3kttWvKszqQVNHHbSFQeZNPLgSgT9eX5akwCjHDcXKJMsRcn2JIrLVeUE3s2wq9YMTaMPQs0bY0qkfGCXqibqiABN9nWNjx9LFoZMx1V6QvvFoIrKI1QFWpGZV9jzPHgEIIbfICi82PaP8vqyIa4_b7eBNBv2WXMBqrZg9E1s0JV7jlOB1iZ1TLaJiZUKYH60pCgdVTsHiaTUQu8cJ-01pU0I6Pg4s8CaXaY8H9-f0l0B0a2gR0N0ECJOR24bWXTBrP68YOTXYMsLo3XAYfSQqoaDHfWaMJVWpR18_BI2AGcXXQ4z3fZSJJoVGX6lEHEeWC3sCCvYKLx7m4ow9RWbLjHAMmhc2jmrWn6tK7NlmWO6JgADhUqAFKJRr7YRsXUoNH-dv15XMjP0Kcz2G7ZSndSRNVJu7iFvaTVS9aF7QLBvDOmPx_sKb_vHrZNlrYB3_1VrWxW5e3kUFtlk-0m00" 
+       alt="Feature Flag 시스템 시퀀스 다이어그램" 
+       style="max-width:100%; height:auto; border:1px solid #ddd; border-radius:4px;">
+  <p><small><i>시스템의 주요 컴포넌트 간 상호작용을 보여주는 시퀀스 다이어그램</i></small></p>
+</div>
+
 *시스템의 주요 컴포넌트 간 상호작용을 보여주는 시퀀스 다이어그램*
 
 아키텍처 설계 시 중앙집중식과 분산식 접근법을 비교했다. 중앙집중식은 모든 Flag 결정을 중앙 서버에서 처리하는 방식으로, 즉각적인 업데이트와 일관된 제어가 가능하지만 네트워크 지연과 의존성이 증가한다. 분산식은 각 클라이언트가 로컬에서 결정을 내리는 방식으로, 성능은 좋지만 상태 동기화가 어렵다.

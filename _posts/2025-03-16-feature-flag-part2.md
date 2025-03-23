@@ -33,9 +33,12 @@ mermaid: true
     font-size: 110% !important;
   }
 
+  /* 다이어그램 문제 해결을 위한 직접적인 스타일 지정 */
   .mermaid {
+    display: block !important;
     width: 100% !important;
-    max-width: 150px !important;  /* 최대 너비 대폭 축소 */
+    max-width: 120px !important;
+    height: auto !important;
     margin: 10px auto !important;
     text-align: center !important;
     background-color: white !important;
@@ -43,16 +46,17 @@ mermaid: true
     border-radius: 4px !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
     overflow-x: auto !important;
-    transform: scale(0.7) !important;  /* 전체 크기 70%로 축소 */
+    transform: scale(0.5) !important;
     transform-origin: center center !important;
   }
   
+  /* SVG 요소에 직접 스타일 지정 */
   .mermaid svg {
-    width: 100% !important;
-    max-width: 140px !important;  /* SVG 최대 너비 더 축소 */
-    height: auto !important;
     display: inline-block !important;
-    transform: scale(0.4) !important;  /* SVG 크기를 40%로 축소 */
+    width: 100% !important;
+    max-width: 100px !important;
+    height: auto !important;
+    transform: scale(0.4) !important;
     transform-origin: center center !important;
   }
 
@@ -64,15 +68,46 @@ mermaid: true
     }
     
     .mermaid {
-      max-width: 120px !important;  /* 모바일에서는 더 작게 */
+      max-width: 100px !important;
       padding: 2px !important;
-      transform: scale(0.5) !important;  /* 전체 크기 50%로 축소 */
+      transform: scale(0.4) !important;
     }
     
     .mermaid svg {
-      max-width: 100px !important;
-      transform: scale(0.3) !important;  /* 모바일에서는 30%로 축소 */
+      max-width: 80px !important;
+      transform: scale(0.3) !important;
     }
+  }
+
+  /* 추가 mermaid 요소 스타일 수정 */
+  .mermaid .node rect,
+  .mermaid .node circle,
+  .mermaid .node ellipse,
+  .mermaid .node polygon,
+  .mermaid .node path {
+    fill: #fff !important;
+    stroke: #333 !important;
+    stroke-width: 1px !important;
+  }
+
+  .mermaid .edgePath .path {
+    stroke: #333 !important;
+    stroke-width: 1px !important;
+  }
+
+  .mermaid .edgeLabel {
+    background-color: #fff !important;
+    font-size: 10px !important;
+  }
+
+  .mermaid .cluster rect {
+    fill: #f9f9f9 !important;
+    stroke: #ddd !important;
+    stroke-width: 1px !important;
+  }
+
+  .mermaid .label {
+    font-size: 10px !important;
   }
 </style>
 

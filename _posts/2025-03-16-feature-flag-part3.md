@@ -33,9 +33,12 @@ mermaid: true
     font-size: 110% !important;
   }
 
+  /* 다이어그램 문제 해결을 위한 직접적인 스타일 지정 */
   .mermaid {
+    display: block !important;
     width: 100% !important;
-    max-width: 150px !important;  /* 최대 너비 대폭 축소 */
+    max-width: 120px !important;
+    height: auto !important;
     margin: 10px auto !important;
     text-align: center !important;
     background-color: white !important;
@@ -43,16 +46,17 @@ mermaid: true
     border-radius: 4px !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
     overflow-x: auto !important;
-    transform: scale(0.7) !important;  /* 전체 크기 70%로 축소 */
+    transform: scale(0.5) !important;
     transform-origin: center center !important;
   }
   
+  /* SVG 요소에 직접 스타일 지정 */
   .mermaid svg {
-    width: 100% !important;
-    max-width: 140px !important;  /* SVG 최대 너비 더 축소 */
-    height: auto !important;
     display: inline-block !important;
-    transform: scale(0.4) !important;  /* SVG 크기를 40%로 축소 */
+    width: 100% !important;
+    max-width: 100px !important;
+    height: auto !important;
+    transform: scale(0.4) !important;
     transform-origin: center center !important;
   }
 
@@ -64,15 +68,46 @@ mermaid: true
     }
     
     .mermaid {
-      max-width: 120px !important;  /* 모바일에서는 더 작게 */
+      max-width: 100px !important;
       padding: 2px !important;
-      transform: scale(0.5) !important;  /* 전체 크기 50%로 축소 */
+      transform: scale(0.4) !important;
     }
     
     .mermaid svg {
-      max-width: 100px !important;
-      transform: scale(0.3) !important;  /* 모바일에서는 30%로 축소 */
+      max-width: 80px !important;
+      transform: scale(0.3) !important;
     }
+  }
+
+  /* 추가 mermaid 요소 스타일 수정 */
+  .mermaid .node rect,
+  .mermaid .node circle,
+  .mermaid .node ellipse,
+  .mermaid .node polygon,
+  .mermaid .node path {
+    fill: #fff !important;
+    stroke: #333 !important;
+    stroke-width: 1px !important;
+  }
+
+  .mermaid .edgePath .path {
+    stroke: #333 !important;
+    stroke-width: 1px !important;
+  }
+
+  .mermaid .edgeLabel {
+    background-color: #fff !important;
+    font-size: 10px !important;
+  }
+
+  .mermaid .cluster rect {
+    fill: #f9f9f9 !important;
+    stroke: #ddd !important;
+    stroke-width: 1px !important;
+  }
+
+  .mermaid .label {
+    font-size: 10px !important;
   }
 </style>
 
@@ -622,7 +657,7 @@ FeatureFlagManager.getInstance().registerModuleFlags(ServiceFeatureFlags.class);
 : 특정 소프트웨어를 개발하기 위한 도구 모음. 라이브러리, 문서, 예제 코드 등을 포함한다.
 
 **Reflection**
-: Java에서 실행 중인 프로그램이 자신의 구조(클래스, 메서드, 필드 등)를 검사하고 조작할 수 있는 능력. 런타임에 클래스의 내부 구조를 살펴보고 동적으로 사용할 수 있다.
+: Java에서 실행 중인 프로그램이 자기 자신의 구조를 분석하는 기능. 런타임에 클래스의 내부 구조를 살펴보고 동적으로 사용할 수 있다.
 
 **Java Annotation**
 : 코드에 메타데이터를 추가하는 Java의 기능. `@FeatureFlag`와 같이 '@' 기호로 시작하며, 컴파일러나 실행 환경에 추가 정보를 제공한다.
@@ -693,3 +728,11 @@ FeatureFlagManager.getInstance().registerModuleFlags(ServiceFeatureFlags.class);
 ## 참고자료
 
 Martin Fowler의 ["Feature Toggles (Feature Flags)"](https://martinfowler.com/articles/feature-toggles.html) - Feature Flag의 개념과 사용 패턴
+
+<!-- 도움말: 다이어그램 직접 HTML로 대체 -->
+<div class="alternative-diagram" style="text-align:center; margin:20px auto; max-width:300px;">
+  <img src="https://www.plantuml.com/plantuml/svg/SoWkIImgAStDuNBAJrBGjLDmpCbCJbMmKiX8pSd9vuBmACtDICmjo2X9LKZ9J4lFII-gHOdvYQaf5Obf9QafIQan1KW9K78FJYnILx3AgEegeGnv0IP0Vm00" 
+       alt="Feature Flag Flow 다이어그램" 
+       style="max-width:100%; height:auto;">
+  <p><small><i>다이어그램이 보이지 않는 경우를 위한 대체 이미지</i></small></p>
+</div>
