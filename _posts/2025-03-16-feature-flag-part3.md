@@ -22,17 +22,20 @@ mermaid: true
   }
 
   /* 개별 요소 크기 설정 - 중첩된 증가 대신 명확한 크기 지정 */
-  p, li { font-size: 16px; }
+  p, li { 
+    font-size: 16px; 
+    margin-bottom: 0.8em;
+  }
   
-  h1 { font-size: 32px; }
-  h2 { font-size: 28px; }
-  h3 { font-size: 24px; }
-  h4 { font-size: 20px; }
-  h5 { font-size: 18px; }
-  h6 { font-size: 16px; }
+  h1 { font-size: 28px; margin-top: 1.8em; margin-bottom: 0.8em; }
+  h2 { font-size: 24px; margin-top: 1.6em; margin-bottom: 0.7em; }
+  h3 { font-size: 20px; margin-top: 1.4em; margin-bottom: 0.6em; }
+  h4 { font-size: 18px; margin-top: 1.2em; margin-bottom: 0.5em; }
+  h5 { font-size: 16px; margin-top: 1.1em; margin-bottom: 0.4em; }
+  h6 { font-size: 15px; margin-top: 1em; margin-bottom: 0.3em; }
   
   code {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   /* 다이어그램 스타일 조정 */
@@ -50,17 +53,15 @@ mermaid: true
 
   /* mermaid 다이어그램 스타일 조정 */
   .mermaid {
-    display: block;
-    max-width: 600px;
-    margin: 0 auto;
-    text-align: center;
-    font-size: 0.8em;
-    transform: scale(0.8);
-    transform-origin: center;
+    display: block !important;
+    max-width: 600px !important;
+    margin: 20px auto !important;
+    text-align: center !important;
+    font-size: 14px !important;
   }
 
   .mermaid svg {
-    max-width: 100%;
+    max-width: 100% !important;
   }
 
   /* 모바일 최적화 */
@@ -70,8 +71,12 @@ mermaid: true
       font-size: 15px;
     }
     
+    h1 { font-size: 26px; }
+    h2 { font-size: 22px; }
+    h3 { font-size: 19px; }
+    
     .mermaid {
-      transform: scale(0.7);
+      font-size: 12px !important;
     }
   }
 </style>
