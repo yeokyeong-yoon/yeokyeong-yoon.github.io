@@ -33,31 +33,17 @@ mermaid: true
     font-size: 110% !important;
   }
 
-  /* 다이어그램 문제 해결을 위한 직접적인 스타일 지정 */
-  .mermaid {
-    display: block !important;
-    width: 100% !important;
-    max-width: 120px !important;
-    height: auto !important;
-    margin: 10px auto !important;
+  /* 다이어그램 스타일 간소화 - mermaid 사용 대신 이미지 스타일만 정의 */
+  .alternative-diagram {
     text-align: center !important;
-    background-color: white !important;
-    padding: 5px !important;
-    border-radius: 4px !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-    overflow-x: auto !important;
-    transform: scale(0.5) !important;
-    transform-origin: center center !important;
+    margin: 20px auto !important;
   }
   
-  /* SVG 요소에 직접 스타일 지정 */
-  .mermaid svg {
-    display: inline-block !important;
-    width: 100% !important;
-    max-width: 100px !important;
+  .alternative-diagram img {
+    max-width: 100% !important;
     height: auto !important;
-    transform: scale(0.4) !important;
-    transform-origin: center center !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
   }
 
   /* 모바일 최적화 */
@@ -66,48 +52,6 @@ mermaid: true
       padding: 10px 5px;
       font-size: 16px !important;
     }
-    
-    .mermaid {
-      max-width: 100px !important;
-      padding: 2px !important;
-      transform: scale(0.4) !important;
-    }
-    
-    .mermaid svg {
-      max-width: 80px !important;
-      transform: scale(0.3) !important;
-    }
-  }
-
-  /* 추가 mermaid 요소 스타일 수정 */
-  .mermaid .node rect,
-  .mermaid .node circle,
-  .mermaid .node ellipse,
-  .mermaid .node polygon,
-  .mermaid .node path {
-    fill: #fff !important;
-    stroke: #333 !important;
-    stroke-width: 1px !important;
-  }
-
-  .mermaid .edgePath .path {
-    stroke: #333 !important;
-    stroke-width: 1px !important;
-  }
-
-  .mermaid .edgeLabel {
-    background-color: #fff !important;
-    font-size: 10px !important;
-  }
-
-  .mermaid .cluster rect {
-    fill: #f9f9f9 !important;
-    stroke: #ddd !important;
-    stroke-width: 1px !important;
-  }
-
-  .mermaid .label {
-    font-size: 10px !important;
   }
 </style>
 
@@ -180,23 +124,14 @@ public static double boostFactor = 1.5;
 
 ### 6.4 전체 동작 흐름: 서비스 시작 시점
 
-```mermaid
-sequenceDiagram
-    participant App as Application
-    participant Loader as JVM ClassLoader
-    participant JVM as JVM (Method Area + Heap)
-    participant FFManager as FeatureFlagManager
-    participant Code as 클래스 with @FeatureFlag
+<!-- 동작 흐름 다이어그램 대체 이미지 -->
+<div class="alternative-diagram">
+  <img src="https://www.plantuml.com/plantuml/svg/bP9DQiCm48NtFiKihZlO0oDifvGH4WIqeg4qr9ATQRarGOeWWpB9_ltxQbQAGINvg_RyURwtpT-CKVL9Ef4bfEoIhOabcmTX8YARMRZp1HlsXsU_qKUU9EGbTmzXRqLQ0nQvGnL8WB2RkxS1GFD5E-L2dZ5N5fUB2iOXaBVSBJ48a09EJVtU7z0-6IJLWMYNbBvZrAqPaRw6oHi4GzrAH0rFUQz5IfVXfVHJnSDl9zOVLLMnCRzzDYfTDEjLT-jCHVUm8-AxT_PYiw3vdKQ62vXogdMT-S2EtP2JlIIvFOOTwlDY5qhQlm40" 
+       alt="Feature Flag 시스템 초기화 시퀀스 다이어그램" 
+       style="max-width:500px;">
+  <p><small><i>Feature Flag 시스템 초기화 시 클래스 로딩과 플래그 등록 과정</i></small></p>
+</div>
 
-    App->>Loader: 클래스 로딩
-    Loader->>JVM: 클래스 및 필드 + Annotation → Method Area 저장
-
-    App->>FFManager: 애플리케이션 초기화
-    FFManager->>JVM: 모든 클래스 탐색
-    FFManager->>Code: @FeatureFlag 필드 탐색 (reflection)
-    Code-->>FFManager: static primitive 필드 + 어노테이션 값
-    FFManager->>FFManager: 플래그 정보 ConcurrentHashMap에 저장
-```
 각 항목별 JVM 저장 위치는 다음과 같다:
 
 **static primitive 필드**
@@ -359,32 +294,13 @@ private Class<?>[] getClasses(String packageName) throws Exception {
 
 3. **멀티 모듈 프로젝트 문제**: 추가 조사를 통해 다른 팀의 멀티 모듈 프로젝트에서도 모듈 간 ClassLoader 차이로 어노테이션 스캔이 실패하는 유사한 문제가 있음을 확인했다.
 
-이 문제의 본질은 단순히 "클래스를 찾지 못하는 버그"가 아니라, Java 애플리케이션의 실행 환경과 ClassLoader 계층 구조에 대한 이해가 필요한 아키텍처적 문제였다.
-
-```mermaid
-graph TD
-    A[Application ClassLoader] --> B[Extension ClassLoader]
-    B --> C[Bootstrap ClassLoader]
-    D[Thread Context ClassLoader] -.-> A
-    E[Custom ClassLoader] -.-> A
-    F[JAR-in-JAR ClassLoader] -.-> A
-    
-    style D fill:#f9f,stroke:#333,stroke-width:2px
-    style E fill:#f9f,stroke:#333,stroke-width:2px
-    style F fill:#f9f,stroke:#333,stroke-width:2px
-```
-*Java ClassLoader 계층 구조 - 다양한 배포 환경에서 추가 ClassLoader가 생성될 수 있음*
-
-다음은 Spring Boot Executable JAR에서의 클래스 이름 변환 과정을 보여주는 예시이다:
-
-**원래 클래스 이름**: `com.company.service.SearchService`  
-**Executable JAR에서의 클래스 이름**: `BOOT-INF.classes.com.company.service.SearchService`
-
-**원래 클래스 이름**: `com.company.flag.FeatureManager`  
-**Executable JAR에서의 클래스 이름**: `BOOT-INF.classes.com.company.flag.FeatureManager`
-
-**원래 클래스 이름**: `org.springframework.core.io.Resource`  
-**Executable JAR에서의 클래스 이름**: `org.springframework.boot.loader.jar.JarFileEntries`
+<!-- ClassLoader 계층 구조 다이어그램 - 대체 이미지 사용 -->
+<div class="alternative-diagram">
+  <img src="https://www.plantuml.com/plantuml/svg/TP31IiD048RlynH3VU0jxO0GtggGIjhQTX4dYNLXqTiOj4YItAlpxJXLTvs9jGGYUmddPf5Wkc3LQ1TmYDC51Lg2hh0F2w05nQxLXrCDp4lnU9a37FfpQlTVdRhArF-YbIi_ZtLrUJBgUzb5ZeADHo0mhqNmn-oFp4ZzCqpGUyoSAj_mJfhAyFUl1cXrUUgVLzkgIYblmJnvcXONTlwsYNPeXv_0lA9oYRkNErkFfO_K8IiRy39m2qzPLMjS2lgdPdIHFhLyb1CWMiHFJSPBDUcSN_0N" 
+       alt="Java ClassLoader 계층 구조" 
+       style="max-width:450px;">
+  <p><small><i>Java ClassLoader 계층 구조 - 다양한 배포 환경에서 추가 ClassLoader가 생성될 수 있음</i></small></p>
+</div>
 
 이러한 클래스 이름 변환은 Spring Boot의 LaunchedURLClassLoader가 수행하며, `Class.forName()`이나 패키지 스캔 시 이러한 변환된 이름을 고려하지 않으면 클래스를 찾지 못하게 된다.
 
@@ -591,7 +507,7 @@ FeatureFlagManager.getInstance().registerModuleFlags(ServiceFeatureFlags.class);
 
 5. **상세한 로깅의 가치**: 상세한 디버그 로깅이 문제 진단에 결정적인 역할을 했다. 특히 리플렉션과 같은 메타프로그래밍 기법을 사용할 때는 내부 동작을 추적할 수 있는 로깅이 필수적이다.
 
-트러블슈팅 과정은 정말 힘들었지만, 그만큼 많이 배울 수 있었던 소중한 경험이었다. 처음에는 Java의 ClassLoader나 리플렉션 같은 개념들이 너무 어려워서 좌절도 많이 했다. 하지만 동료 개발자들과 페어 프로그래밍을 하면서 문제를 하나씩 해결해나갔다. 특히 ClassLoader 관련 문제를 해결할 때는 함께 Java 스펙도 찾아보고, 오픈소스 프로젝트의 구현 사례도 분석하면서 깊이 있게 공부했다. 이렇게 실제 문제를 해결하면서 공부하니 이론으로만 알던 개념들을 확실하게 이해할 수 있었다. 이러한 학습 과정을 통해 기술적 성장을 이룰 수 있었지만, 실제 프로덕션 환경에서는 또 다른 도전이 기다리고 있었다.
+트러블슈팅 과정은 정말 힘들었지만, 그만큼 많이 배울 수 있었다. 처음에는 Java의 ClassLoader나 리플렉션 같은 개념들이 너무 어려워서 좌절도 많이 했다. 하지만 동료 개발자들과 페어 프로그래밍을 하면서 문제를 하나씩 해결해나갔다. 특히 ClassLoader 관련 문제를 해결할 때는 함께 Java 스펙도 찾아보고, 오픈소스 프로젝트의 구현 사례도 분석하면서 깊이 있게 공부했다. 이렇게 실제 문제를 해결하면서 공부하니 이론으로만 알던 개념들을 확실하게 이해할 수 있었다. 이러한 학습 과정을 통해 기술적 성장을 이룰 수 있었다.
 
 개발 환경에서는 잘 동작하던 코드가 실제 프로덕션 환경에서 문제가 발생했을 때는 정말 당황스러웠다. 하지만 이 경험을 통해 테스트의 중요성을 뼈저리게 느꼈고, 다양한 환경에서의 테스트 케이스를 꼼꼼히 작성하는 습관을 기를 수 있었다. 결국 이런 시행착오 끝에 안정적으로 동작하는 SDK를 만들 수 있었고, 이 과정에서 성장할 수 있었다는 점이 가장 큰 수확이었다.
 
@@ -729,10 +645,10 @@ FeatureFlagManager.getInstance().registerModuleFlags(ServiceFeatureFlags.class);
 
 Martin Fowler의 ["Feature Toggles (Feature Flags)"](https://martinfowler.com/articles/feature-toggles.html) - Feature Flag의 개념과 사용 패턴
 
-<!-- 도움말: 다이어그램 직접 HTML로 대체 -->
-<div class="alternative-diagram" style="text-align:center; margin:20px auto; max-width:300px;">
+<!-- Feature Flag 시스템 흐름도 - 대체 이미지 -->
+<div class="alternative-diagram">
   <img src="https://www.plantuml.com/plantuml/svg/SoWkIImgAStDuNBAJrBGjLDmpCbCJbMmKiX8pSd9vuBmACtDICmjo2X9LKZ9J4lFII-gHOdvYQaf5Obf9QafIQan1KW9K78FJYnILx3AgEegeGnv0IP0Vm00" 
        alt="Feature Flag Flow 다이어그램" 
-       style="max-width:100%; height:auto;">
-  <p><small><i>다이어그램이 보이지 않는 경우를 위한 대체 이미지</i></small></p>
+       style="max-width:350px;">
+  <p><small><i>Feature Flag 시스템의 전체 흐름도 - 다이어그램이 보이지 않는 경우를 위한 대체 이미지</i></small></p>
 </div>

@@ -35,31 +35,17 @@ mermaid: true
     font-size: 110% !important;
   }
 
-  /* 다이어그램 문제 해결을 위한 직접적인 스타일 지정 */
-  .mermaid {
-    display: block !important;
-    width: 100% !important;
-    max-width: 120px !important;
-    height: auto !important;
-    margin: 10px auto !important;
+  /* 다이어그램 스타일 간소화 - mermaid 사용 대신 이미지 스타일만 정의 */
+  .alternative-diagram {
     text-align: center !important;
-    background-color: white !important;
-    padding: 5px !important;
-    border-radius: 4px !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-    overflow-x: auto !important;
-    transform: scale(0.5) !important;
-    transform-origin: center center !important;
+    margin: 20px auto !important;
   }
   
-  /* SVG 요소에 직접 스타일 지정 */
-  .mermaid svg {
-    display: inline-block !important;
-    width: 100% !important;
-    max-width: 100px !important;
+  .alternative-diagram img {
+    max-width: 100% !important;
     height: auto !important;
-    transform: scale(0.4) !important;
-    transform-origin: center center !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
   }
 
   /* 모바일 최적화 */
@@ -68,48 +54,6 @@ mermaid: true
       padding: 10px 5px;
       font-size: 16px !important;
     }
-    
-    .mermaid {
-      max-width: 100px !important;
-      padding: 2px !important;
-      transform: scale(0.4) !important;
-    }
-    
-    .mermaid svg {
-      max-width: 80px !important;
-      transform: scale(0.3) !important;
-    }
-  }
-
-  /* 추가 mermaid 요소 스타일 수정 */
-  .mermaid .node rect,
-  .mermaid .node circle,
-  .mermaid .node ellipse,
-  .mermaid .node polygon,
-  .mermaid .node path {
-    fill: #fff !important;
-    stroke: #333 !important;
-    stroke-width: 1px !important;
-  }
-
-  .mermaid .edgePath .path {
-    stroke: #333 !important;
-    stroke-width: 1px !important;
-  }
-
-  .mermaid .edgeLabel {
-    background-color: #fff !important;
-    font-size: 10px !important;
-  }
-
-  .mermaid .cluster rect {
-    fill: #f9f9f9 !important;
-    stroke: #ddd !important;
-    stroke-width: 1px !important;
-  }
-
-  .mermaid .label {
-    font-size: 10px !important;
   }
 </style>
 
@@ -122,48 +66,10 @@ Feature Flag(기능 플래그)는 코드를 변경하지 않고도 기능을 켜
 
 ## 2. 시스템 아키텍처
 
-시스템의 데이터 흐름과 주요 컴포넌트 간의 상호작용은 다음 시퀀스 다이어그램과 같다:
+시스템의 데이터 흐름과 주요 컴포넌트 간의 상호작용은 다음과 같습니다:
 
-```mermaid
-sequenceDiagram
-    participant Client as Client Application
-    participant Manager as Feature Flag Manager
-    participant Cache as LRU Cache
-    participant API as Splitter API
-    participant Admin as Admin Page
-    participant DB as DynamoDB
-
-    Client->>Manager: Flags declared via Annotation (Reflection)
-    Manager->>API: Register declared flags (initial execution)
-    API->>DB: Store flag definitions
-    DB-->>API: Acknowledge storage
-    API->>Admin: Send flag registration
-    Admin-->>API: Acknowledge registration
-    API-->>Manager: Respond with registration acknowledgment
-
-    loop Periodic Update
-        Manager->>API: Request latest Flag Treatments
-        API->>DB: Query latest flag values
-        DB-->>API: Return flag data
-        API->>Admin: Fetch latest Treatment values
-        Admin-->>API: Return latest Treatment values
-        API-->>Manager: Respond with latest Flag values
-        Manager->>Cache: Update cache
-    end
-
-    Client->>Manager: Request Flag value
-    Manager->>Cache: Retrieve cached Flag
-    Cache-->>Manager: Return cached value
-    Manager-->>Client: Provide Flag value
-
-    Note over Admin,DB: Admin changes are persisted to DynamoDB
-    Admin->>API: Update flag value
-    API->>DB: Store updated value
-    DB-->>API: Acknowledge update
-```
-
-<!-- 대체 다이어그램 이미지 -->
-<div class="alternative-diagram" style="text-align:center; margin:20px auto; max-width:400px;">
+<!-- mermaid 다이어그램을 제거하고 대체 이미지만 사용 -->
+<div class="alternative-diagram" style="text-align:center; margin:20px auto;">
   <img src="https://www.plantuml.com/plantuml/svg/hLJBRjim4BppAnRk8JIaUsLP1Lj5i3Tfa70OKjuXPGIPsj0QQPUeAKmMstt6k_HKn3Kgq-3kttWvKszqQVNHHbSFQeZNPLgSgT9eX5akwCjHDcXKJMsRcn2JIrLVeUE3s2wq9YMTaMPQs0bY0qkfGCXqibqiABN9nWNjx9LFoZMx1V6QvvFoIrKI1QFWpGZV9jzPHgEIIbfICi82PaP8vqyIa4_b7eBNBv2WXMBqrZg9E1s0JV7jlOB1iZ1TLaJiZUKYH60pCgdVTsHiaTUQu8cJ-01pU0I6Pg4s8CaXaY8H9-f0l0B0a2gR0N0ECJOR24bWXTBrP68YOTXYMsLo3XAYfSQqoaDHfWaMJVWpR18_BI2AGcXXQ4z3fZSJJoVGX6lEHEeWC3sCCvYKLx7m4ow9RWbLjHAMmhc2jmrWn6tK7NlmWO6JgADhUqAFKJRr7YRsXUoNH-dv15XMjP0Kcz2G7ZSndSRNVJu7iFvaTVS9aF7QLBvDOmPx_sKb_vHrZNlrYB3_1VrWxW5e3kUFtlk-0m00" 
        alt="Feature Flag 시스템 시퀀스 다이어그램" 
        style="max-width:100%; height:auto; border:1px solid #ddd; border-radius:4px;">

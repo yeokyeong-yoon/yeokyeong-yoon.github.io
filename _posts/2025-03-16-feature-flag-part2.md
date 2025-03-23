@@ -33,31 +33,17 @@ mermaid: true
     font-size: 110% !important;
   }
 
-  /* 다이어그램 문제 해결을 위한 직접적인 스타일 지정 */
-  .mermaid {
-    display: block !important;
-    width: 100% !important;
-    max-width: 120px !important;
-    height: auto !important;
-    margin: 10px auto !important;
+  /* 다이어그램 스타일 간소화 - mermaid 사용 대신 이미지 스타일만 정의 */
+  .alternative-diagram {
     text-align: center !important;
-    background-color: white !important;
-    padding: 5px !important;
-    border-radius: 4px !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-    overflow-x: auto !important;
-    transform: scale(0.5) !important;
-    transform-origin: center center !important;
+    margin: 20px auto !important;
   }
   
-  /* SVG 요소에 직접 스타일 지정 */
-  .mermaid svg {
-    display: inline-block !important;
-    width: 100% !important;
-    max-width: 100px !important;
+  .alternative-diagram img {
+    max-width: 100% !important;
     height: auto !important;
-    transform: scale(0.4) !important;
-    transform-origin: center center !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
   }
 
   /* 모바일 최적화 */
@@ -66,48 +52,6 @@ mermaid: true
       padding: 10px 5px;
       font-size: 16px !important;
     }
-    
-    .mermaid {
-      max-width: 100px !important;
-      padding: 2px !important;
-      transform: scale(0.4) !important;
-    }
-    
-    .mermaid svg {
-      max-width: 80px !important;
-      transform: scale(0.3) !important;
-    }
-  }
-
-  /* 추가 mermaid 요소 스타일 수정 */
-  .mermaid .node rect,
-  .mermaid .node circle,
-  .mermaid .node ellipse,
-  .mermaid .node polygon,
-  .mermaid .node path {
-    fill: #fff !important;
-    stroke: #333 !important;
-    stroke-width: 1px !important;
-  }
-
-  .mermaid .edgePath .path {
-    stroke: #333 !important;
-    stroke-width: 1px !important;
-  }
-
-  .mermaid .edgeLabel {
-    background-color: #fff !important;
-    font-size: 10px !important;
-  }
-
-  .mermaid .cluster rect {
-    fill: #f9f9f9 !important;
-    stroke: #ddd !important;
-    stroke-width: 1px !important;
-  }
-
-  .mermaid .label {
-    font-size: 10px !important;
   }
 </style>
 

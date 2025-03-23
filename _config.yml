@@ -98,8 +98,8 @@ kramdown:
   math_engine: mathjax
 
 # Mermaid 설정
-mermaid: true
-mermaid_version: "10.2.3"  # 최신 버전으로 업데이트 
+mermaid: false
+mermaid_version: "10.2.3"  # 최신 버전으로 업데이트, 하지만 비활성화됨
 
 # 성능 최적화 설정
 # incremental: true 
