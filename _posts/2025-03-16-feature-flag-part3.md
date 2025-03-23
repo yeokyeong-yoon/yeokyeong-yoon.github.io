@@ -17,11 +17,25 @@ mermaid: true
     margin: 0 auto;
     padding: 20px;     /* 기본 패딩 */
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 18px !important;  /* 글씨 크기 키우기 */
+    line-height: 1.6 !important;
+  }
+
+  p, li, h1, h2, h3, h4, h5, h6 {
+    font-size: 120% !important;
+  }
+
+  h1 { font-size: 200% !important; }
+  h2 { font-size: 170% !important; }
+  h3 { font-size: 150% !important; }
+  
+  code {
+    font-size: 110% !important;
   }
 
   .mermaid {
     width: 100% !important;
-    max-width: 200px !important;  /* 최대 너비 더 축소 */
+    max-width: 150px !important;  /* 최대 너비 대폭 축소 */
     margin: 10px auto !important;
     text-align: center !important;
     background-color: white !important;
@@ -29,14 +43,16 @@ mermaid: true
     border-radius: 4px !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
     overflow-x: auto !important;
+    transform: scale(0.7) !important;  /* 전체 크기 70%로 축소 */
+    transform-origin: center center !important;
   }
   
   .mermaid svg {
     width: 100% !important;
-    max-width: 180px !important;  /* SVG 최대 너비 더 축소 */
+    max-width: 140px !important;  /* SVG 최대 너비 더 축소 */
     height: auto !important;
     display: inline-block !important;
-    transform: scale(0.5) !important;  /* SVG 크기를 50%로 축소 */
+    transform: scale(0.4) !important;  /* SVG 크기를 40%로 축소 */
     transform-origin: center center !important;
   }
 
@@ -44,16 +60,18 @@ mermaid: true
   @media screen and (max-width: 767px) {
     .post {
       padding: 10px 5px;
+      font-size: 16px !important;
     }
     
     .mermaid {
-      max-width: 180px !important;  /* 모바일에서는 더 작게 */
+      max-width: 120px !important;  /* 모바일에서는 더 작게 */
       padding: 2px !important;
+      transform: scale(0.5) !important;  /* 전체 크기 50%로 축소 */
     }
     
     .mermaid svg {
-      max-width: 150px !important;
-      transform: scale(0.4) !important;  /* 모바일에서는 40%로 축소 */
+      max-width: 100px !important;
+      transform: scale(0.3) !important;  /* 모바일에서는 30%로 축소 */
     }
   }
 </style>
