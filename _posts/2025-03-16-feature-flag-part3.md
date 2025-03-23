@@ -124,12 +124,12 @@ public static double boostFactor = 1.5;
 
 ### 6.4 전체 동작 흐름: 서비스 시작 시점
 
-<!-- 동작 흐름 다이어그램 대체 이미지 -->
+<!-- Feature Flag 시스템 초기화 다이어그램 -->
 <div class="alternative-diagram">
-  <img src="https://www.plantuml.com/plantuml/svg/bP9DQiCm48NtFiKihZlO0oDifvGH4WIqeg4qr9ATQRarGOeWWpB9_ltxQbQAGINvg_RyURwtpT-CKVL9Ef4bfEoIhOabcmTX8YARMRZp1HlsXsU_qKUU9EGbTmzXRqLQ0nQvGnL8WB2RkxS1GFD5E-L2dZ5N5fUB2iOXaBVSBJ48a09EJVtU7z0-6IJLWMYNbBvZrAqPaRw6oHi4GzrAH0rFUQz5IfVXfVHJnSDl9zOVLLMnCRzzDYfTDEjLT-jCHVUm8-AxT_PYiw3vdKQ62vXogdMT-S2EtP2JlIIvFOOTwlDY5qhQlm40" 
-       alt="Feature Flag 시스템 초기화 시퀀스 다이어그램" 
-       style="max-width:500px;">
-  <p><small><i>Feature Flag 시스템 초기화 시 클래스 로딩과 플래그 등록 과정</i></small></p>
+  <img src="https://mermaid.ink/img/pako:eNp1kl9v2jAUxb9K5MeNSaO0TJBAB9J4GNOkPmxPe3Gcm2DBsTPbAVZV3323QKftobwk55z7O_4TLlBlmUhAvNZGrY1ckoZ3JY4Kb42hUiHYvEFjFBltQ2-gtKxXNAeF57x71oDBn1t_A_TyZQxivGN2Mupoi4yD3wdrrHA3VjUVBEK12j1dXZXLw1braGXbvkAHg_ZWEHt-oyqlPaJmkTqK5ZGATzwM5QQ4e3glTSV5W9uKJDxFd8vOYVVSQc6cpeeXdDQGJ2ubDt1OdNhR4jLMaNe8k1Zat0ow0jOPLSUujTT4gc6i6UZ_6uqL6V91-zHUOJaz_f49PC2i_gL3koQ5" 
+       alt="Feature Flag 시스템 초기화 과정" 
+       style="max-width:600px; display:block; margin:0 auto;">
+  <p style="text-align:center;"><small><i>Feature Flag 시스템 초기화 시 클래스 로딩과 플래그 등록 과정</i></small></p>
 </div>
 
 각 항목별 JVM 저장 위치는 다음과 같다:
@@ -647,8 +647,8 @@ Martin Fowler의 ["Feature Toggles (Feature Flags)"](https://martinfowler.com/ar
 
 <!-- Feature Flag 시스템 흐름도 - 대체 이미지 -->
 <div class="alternative-diagram">
-  <img src="https://www.plantuml.com/plantuml/svg/SoWkIImgAStDuNBAJrBGjLDmpCbCJbMmKiX8pSd9vuBmACtDICmjo2X9LKZ9J4lFII-gHOdvYQaf5Obf9QafIQan1KW9K78FJYnILx3AgEegeGnv0IP0Vm00" 
-       alt="Feature Flag Flow 다이어그램" 
-       style="max-width:350px;">
-  <p><small><i>Feature Flag 시스템의 전체 흐름도 - 다이어그램이 보이지 않는 경우를 위한 대체 이미지</i></small></p>
+  <img src="https://mermaid.ink/img/pako:eNptkLFugzAQhl_l5DEpA5UKSSxkSFy1VaRm6pIFk1MwPmQMiaTi3WsPEEUpveS-_7777_wcSCtFHNBYZ5LnXc6eXrjEsEZDRjE4HdAoS5y6QU9omCw1pyjFnL3uCrT_q-0S0Mu70YjxlVVf04nWyNj7e3TGCvdkdVVAoEjWi8djmW8OWkWl67YXaKFTbQmxl3cqE7QnVBRCRb6sCXDPfCpnwNnLkRSW6N-1FXHo0d-yEUwkNKTM2dR8QFoaHKytOvQ7UfWowKVXlBG9kVIYR4ow0jKPKUQfQ-p9T6PRtONPWXwx9ZOuPzSVT-Vst30JT8Vo_wAeGnCb?type=png" 
+       alt="Feature Flag 시스템 흐름도" 
+       style="max-width:600px; display:block; margin:0 auto;">
+  <p style="text-align:center;"><small><i>Feature Flag 시스템의 전체 흐름도 - 어노테이션 선언부터 값 조회까지</i></small></p>
 </div>
