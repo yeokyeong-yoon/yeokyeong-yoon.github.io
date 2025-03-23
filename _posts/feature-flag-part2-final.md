@@ -1,3 +1,5 @@
+
+> 💡 *Feature Flag의 개념이 낯설다면 [1부에서 설명한 개념 정리](../feature-flag-part1) 를 참고하세요.*
 ---
 layout: post
 title: "Feature Flag 시스템 구축하기 (2부): 복잡한 엔터프라이즈 환경에서의 기술적 도전기"
@@ -90,7 +92,6 @@ Feature Flag 시스템을 위한 별도의 인프라를 구축하지 않고, 회
 - 전용 리소스를 통한 성능 최적화
 - 독립적인 확장 및 배포 주기
 - 더 명확한 책임 분리와 관리
-- Feature Flag 특화 기능 추가 용이성
 - 다른 시스템의 장애로부터 격리
 
 이러한 경험은 향후 프로젝트에서 초기 아키텍처 결정의 중요성과 장기적 확장성을 더 신중하게 고려해야 함을 깨닫게 했다.
@@ -139,12 +140,12 @@ Jenkins도 우리 환경에 잘 맞았다. 무엇보다 회사의 기존 인프�
 
 데이터 저장소 선택 시 고려했던 대안들은 다음과 같다:
 
-1. **PostgreSQL/MySQL**
+30. **PostgreSQL/MySQL**
    - 장점: 강력한 트랜잭션, ACID 준수, SQL 표준 지원, 복잡한 쿼리 가능
    - 단점: 수평적 확장 어려움, 스키마 변경의 복잡성, 높은 초기 설정 비용
    - 기각 이유: Feature Flag 데이터 모델의 단순성과 높은 읽기 처리량 요구사항에 과도한 솔루션
 
-2. **MongoDB**
+31. **MongoDB**
    - 장점: 문서 지향 모델, 유연한 스키마, 개발자 친화적 API
    - 단점: 일관성 모델 약함, 복잡한 샤딩 설정, 운영 복잡성
    - 기각 이유: 회사 내 MongoDB 운영 경험 부족, 관리 오버헤드 우려
@@ -160,7 +161,7 @@ Feature Flag 시스템은 다음과 같은 RESTful API 엔드포인트를 제공
 
 API 설계 시 다음과 같은 대안적 접근법을 검토했다:
 
-1. **gRPC 기반 API**
+32. **gRPC 기반 API**
    - 장점: Protocol Buffer의 효율적인 직렬화, 강력한 타입 시스템, 양방향 스트리밍을 통한 실시간 업데이트 지원
    - 단점: HTTP 도구와의 호환성 부족, 높은 학습 곡선, 브라우저 네이티브 지원 미흡
    - 기각 이유: REST API의 범용성과 단순함, 기존 인프라와의 통합 용이성을 더 중요하게 판단
@@ -203,7 +204,7 @@ sequenceDiagram
 
 ### 5.2 SDK 통합 코드
 
-#### 호출 예시
+### 호출 예시
 ```java
 FeatureFlagManager manager = FeatureFlagManager.builder()
                 .setPackageNames(new String[]{"your.package.names"})
@@ -212,7 +213,7 @@ FeatureFlagManager manager = FeatureFlagManager.builder()
                 .build();
 ```
 
-#### 선언 예시
+### 선언 예시
 ```java
 // Flag를 선언할 클래스 내에서
 @FeatureFlag(flagName = "new-search-algorithm")
