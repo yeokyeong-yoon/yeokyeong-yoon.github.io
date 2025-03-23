@@ -98,6 +98,8 @@ graph TD
     Admin -->|Change Flag Value| Splitter
     Splitter -->|Update DB| DB
     DB -->|Update Manager Cache| Manager
+    Manager -->|Store in Cache| Cache[ConcurrentHashMap]
+    Cache -->|Retrieve Flag Value| Manager
 ```
 
 *Feature Flag 시스템의 전체 아키텍처를 보여주는 다이어그램*
