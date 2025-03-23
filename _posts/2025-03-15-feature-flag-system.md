@@ -7,6 +7,77 @@ tags: [feature-flag, system-design, architecture]
 mermaid: true
 ---
 
+<style>
+.mermaid {
+  width: 100%;
+  max-width: 100%;
+  margin: 20px auto;
+  font-size: 14px;
+  font-family: 'Arial', sans-serif;
+  overflow: hidden;
+}
+.mermaid .node rect, 
+.mermaid .node circle, 
+.mermaid .node ellipse, 
+.mermaid .node polygon, 
+.mermaid .node path {
+  fill: #f5f9ff;
+  stroke: #4a6da7;
+  stroke-width: 1.5px;
+}
+.mermaid .node text {
+  font-size: 14px;
+  font-weight: 500;
+}
+.mermaid .edgeLabel {
+  font-size: 12px;
+  background-color: white;
+  padding: 2px 4px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.mermaid .cluster rect {
+  fill: #f0f8ff;
+  stroke: #4a6da7;
+  stroke-width: 1px;
+  rx: 8px;
+  ry: 8px;
+}
+.mermaid .label {
+  font-size: 16px;
+  font-weight: bold;
+}
+.mermaid .timeline-event {
+  font-size: 14px;
+}
+.mermaid .journey-section {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* 모바일 최적화를 위한 미디어 쿼리 */
+@media screen and (max-width: 768px) {
+  .mermaid {
+    font-size: 12px;
+    margin: 15px 0;
+  }
+  .mermaid .node text {
+    font-size: 12px;
+  }
+  .mermaid .edgeLabel {
+    font-size: 10px;
+    padding: 1px 2px;
+  }
+  .mermaid .label {
+    font-size: 14px;
+  }
+  .mermaid .timeline-event,
+  .mermaid .journey-section {
+    font-size: 12px;
+  }
+}
+</style>
+
 ## 1. Feature Flag 시스템 개요
 
 Feature Flag(기능 플래그)는 코드를 변경하지 않고도 기능을 켜고 끌 수 있게 해주는 소프트웨어 개발 기법이다. 마치 집안의 전등 스위치처럼, 개발자는 기능의 활성화 여부를 간단히 '스위치'로 제어할 수 있다. 이 기법은 코드 배포와 기능 출시를 분리함으로써, 새로운 기능을 안전하게 테스트하고 점진적으로 사용자에게 제공할 수 있게 해준다.
@@ -182,16 +253,15 @@ Feature Flag Manager는 싱글톤 패턴으로 구현하여 애플리케이션 �
 3. **코드 복잡성 감소**: 명시적인 락 메커니즘을 구현하려면 읽기/쓰기 락, 데드락 방지 등 복잡한 동시성 제어 로직이 필요하다. `ConcurrentHashMap`을 사용함으로써 이러한 복잡성을 크게 줄일 수 있었다.
 
 4. **원자적 연산 지원**: `ConcurrentHashMap`은 `putIfAbsent`, `computeIfAbsent` 등의 원자적 연산을 제공하여 락 없이도 안전한 업데이트가 가능하다.
+동시성 제어를 위해 다른 방법들도 검토해보았다:
 
-동시성 관리를 위한 다른 대안들도 검토했다:
-
-1. **Synchronized Collections**
+1. **Synchronized Collections** 
    ```java
    Map<String, FeatureFlag> flagRegistry = Collections.synchronizedMap(new HashMap<>());
    ```
-   - 장점: 구현 간단, Java 표준 라이브러리 활용
-   - 단점: 메서드 호출마다 전체 컬렉션에 락 적용, 확장성 제한
-   - 기각 이유: 읽기 작업이 많은 시스템에서 성능 병목 현상 발생
+   - 장점: 구현이 매우 간단하고 Java 기본 라이브러리를 사용할 수 있다
+   - 단점: 모든 읽기/쓰기 작업마다 전체 Map에 락이 걸려서 성능이 떨어진다
+   - 기각 이유: 읽기 작업이 많은 우리 시스템에서는 성능 저하가 심각할 것으로 예상됨
 
 2. **ReentrantReadWriteLock**
    ```java
@@ -199,154 +269,75 @@ Feature Flag Manager는 싱글톤 패턴으로 구현하여 애플리케이션 �
    private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
    
    public FeatureFlag getFlag(String name) {
-       rwLock.readLock().lock();
+       rwLock.readLock().lock();  // 읽기 락 획득
        try {
            return flagRegistry.get(name);
        } finally {
-           rwLock.readLock().unlock();
+           rwLock.readLock().unlock();  // 읽기 락 해제
        }
    }
    
    public void updateFlag(String name, FeatureFlag flag) {
-       rwLock.writeLock().lock();
+       rwLock.writeLock().lock();  // 쓰기 락 획득
        try {
            flagRegistry.put(name, flag);
        } finally {
-           rwLock.writeLock().unlock();
+           rwLock.writeLock().unlock();  // 쓰기 락 해제
        }
    }
    ```
-   - 장점: 읽기/쓰기 작업 구분, 읽기 작업 동시성 향상
-   - 단점: 코드 복잡성 증가, 락 획득/해제 관리 필요
-   - 기각 이유: 명시적 락 관리의 복잡성과 오류 가능성
+   - 장점: 읽기 작업과 쓰기 작업을 구분해서 처리할 수 있다
+   - 단점: 락을 직접 관리해야 해서 코드가 복잡해지고 실수하기 쉽다
+   - 기각 이유: 락 관리의 복잡성으로 인해 버그 발생 가능성이 높음
 
-이러한 대안들을 검토한 결과, `ConcurrentHashMap`은 성능과 코드 단순성을 최적으로 균형 잡는 선택이었다. 특히 Java 5부터 제공되는 안정적인 API로, 다양한 환경에서 호환성이 보장되고 잘 검증된 구현체라는 장점이 있었다. 실제 성능 테스트에서도 읽기 작업이 많은 우리 시스템에서 가장 좋은 결과를 보여주었다.
+이러한 대안들을 검토한 후, 결국 ConcurrentHashMap을 선택했다. ConcurrentHashMap은 Java 5부터 제공되는 검증된 라이브러리로, 다음과 같은 장점이 있다:
 
-`ConcurrentHashMap`의 주요 특징을 요약하자면:
+- **부분 락**: Map 전체가 아닌 일부분에만 락을 걸어서 다른 부분은 계속 사용할 수 있다
+- **동시 읽기**: 여러 스레드가 동시에 읽기 작업을 할 수 있다
+- **안전한 업데이트**: putIfAbsent(), replace() 같은 안전한 업데이트 메서드를 제공한다
+- **검증된 구현**: 오랜 기간 많은 개발자들이 사용하면서 검증된 라이브러리다
 
-- **분할 락(Segmented Locking)**: 맵 전체가 아닌 일부 세그먼트에만 락을 적용하여 동시성 성능 향상
-- **락 스트라이핑(Lock Striping)**: 여러 개의 락을 사용하여 다른 버킷에 대한 동시 접근 허용
-- **비차단 읽기(Non-blocking Reads)**: 읽기 작업은 락을 획득하지 않고 수행되어 높은 처리량 제공
-- **약한 일관성(Weak Consistency)**: 완전한 동기화 대신 실용적인 일관성 모델 채택
-- **원자적 연산**: `putIfAbsent()`, `replace()` 등 복합 연산의 원자성 보장
-
-검증된 동시성 컬렉션을 활용하는 것이 더 안정적이고 유지보수하기 쉽다는 결론에 도달했다. "최대한 심플하게 구성하라"는 조언이 가장 큰 영향을 미쳤는데, 이는 특히 여러 팀이 사용하는 공통 SDK에서 중요한 원칙이었다. 복잡한 동시성 제어 로직은 버그 발생 가능성을 높이고 디버깅을 어렵게 만들 수 있기 때문에, 검증된 라이브러리의 기능을 최대한 활용하는 방향으로 설계했다.
+최종적으로는, 시니어 개발자의 "최대한 단순하게 만들어라"는 조언을 따라, 직접 복잡한 동시성 제어를 구현하는 대신 검증된 라이브러리를 사용하기로 했다. 특히 여러 팀이 사용하는 공통 SDK에서는 코드가 단순할수록 버그도 적고 유지보수도 쉽다는 점을 고려했다.
 
 ## 4. 기술 스택 상세
 
 ### 4.1 코어 SDK: Java 8 (Vanilla Java)
 Java 8을 선택한 이유는 회사의 기존 코드베이스와의 호환성도 있었지만, 더 중요한 것은 SDK의 확장성과 유지보수성이었다. 프레임워크 의존성이 가져올 수 있는 문제점을 고민했다. Spring과 같은 프레임워크를 사용할 경우 버전 충돌이 발생할 수 있고, 사용자들이 SDK를 도입할 때 추가적인 설정이 필요해질 수 있다고 판단했다. 순수 Java만으로 구현함으로써 어떤 환경에서도 쉽게 통합될 수 있는 유연성을 확보했고, 이는 실제로 레거시 시스템에서도 문제없이 작동하는 결과로 이어졌다. 특히 Reflection API를 활용한 어노테이션 처리 부분에서는 외부 라이브러리 없이 직접 구현하는 과정이 도전적이었지만, 이를 통해 Java의 메타프로그래밍 기능에 대한 이해도를 크게 높일 수 있었다.
-
-SDK 구현 시 고려했던 다른 기술 스택 대안들은 다음과 같다:
-
-1. **Kotlin**
-   - 장점: 간결한 문법, Null 안전성, 함수형 프로그래밍 지원
-   - 단점: 추가 의존성, 일부 개발자에게 생소함, 학습 곡선
-   - 기각 이유: 모든 팀원이 Java에 익숙했고, 추가 언어 도입으로 인한 복잡성 증가 우려
-
-2. **Scala**
-   - 장점: 함수형 프로그래밍, 타입 안전성, 강력한 표현력
-   - 단점: 높은 학습 곡선, 복잡한 문법, 빌드 시간 증가
-   - 기각 이유: 팀 내 전문성 부족, 통합 및 유지보수 어려움
-
-3. **Spring Framework 기반**
-   - 장점: 풍부한 기능, 의존성 주입, 관점 지향 프로그래밍
-   - 단점: 무거운 의존성, 버전 충돌 가능성, 오버헤드
-   - 기각 이유: 경량화 목표와 상충, 프레임워크 중립성 손상
-
-4. **Java EE/Jakarta EE**
-   - 장점: 표준화된 API, 엔터프라이즈 기능 포함
-   - 단점: 복잡한 구성, 무거운 서버 요구, 유연성 제한
-   - 기각 이유: 마이크로서비스 환경에 과도한 기능, 가벼운 SDK 목표와 불일치
-
-자바 버전 선택에 있어서도 여러 옵션을 비교했다:
-
-1. **Java 7**
-   - 장점: 광범위한 호환성, 성숙한 생태계
-   - 단점: 제한된 기능, 이미 지원 종료
-   - 기각 이유: 람다식, 스트림 API 등 Java 8의 유용한 기능 부재
-
-2. **Java 11 이상**
-   - 장점: 최신 기능, 모듈 시스템, 향상된 성능
-   - 단점: 일부 레거시 시스템과 호환성 이슈
-   - 기각 이유: 회사 내 일부 시스템이 아직 Java 8 기반으로 운영 중
-
-결과적으로 Java 8은 새로운 기능(람다, 스트림, Optional 등)과 광범위한 호환성 사이의 최적의 균형점이었다. 이 선택은 SDK의 주요 목표인 "어디서나 쉽게 통합 가능한 경량 라이브러리" 제공에 부합했으며, 코드 가독성과 유지보수성을 높이는 데도 기여했다.
-
 ### 4.2 인프라: Kubernetes on AWS EKS
-Feature Flag 시스템을 위한 별도의 인프라를 구축하지 않고, 회사에 이미 구축되어 있던 실험 분기 API에 새로운 엔드포인트를 추가하는 방식으로 개발했다. 이 접근 방식은 빠른 개발과 배포를 가능하게 했지만, 지금 돌이켜보면 독립적인 서비스로 분리했어야 했다는 아쉬움이 남는다. 기존 API에 기능을 추가하면서 Flag 값 변경이 모든 클라이언트에 빠르게 전파되어야 한다는 요구사항을 충족시키기 위해 캐싱 전략과 업데이트 메커니즘을 최적화했다. 이 과정에서 API 설계와 확장성에 대한 중요한 교훈을 얻었으며, 향후에는 처음부터 독립적인 마이크로서비스로 설계하여 Feature Flag 시스템만의 특성에 맞게 최적화된 인프라를 구축하는 것이 더 나은 선택이었을 것이다.
+Feature Flag 시스템의 인프라는 회사의 기존 실험 분기 API에 새로운 엔드포인트를 추가하는 방식으로 구현했다. 이 접근 방식은 빠른 개발과 배포를 가능하게 했지만, 실제 운영 중 심각한 문제가 발생했다. 지난 분기에 실험 API 서버에서 메모리 누수로 인한 장애가 발생했고, 이로 인해 Feature Flag 시스템까지 영향을 받아 일부 기능이 정상적으로 동작하지 않는 사고가 있었다. 이 사건은 Feature Flag와 같은 핵심 인프라를 다른 서비스에 종속시키는 것의 위험성을 명확하게 보여주었다.
 
-인프라 구성에서 고려했던 대안들은 다음과 같다:
-
-1. **독립형 Feature Flag 서비스**
-   - 장점: 전용 리소스, 독립적 확장성, 최적화된 설계
-   - 단점: 추가 인프라 관리 부담, 개발 시간 증가
-   - 기각 이유: 빠른 출시 요구사항과 초기 리소스 제약
-
-2. **AWS Lambda 기반 서버리스 아키텍처**
-   - 장점: 관리 오버헤드 감소, 자동 확장, 사용량 기반 비용
-   - 단점: 콜드 스타트 지연, 장기 실행 연결 제한, 디버깅 어려움
-   - 기각 이유: 지속적 연결 및 상태 관리 요구사항과의 불일치
-
-3. **다중 리전 배포**
-   - 장점: 지역적 지연 감소, 고가용성, 재해 복구
-   - 단점: 복잡한 데이터 동기화, 비용 증가, 관리 복잡성
-   - 기각 이유: 초기 단계에서의 과도한 복잡성, 명확한 지역적 요구사항 부재
-
-4. **하이브리드 클라우드 접근법**
-   - 장점: 온프레미스와 클라우드 환경 모두 지원, 유연한 배포
-   - 단점: 환경 간 일관성 유지 어려움, 관리 복잡성
-   - 기각 이유: 추가 복잡성 대비 명확한 이점 부족
-
-실험 분기 API에 통합하는 방식을 선택한 것은 주로 시간 제약과 실용적 고려 때문이었다. 하지만 이상적으로는 독립형 마이크로서비스로 구축하여 다음과 같은 이점을 얻을 수 있었을 것이다:
+이러한 실제 장애 경험을 통해, Feature Flag 시스템은 반드시 독립적인 마이크로서비스로 분리되어야 한다는 교훈을 얻었다. 현재는 임시방편으로 실험 API의 장애 상황에서도 Feature Flag가 최소한의 기능을 유지할 수 있도록 fallback 메커니즘을 구현해놓은 상태지만, 이상적으로는 완전히 독립된 서비스로 재구축하여 다음과 같은 이점을 얻을 수 있을 것이다:
 
 - 전용 리소스를 통한 성능 최적화
 - 독립적인 확장 및 배포 주기
 - 더 명확한 책임 분리와 관리
 - Feature Flag 특화 기능 추가 용이성
 
-이러한 경험은 향후 프로젝트에서 초기 아키텍처 결정의 중요성과 장기적 확장성을 더 신중하게 고려해야 함을 깨닫게 했다.
+이러한 경험은 향후 프로젝트에서 초기 아키텍처 결정의 중요성과 장기적 확장성을 더 신중하게 고려해야 함을 깨닫게 했다. 특히 Feature Flag 시스템만의 특성에 맞게 최적화된 인프라를 구축하는 것이 더 나은 선택이었을 것이다.
 
 ### 4.3 배포: Jib & Jenkins
-배포 과정에서 가장 큰 고민은 빌드 시간 단축과 안정적인 배포 파이프라인 구축이었다. 기존 Docker 기반 배포에서는 매번 전체 이미지를 다시 빌드하는 비효율이 있었고, 이로 인해 작은 코드 변경에도 배포 시간이 길어지는 문제가 있었다. Jib을 도입함으로써 변경된 클래스 파일만 효율적으로 업데이트하는 방식으로 빌드 시간을 크게 단축할 수 있었다. 또한 Jenkins 파이프라인을 구성하면서 단순 자동화를 넘어 각 단계별 검증 과정을 추가했다. 특히 단위 테스트를 실행하고, 코드 커버리지가 일정 수준 이상일 때만 배포가 진행되도록 설정했다. 이 과정에서 CI/CD 파이프라인의 중요성과 테스트 자동화의 가치를 실감할 수 있었다.
-
-배포 전략에 있어 여러 대안을 검토했다:
+배포 과정에서 가장 큰 고민은 빌드 시간 단축과 안정적인 배포 파이프라인 구축이었다. 컨테이너 이미지 빌드 도구로 기존 Docker와 Google의 Jib을 비교 검토했다:
 
 1. **전통적인 Dockerfile 기반 빌드**
    - 장점: 익숙한 방식, 세부 설정 가능, 광범위한 사용 사례
-   - 단점: 느린 빌드 시간, 레이어 캐싱 최적화 어려움
-   - 기각 이유: 빌드 시간 개선 요구 충족 실패, 반복적인 전체 재빌드 필요
+   - 단점: 
+     - 매번 전체 이미지를 다시 빌드하여 시간이 오래 걸림
+     - 레이어 캐싱 최적화가 어려움
+     - Docker 데몬 필요
+   - 기각 이유: 빌드 시간이 3-5분으로 너무 길고, 작은 코드 변경에도 전체 재빌드 필요
 
-2. **GitLab CI/CD**
-   - 장점: 코드 저장소와 통합, 선언적 파이프라인, 현대적 UI
-   - 단점: 기존 Jenkins 투자와 익숙함 포기 필요
-   - 기각 이유: 팀의 Jenkins 경험과 기존 파이프라인 자산 활용 선호
+2. **Jib**
+   - 장점:
+     - 변경된 레이어만 빌드하여 30초 이내로 빌드 시간 단축
+     - Docker 데몬 불필요
+     - Maven/Gradle과 원활한 통합
+     - 멀티스테이지 빌드 자동화로 이미지 크기 최적화
+   - 단점: Dockerfile 대비 세부 설정의 유연성 다소 제한
+   - 선택 이유: 빌드 시간 대폭 단축과 개발 생산성 향상
 
-3. **GitHub Actions**
-   - 장점: 간편한 설정, 코드 저장소 통합, 풍부한 마켓플레이스
-   - 단점: 온프레미스 제어 제한, 회사 Github Enterprise와의 호환성 이슈
-   - 기각 이유: 회사 내 GitHub 도입 수준 및 기존 시스템과의 통합 문제
+배포 파이프라인은 Jenkins를 활용했다. Jenkins를 선택한 주된 이유는 이미 회사에서 SDK 배포를 위한 환경이 잘 구축되어 있었기 때문이다. 기존 SDK들의 배포 파이프라인이 Jenkins로 구성되어 있어 참고할 수 있는 사례가 많았고, Maven Repository 연동이나 버전 관리 등의 설정을 재사용할 수 있었다. 이를 통해 새로운 배포 환경을 구축하는 대신 검증된 파이프라인을 활용할 수 있었다.
 
-4. **Spinnaker를 통한 고급 배포**
-   - 장점: 정교한 배포 전략, 멀티 클라우드 지원, 카나리 배포
-   - 단점: 복잡한 설정, 학습 곡선, 관리 오버헤드
-   - 기각 이유: 시스템 복잡성 대비 현재 요구사항 불일치
-
-Jib과 Jenkins의 조합을 선택한 주요 이유:
-
-1. **Jib의 장점**:
-   - 변경된 레이어만 빌드하여 빌드 시간 대폭 단축 (기존 3-5분에서 30초 이내로 개선)
-   - Docker 데몬 불필요, 클라우드 빌드 환경에서도 원활한 동작
-   - 멀티스테이지 빌드 자동화로 이미지 사이즈 최적화
-   - Maven/Gradle과의 원활한 통합
-
-2. **Jenkins의 장점**:
-   - 기존 회사 인프라와의 통합성
-   - 풍부한 플러그인 생태계와 확장성
-   - 세밀한 권한 관리와 감사 기능
-   - 회사 개발자들의 높은 친숙도
-
-이 조합은 빠른 빌드와 안정적인 파이프라인이라는 두 가지 목표를 모두 달성하는 최적의 솔루션이었다. 특히 배포 자동화와 품질 게이트(코드 커버리지, 정적 분석 등)를 통합함으로써 개발자들이 코드 품질에 더 집중할 수 있는 환경을 조성했다.
+이러한 Jib과 Jenkins의 조합으로, 특히 사내 Maven Repository와의 연동을 통해 효율적인 라이브러리 배포 파이프라인을 구축할 수 있었다. 기존 인프라를 최대한 활용함으로써 추가적인 설정이나 관리 부담 없이 안정적인 배포가 가능했다.
 
 ### 4.4 데이터 저장소: AWS DynamoDB
 데이터 저장소 선택에서 가장 큰 고민은 SQL과 NoSQL 중 어떤 것을 사용할지였다. SQL은 스키마 변경이 어렵고 확장성이 제한적이지만 데이터 일관성과 트랜잭션 지원이 강점이었다. NoSQL은 유연한 스키마와 수평적 확장이 용이하지만 강력한 일관성 보장이 어려웠다. 결국 NoSQL 중에서도 DynamoDB를 선택했는데, 이는 회사 인프라팀에서 이미 DynamoDB를 지원하고 있었기 때문이다. 이를 통해 운영 부담을 크게 줄일 수 있었고, 특히 Flag 값 조회 API가 서비스의 핵심 로직 실행 전에 호출되는 만큼 안정적인 운영이 가능했다.
@@ -362,16 +353,6 @@ Jib과 Jenkins의 조합을 선택한 주요 이유:
    - 장점: 문서 지향 모델, 유연한 스키마, 개발자 친화적 API
    - 단점: 일관성 모델 약함, 복잡한 샤딩 설정, 운영 복잡성
    - 기각 이유: 회사 내 MongoDB 운영 경험 부족, 관리 오버헤드 우려
-
-3. **Redis**
-   - 장점: 극도로 빠른 읽기/쓰기, 인메모리 저장소, 단순한 API
-   - 단점: 영구 저장 제한, 메모리 제약, 복잡한 쿼리 지원 부족
-   - 기각 이유: 영구 데이터 저장 요구사항과의 불일치, 데이터 모델 표현의 제한
-
-4. **Cassandra**
-   - 장점: 선형적 확장성, 고가용성, 튜닝 가능한 일관성 모델
-   - 단점: 복잡한 설정 및 관리, 학습 곡선, 쿼리 패턴 제한
-   - 기각 이유: 시스템 복잡성 대비 현재 규모 요구사항 불균형, 운영 전문성 부족
 
 DynamoDB를 선택한 핵심 이유:
 
@@ -394,16 +375,25 @@ Feature Flag 시스템은 다음과 같은 RESTful API 엔드포인트를 제공
 - `PUT /feature-flags/{flagName}`: 특정 Feature Flag 생성 또는 수정
 - `DELETE /feature-flags/{flagName}`: 특정 Feature Flag 삭제
 
-API 설계 시 다음과 같은 대안적 접근법을 검토했다:
+API 설계 시 gRPC 도입을 고민했지만, 당시에는 학습 곡선이 높아 보여 채택하지 않았다. 지금 돌아보면 이 결정이 아쉽다. 우리 Feature Flag SDK의 특성을 고려했을 때 gRPC가 제공했을 이점들은 다음과 같다:
 
-1. **gRPC 기반 API**
-   - 장점: Protocol Buffer의 효율적인 직렬화, 강력한 타입 시스템, 양방향 스트리밍을 통한 실시간 업데이트 지원
-   - 단점: HTTP 도구와의 호환성 부족, 높은 학습 곡선, 브라우저 네이티브 지원 미흡
-   - 기각 이유: REST API의 범용성과 단순함, 기존 인프라와의 통합 용이성을 더 중요하게 판단
+1. **Flag 값 동기화의 효율성**
+   - 현재는 10초의 TTL을 가진 캐시를 사용하여 실시간 동기화가 아닌 주기적 갱신 방식을 채택
+   - 그럼에도 REST API로는 폴링 방식의 갱신이 필요하며, 이는 불필요한 네트워크 트래픽 발생
+   - gRPC를 사용했다면 서버 푸시 기반의 효율적인 갱신이 가능했을 것이며, 특히 Flag 값 변경 시에만 클라이언트에 알림
+   - 수천 개의 SDK 인스턴스가 동시 접속한 상황에서도 폴링 대신 스트리밍으로 서버 부하 감소 가능했을 것
 
-여담으로, Node.js 클라이언트 개발 과정에서 Protocol Buffer 스키마를 정의하면서 gRPC로의 전환을 재검토했다. 하지만 기존 시스템의 복잡도와 마이그레이션에 필요한 리소스를 고려했을 때 현실적인 제약이 있었다. 이는 초기 설계 단계에서 확장성을 충분히 고려하지 못한 결과였다.
+2. **다국어 SDK 개발 효율**
+   - 현재 Java, Node.js, Python 등 여러 언어의 SDK를 각각 개발/유지보수 중
+   - Protocol Buffer로 정의했다면 각 언어별 클라이언트 코드 자동 생성
+   - SDK 버전 간 일관성 유지가 더 쉬웠을 것
 
-그래도 최종적으로 선택한 RESTful API는 다음과 같은 명확한 이점을 제공했다:
+3. **Flag 정의 타입 시스템**
+   - 현재는 타입 불일치로 인한 런타임 에러는 없으나, 개발자의 실수로 인한 휴먼 에러 가능성 존재
+   - Protocol Buffer의 명시적 타입 정의로 개발 단계에서 실수 방지 가능
+   - 특히 여러 팀이 Flag를 공유하는 상황에서 문서화와 타입 체크 자동화 가능
+
+하지만 최종적으로 선택한 RESTful API도 다음과 같은 명확한 이점을 제공했다:
 
 - 단순하고 직관적인 리소스 중심 설계
 - 기존 HTTP 캐싱과 로드밸런싱 활용 가능
@@ -426,48 +416,6 @@ FeatureFlagManager manager = FeatureFlagManager.builder()
 @FeatureFlag(flagName = "Test2")
 public static int privateField = 3;
 ```
-
-SDK 설계 시 고려했던 대안적 접근법:
-
-1. **메서드 체이닝 패턴**
-   ```java
-   FeatureFlagManager manager = FeatureFlagManager.getInstance()
-       .withPackages("your.package.names")
-       .withEnvironment(ExpEnv.QA)
-       .withClassLoader(classLoader)
-       .build();
-   ```
-   - 장점: 유연한 구성, 가독성 좋음, 점진적 구성 가능
-   - 단점: 중간 객체가 변경 가능한 상태를 가짐, 스레드 안전성 보장 어려움
-   - 빌더 패턴과의 차이점: 빌더는 별도의 Builder 클래스를 통해 객체를 생성하여 원본 객체의 불변성을 보장하고, 필수값 검증이 용이함. 반면 메서드 체이닝은 자기 자신을 반환하여 상태를 직접 변경하므로 객체의 일관성을 유지하기 어려움
-
-2. **팩토리 메서드 패턴**
-   ```java
-   FeatureFlagManager manager = FeatureFlagManagerFactory.create(
-       "your.package.names", ExpEnv.QA, classLoader);
-   ```
-   - 장점: 단순한 인터페이스, 구현 세부사항 숨김
-   - 단점: 구성 옵션 확장성 제한, 가독성 저하 가능성
-   - 복잡한 설정 옵션을 지원하기에 제한적인 접근법
-
-3. **정적 구성 클래스**
-   ```java
-   FeatureFlagConfig.setPackageNames("your.package.names");
-   FeatureFlagConfig.setEnvironment(ExpEnv.QA);
-   FeatureFlagConfig.setClassLoader(classLoader);
-   FeatureFlagManager manager = FeatureFlagManager.getInstance();
-   ```
-   - 장점: 익숙한 접근법, 분리된 구성
-   - 단점: 글로벌 상태 의존, 멀티테넌시 어려움, 테스트 복잡성
-   - 여러 구성을 동시에 지원해야 하는 요구사항과 충돌
-
-빌더 패턴을 선택한 이유:
-
-- 명확하고 가독성 높은 API 디자인
-- 필수 및 선택적 매개변수 구분 용이
-- 객체 생성 과정의 유연성과 제어성
-- 불변 객체 생성 지원으로 스레드 안전성 향상
-- 자바 개발자에게 익숙한 디자인 패턴
 
 ## 6. Feature Flag 시스템의 내부 동작 원리
 
@@ -504,37 +452,20 @@ public static double boostFactor = 1.5;
 - 해당 필드는 런타임에 값을 바꿀 수 있다(`final`이 아님)
 - 다양한 primitive 타입(boolean, int, long, double 등)을 지원한다
 - `@FeatureFlag`가 부착되어 있으면, 애플리케이션 시작 시 `FeatureFlagManager`가 이를 인식한다
-
 ### 6.3 Primitive 타입을 사용하는 이유
 
-시스템 설계 시 primitive 타입을 사용한 이유는 다음과 같다:
+시스템 설계 시 primitive 타입과 객체 타입의 비교:
 
-1. **메모리 효율성**: primitive 타입은 객체가 아니므로 참조 오버헤드가 없다. 특히 boolean은 단 1바이트만 차지하여 메모리 사용이 매우 효율적이다.
+| 항목 | Primitive 타입 | 객체 타입 |
+|-----|---------------|-----------|
+| **메모리 효율성** | ✅ 참조 오버헤드 없음<br>✅ boolean은 1바이트만 사용 | ❌ 객체 참조 오버헤드 발생<br>❌ 추가 메모리 사용 |
+| **성능** | ✅ 박싱/언박싱 없음<br>✅ 직접 접근 가능 | ❌ 박싱/언박싱 필요<br>❌ 참조 접근 필요 |
+| **타입 안전성** | ✅ 컴파일 타임 타입 체크<br>✅ 타입 변환 오류 방지 | ✅ 컴파일 타임 타입 체크<br>❌ null 가능성 존재 |
+| **사용성** | ✅ 직관적인 사용<br>✅ 변환 과정 불필요 | ❌ null 체크 필요<br>❌ 형변환 필요할 수 있음 |
+| **리플렉션** | ✅ 단순하고 직접적인 처리<br>✅ 값 설정이 용이 | ❌ 복잡한 객체 처리 필요<br>❌ 깊은 복사 고려 필요 |
+| **직렬화** | ✅ 간단한 직렬화/역직렬화<br>✅ 네트워크 전송 효율적 | ❌ 복잡한 직렬화 로직<br>❌ 더 큰 전송 크기 |
 
-2. **성능 최적화**: 객체 래퍼(Boolean, Integer 등)와 달리 primitive 타입은 박싱/언박싱 과정이 없어 성능이 더 뛰어나다. 자주 접근되는 Flag 값은 이러한 성능 차이가 중요하다.
-
-3. **타입 안전성**: 각 플래그마다 명확한 타입을 지정함으로써 컴파일 타임에 타입 검사가 가능하다. 이는 런타임 오류 가능성을 줄인다.
-
-4. **간결한 사용성**: 개발자가 별도의 변환 과정 없이 자연스럽게 사용할 수 있다.
-   ```java
-   if (useNewSearchAlgorithm) {
-       // 새 알고리즘 사용
-   }
-   ```
-
-5. **다양한 설정 지원**: boolean 외에도 int, double 등을 지원함으로써 단순한 on/off 토글을 넘어 다양한 설정값을 제어할 수 있다.
-   ```java
-   // 검색 결과 수 제한 적용
-   List<Result> results = search(query).limit(maxSearchResults);
-   ```
-
-객체 타입(String, 사용자 정의 클래스 등) 대신 primitive 타입만 지원한 것은 아래와 같은 고려 때문이었다:
-
-1. **리플렉션 최적화**: primitive 타입은 리플렉션을 통한 값 설정이 단순하고 직접적이다.
-
-2. **직렬화 용이성**: 백엔드 시스템과 통신 시 primitive 타입은 직렬화/역직렬화가 간단하다.
-
-3. **설계 단순화**: 복잡한 객체 타입을 지원하면 값의 불변성, 깊은 복사 등 추가적인 고려사항이 생기므로, MVP 단계에서는 primitive 타입만 지원하는 것이 합리적이었다.
+사용 예시:
 
 ### 6.4 전체 동작 흐름: 서비스 시작 시점
 
@@ -588,65 +519,33 @@ public class FeatureFlagManager {
             }
         }
     }
-
-    public static <T> T getFlag(String flagName, T defaultValue) {
-        FlagMeta meta = flags.get(flagName);
-        if (meta != null) {
-            try {
-                @SuppressWarnings("unchecked")
-                T value = (T) meta.value;
-                return value;
-            } catch (ClassCastException e) {
-                logger.error("Type mismatch for flag: " + flagName, e);
-                return defaultValue;
-            }
-        }
-        return defaultValue;
-    }
-
-    public static <T> void setFlag(String flagName, T value) {
-        FlagMeta meta = flags.get(flagName);
-        if (meta != null && meta.field.getType().isAssignableFrom(value.getClass())) {
-            try {
-                meta.field.set(null, value);  // static 필드 갱신
-                meta.value = value;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    static class FlagMeta {
-        final Field field;
-        final FeatureFlag annotation;
-        volatile Object value;
-
-        FlagMeta(Field field, Object value, FeatureFlag annotation) {
-            this.field = field;
-            this.value = value;
-            this.annotation = annotation;
-        }
-    }
+    ...
 }
 ```
-
 ### 6.6 핵심 기술 요소 설명
+**Annotation과 Reflection의 기본 개념**
+- Java에서 Annotation은 코드에 메타데이터를 추가하는 방법이다
+- 예를 들어 `@FeatureFlag`라는 어노테이션을 만들면, 이 정보는 컴파일 시 `.class` 파일에 저장된다
+- JVM이 클래스를 로딩할 때, 이 메타데이터는 Method Area라는 메모리 영역에 저장된다
+- Reflection은 실행 중인 프로그램이 자기 자신을 분석하고 수정할 수 있게 해주는 기능이다
+  - `clazz.getDeclaredFields()`로 클래스의 모든 필드 정보를 가져올 수 있다
+  - `field.getAnnotation()`으로 필드에 붙은 어노테이션 정보도 읽을 수 있다
 
-**Annotation + Reflection**
-- `@FeatureFlag` 메타정보는 `.class` 파일에 저장되고 JVM 로딩 시 Method Area에 올라간다
-- `clazz.getDeclaredFields()` → 클래스의 모든 필드를 가져온다
-- `field.getAnnotation(...)` → 해당 필드에 붙은 어노테이션을 Heap에서 객체로 생성하여 반환한다
+**static과 primitive 타입의 이해**
+- Java에서 `static` 키워드가 붙은 필드는 클래스당 하나만 존재한다
+  - 일반 필드는 객체마다 별도로 존재하지만, static 필드는 모든 객체가 공유한다
+  - 이는 전체 시스템에서 공유되는 글로벌 설정값과 같은 역할을 한다
+- primitive 타입(int, boolean 등)은 객체가 아닌 기본 데이터 타입이다
+  - 메모리 사용량이 적고 접근 속도가 빠르다
+  - 객체 타입 대비 단순하지만 효율적인 특성을 가진다
 
-**static primitive 필드**
-- `static` → 클래스 단위로 공유된다
-- `primitive` → 가볍고 효율적인 메모리 사용
-- `field.set(null, value)` → 런타임에 해당 static 필드 값을 변경 가능하다
-  (인스턴스가 없으므로 첫 인자에 null)
-
-**ConcurrentHashMap**
-- Heap에 저장되어 GC 대상이 된다
-- 다수의 스레드에서 플래그를 읽고 쓸 수 있다 (Thread-safe)
-- Map의 키는 어노테이션의 flagName, 값은 메타정보를 담은 래퍼 객체 FlagMeta이다
+**ConcurrentHashMap과 멀티스레딩**
+- 일반 HashMap은 다중 스레드 환경에서 데이터 정합성 문제가 발생할 수 있다
+  - 동시성 제어가 되지 않아 데이터 손실이나 불일치가 발생할 수 있다
+- ConcurrentHashMap은 스레드 안전성이 보장된 특수한 Map 구현체이다
+  - 다중 스레드 환경에서 동기화를 자동으로 처리한다
+  - 데이터 접근 시 세밀한 락킹을 통해 성능과 안전성을 모두 확보한다
+- 이 Map은 JVM의 Heap 영역에 저장되며 가비지 컬렉션의 대상이 된다
 
 ### 6.7 시스템의 장점
 
@@ -657,10 +556,9 @@ public class FeatureFlagManager {
 | 다양한 타입 지원 | boolean 뿐만 아니라 int, long, double 등 다양한 primitive 타입 지원 |
 | Annotation 기반 선언적 관리 | 코드에 명시적으로 어떤 클래스/필드가 플래그 대상인지 드러남 |
 | Thread-safe 관리 | ConcurrentHashMap으로 멀티스레드 환경에서도 안전한 접근 보장 |
-
 ### 6.8 요약
 
-이 Feature Flag 시스템은 클래스의 static primitive 필드를 중심으로, 어노테이션과 리플렉션을 활용하여 기능 플래그를 선언적이고 동적으로 제어할 수 있게 설계되었다. 서비스 시작 시 모든 플래그를 탐색하고 ConcurrentHashMap에 저장하여 이후 런타임에서 플래그 값을 조회하고 변경할 수 있다. 이 설계는 Java의 Method Area, Reflection, Annotation, static 필드, Heap 구조를 효과적으로 활용한 좋은 사례이다.
+이 Feature Flag 시스템은 클래스의 static primitive 필드를 중심으로, 어노테이션과 리플렉션을 활용하여 기능 플래그를 선언적이고 동적으로 제어할 수 있게 구현되었다. 서비스 시작 시 모든 플래그를 탐색하고 ConcurrentHashMap에 저장하여 이후 런타임에서 플래그 값을 조회하고 변경할 수 있다. 이 구현은 Java의 Method Area, Reflection, Annotation, static 필드, Heap 구조를 활용하여 동작한다.
 
 ## 7. 트러블슈팅: 배포 환경별 ClassLoader 문제
 
@@ -765,128 +663,15 @@ my-application.jar
 
 문제 해결을 위해 여러 접근법을 시도했다:
 
-1. **ClassLoader 이해**: 온라인 문서와 예제를 통해 JVM의 ClassLoader 동작 방식을 찾아보았다. 특히 Executable JAR, WAR, Spring Boot의 ClassLoader 구조에 대한 기본적인 이해를 쌓는 데 집중했다.
+1. **ClassLoader 이해**: Java의 ClassLoader는 JVM에서 클래스를 동적으로 로드하는 핵심 컴포넌트이다. Bootstrap ClassLoader, Extension ClassLoader, Application ClassLoader의 3단계 계층 구조로 되어있으며, 각각 JDK의 핵심 라이브러리, 확장 라이브러리, 애플리케이션 클래스를 로드하는 역할을 한다. 이러한 ClassLoader의 동작 방식을 이해하는 것이 Spring Boot의 JAR 실행 구조를 파악하는데 도움이 되었다.
 
-2. **다양한 배포 환경 테스트**: 다른 팀들의 배포 방식을 시뮬레이션하는 테스트 환경을 구축하여 문제를 재현하고 해결책을 검증했다. 특히 Spring Boot로 패키징된 JAR 파일을 생성하고, 클래스 이름 변환이 어떻게 일어나는지 확인했다.
+2. **다양한 배포 환경 테스트**: 다른 팀과의 페어 프로그래밍 세션을 통해 각 팀의 배포 환경에서 발생하는 문제를 직접 확인하고 해결책을 검증했다. 디버깅 로그를 보면서 Spring Boot로 패키징된 JAR 파일의 클래스 이름 변환 과정을 이해할 수 있었다.
 
 3. **접두어 처리 메커니즘 개발**: `BOOT-INF.classes.` 접두어를 가진 클래스를 올바르게 처리할 수 있는 로직을 개발했다. 패키지 스캔 시 접두어가 있는 경우와 없는 경우를 모두 고려하여 클래스를 찾는 방식으로 코드를 개선했다.
 
 4. **여러 ClassLoader 활용**: 단일 ClassLoader에 의존하지 않고, 접근 가능한 여러 ClassLoader를 조합하여 사용하는 방식으로 코드를 개선했다.
 
-```java
-// 개선된 ClassLoader 처리 코드
-private List<Class<?>> getAllClasses(String packageName) throws Exception {
-    List<Class<?>> classes = new ArrayList<>();
-    
-    // 1. 현재 스레드의 ContextClassLoader 사용
-    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-    classes.addAll(getClassesFromLoader(packageName, contextClassLoader));
-    
-    // 2. 현재 클래스의 ClassLoader 사용
-    ClassLoader thisClassLoader = this.getClass().getClassLoader();
-    if (thisClassLoader != contextClassLoader) {
-        classes.addAll(getClassesFromLoader(packageName, thisClassLoader));
-    }
-    
-    // 3. 시스템 ClassLoader 사용
-    ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
-    if (systemClassLoader != null && 
-        systemClassLoader != contextClassLoader && 
-        systemClassLoader != thisClassLoader) {
-        classes.addAll(getClassesFromLoader(packageName, systemClassLoader));
-    }
-    
-    // 4. 사용자 지정 ClassLoader 사용 (파라미터로 전달받은 경우)
-    if (userClassLoader != null && 
-        userClassLoader != contextClassLoader && 
-        userClassLoader != thisClassLoader && 
-        userClassLoader != systemClassLoader) {
-        classes.addAll(getClassesFromLoader(packageName, userClassLoader));
-    }
-    
-    // 5. Spring Boot의 Executable JAR를 위한 추가 처리
-    // BOOT-INF.classes 접두어가 붙은 클래스 처리
-    try {
-        String bootInfPackage = "BOOT-INF.classes." + packageName;
-        classes.addAll(getClassesFromLoader(bootInfPackage, contextClassLoader));
-        
-        if (thisClassLoader != contextClassLoader) {
-            classes.addAll(getClassesFromLoader(bootInfPackage, thisClassLoader));
-        }
-        
-        // 다른 ClassLoader에도 동일하게 적용
-    } catch (Exception e) {
-        logger.debug("Failed to scan BOOT-INF classes, this may not be a Spring Boot executable JAR", e);
-    }
-    
-    // 중복 제거 및 결과 반환
-    return classes.stream().distinct().collect(Collectors.toList());
-}
-
-private List<Class<?>> getClassesFromLoader(String packageName, ClassLoader classLoader) {
-    List<Class<?>> classes = new ArrayList<>();
-    try {
-        // 패키지 경로를 파일 시스템 경로로 변환
-        String path = packageName.replace('.', '/');
-        Enumeration<URL> resources = classLoader.getResources(path);
-        
-        while (resources.hasMoreElements()) {
-            URL resource = resources.nextElement();
-            String protocol = resource.getProtocol();
-            
-            if ("file".equals(protocol)) {
-                // 파일 시스템에서 클래스 스캔
-                classes.addAll(findClassesInDirectory(new File(resource.getFile()), packageName));
-            } else if ("jar".equals(protocol)) {
-                // JAR 파일 내부에서 클래스 스캔
-                classes.addAll(findClassesInJar(resource, packageName));
-            }
-        }
-        
-        // Spring Boot Executable JAR 특별 처리
-        if (packageName.startsWith("BOOT-INF.classes.")) {
-            // 원래 패키지 이름 추출 (접두어 제거)
-            String originalPackage = packageName.substring("BOOT-INF.classes.".length());
-            
-            // 클래스 로딩 시 접두어 처리 로직
-            // ...
-        }
-    } catch (Exception e) {
-        logger.warn("Error scanning package: " + packageName + " with classloader: " + classLoader, e);
-    }
-    
-    return classes;
-}
-```
-
 5. **사용자 지정 ClassLoader 지원과 접두어 처리 옵션**: SDK 사용자가 직접 특수한 ClassLoader를 제공하고, 패키지 접두어 처리 방식을 설정할 수 있는 옵션을 추가했다.
-
-```java
-// SDK 초기화 시 ClassLoader 지정과 접두어 처리 옵션 추가
-FeatureFlagManager manager = FeatureFlagManager.builder()
-        .setPackageNames(new String[]{"your.package.names"})
-        .setEnvironment(ExpEnv.QA)
-        .setClassLoader(customClassLoader) // 사용자 지정 ClassLoader 설정
-        .enableSpringBootSupport(true) // Spring Boot JAR 지원 활성화
-        .addPackagePrefix("BOOT-INF.classes") // 추가 패키지 접두어 지정
-        .build();
-```
-
-Spring Boot 애플리케이션을 위한 특별 초기화 헬퍼 메서드도 추가했다:
-
-```java
-// Spring Boot 환경에 최적화된 초기화 메서드
-public static FeatureFlagManager forSpringBoot(String[] packageNames, ExpEnv env) {
-    // Spring Boot의 LaunchedURLClassLoader 자동 감지
-    ClassLoader bootClassLoader = Thread.currentThread().getContextClassLoader();
-    return FeatureFlagManager.builder()
-            .setPackageNames(packageNames)
-            .setEnvironment(env)
-            .setClassLoader(bootClassLoader)
-            .enableSpringBootSupport(true)
-            .build();
-}
-```
 
 ### 7.4 추가 문제: 멀티 모듈 프로젝트에서의 클래스 로딩
 
@@ -918,32 +703,29 @@ project-root/
 3. **명시적 모듈 등록 API**: 모듈 개발자가 자신의 모듈에 있는 Feature Flag 클래스를 명시적으로 등록할 수 있는 API를 추가했다.
 
 ```java
-// 모듈별 Feature Flag 등록을 위한 API
-FeatureFlagManager.getInstance().registerModuleFlags(CoreFeatureFlags.class);
-FeatureFlagManager.getInstance().registerModuleFlags(ServiceFeatureFlags.class);
+// 모듈별 Feature Flag 등록을 위한 API 예시
+FeatureFlagManager manager = FeatureFlagManager.getInstance();
+manager.registerModule("core", CoreFeatureFlags.class);
+manager.registerModule("service", ServiceFeatureFlags.class);
+manager.registerModule("web", WebFeatureFlags.class);
 ```
 
 이러한 접근 방식을 통해 복잡한 멀티 모듈 프로젝트에서도 Feature Flag가 안정적으로 작동할 수 있게 되었다.
 
 ### 7.5 배운 점
+이 트러블슈팅 경험을 통해 많은 것을 배웠다. 솔직히 Java와 Spring, JVM 생태계는 이번 프로젝트가 처음이라 초반에는 상당히 어려웠다. ClassLoader나 리플렉션 같은 개념들이 생소했고, 클라이언트 환경인 Spring Boot의 실행 구조를 이해하는 데도 시간이 걸렸다. 하지만 문제를 하나씩 해결해나가면서 점차 이해도가 높아졌고, 결국 안정적인 시스템을 만들어낼 수 있었다는 점이 매우 뿌듯했다.
 
-이 트러블슈팅 경험을 통해 얻은 중요한 교훈들:
+특히 개발 환경과 프로덕션 환경의 차이를 직접 경험하면서, 이론적인 지식을 넘어 실제 운영 환경에서 발생할 수 있는 다양한 문제들을 배울 수 있었다. 처음에는 단순히 API만 사용하던 수준에서, 이제는 JVM의 내부 동작 원리까지 이해하게 된 것이 가장 큰 성장이었다고 생각한다.
 
-1. **실제 사용 환경의 중요성**: 기능 설계 시 구현뿐만 아니라 실제 사용 환경과 다양한 배포 방식까지 세심하게 고려해야 한다. 개발 환경과 프로덕션 환경의 차이를 항상 염두에 두어야 한다.
+여러 팀이 사용하는 SDK를 만든다는 책임감도 컸다. 처음에는 단순히 '돌아가게만' 만들면 된다고 생각했지만, 실제로는 다양한 환경과 사용 사례를 고려한 견고한 설계가 필요했다. 디버그 로깅을 꼼꼼히 추가하고, 엣지 케이스를 철저히 테스트하는 습관도 이 과정에서 자연스럽게 생겼다.
 
-2. **기술적 이해의 가치**: JVM의 ClassLoader와 리플렉션에 대한 기본적인 이해가 문제 해결의 핵심이었다. 표면적인 API 사용법을 넘어 기본적인 동작 원리를 이해하는 것이 복잡한 문제 해결에 큰 도움이 된다.
+결과적으로 Feature Flag 시스템은 성공적으로 도입되었고, 이 과정에서 얻은 Java 플랫폼에 대한 이해와 경험은 앞으로의 개발 여정에 큰 자산이 될 것 같다. 물론 아직도 배워야 할 것이 많지만, 이번 경험을 통해 새로운 기술을 습득하는 자신감을 얻을 수 있었다.
 
-3. **확장성 있는 설계의 중요성**: 다양한 환경과 사용 사례를 수용할 수 있는 유연한 설계가 중요하다. 특히 공통 SDK와 같이 여러 팀이 사용하는 코드는 더욱 강건하고 적응력 있게 설계해야 한다.
+## 8. 향후 발전 방향
 
-4. **엣지 케이스 테스트의 필요성**: 일반적인 사용 사례뿐만 아니라 예상치 못한 엣지 케이스도 철저히 테스트해야 한다. 다양한 배포 환경을 시뮬레이션하는 테스트 사례를 추가하여 유사한 문제를 사전에 방지할 수 있다.
+Feature Flag 시스템은 현재 안정적으로 운영되고 있으며, 많은 팀들이 유용하게 활용하고 있다. 다만 회사의 전략적 방향에 따라 다른 프로젝트들이 우선순위를 가지게 되면서, 시스템의 추가 개발은 잠시 보류된 상태다. 현재는 기존 기능의 안정적인 운영과 유지보수에 집중하고 있다.
 
-5. **상세한 로깅의 가치**: 상세한 디버그 로깅이 문제 진단에 결정적인 역할을 했다. 특히 리플렉션과 같은 메타프로그래밍 기법을 사용할 때는 내부 동작을 추적할 수 있는 로깅이 필수적이다.
-
-트러블슈팅 과정은 어려웠지만, 덕분에 다양한 Java 실행 환경의 차이점을 깊이 이해할 수 있었고 SDK의 호환성을 크게 개선할 수 있었다. 이렇게 개발된 Feature Flag 시스템은 성공적으로 업무에 도입되었지만, 추가적인 개선 필요사항과 아쉬운 점도 남아있다.
-
-## 8. 개선 필요사항 및 기술적 아쉬움
-
-회사 합병/분사 과정에서 팀이 바뀌고 프로젝트가 인수인계 되면서 여러 핵심 기능을 구현하지 못했다. 현재는 기본적인 관리 운영만 담당하고 있으며, 다음과 같은 개선이 필요하다:
+앞으로 시스템을 더욱 발전시킬 기회가 온다면, 사용자들의 피드백을 바탕으로 다음과 같은 개선사항들을 검토해볼 수 있을 것 같다:
 
 1. **분석 및 로깅 시스템 구축**: 현재 Feature Flag 변경에 대한 로깅 기능이 없어 Flag 변경의 영향을 분석할 수 없는 상황이다. 이벤트 기반 알림 시스템(EventListener)과 AWS의 모니터링 서비스(CloudWatch)를 통합하여 변경 이력을 추적하고, 이를 실험 플랫폼과 연동하여 비즈니스 지표에 미치는 영향을 정량적으로 분석할 수 있는 시스템이 필요하다.
 
@@ -963,29 +745,7 @@ FeatureFlagManager.getInstance().registerModuleFlags(ServiceFeatureFlags.class);
 
 이러한 개선 사항들은 프로젝트 진행 중 식별되었으나 조직 변경으로 인해 구현하지 못했다. 그럼에도 이 경험을 통해 얻은 교훈은 다음 프로젝트에 큰 도움이 되었다.
 
-## 9. 다음 시스템 개발 시 적용할 교훈
-
-이 프로젝트에서 얻은 경험은 후속 프로젝트에 많은 영향을 미쳤다. 특히 다음과 같은 교훈을 얻었다:
-
-1. **사용성 중심 설계**: 기술적으로 완벽한 시스템보다 사용자(개발자)가 쉽게 이해하고 활용할 수 있는 시스템이 더 가치 있다. API 설계 시 개발자 경험(DX)을 최우선으로 고려해야 한다.
-
-2. **점진적 확장 계획**: 처음부터 완벽한 시스템을 구축하기보다는 MVP(Minimum Viable Product)로 시작하고 사용자 피드백을 바탕으로 점진적으로 확장하는 것이 중요하다. 이 과정에서 올바른 추상화 계층을 구축하면 확장이 용이해진다.
-
-3. **문서화와 교육의 중요성**: 시스템 사용법에 대한 명확한 문서와 코드 예제가 도입 속도를 높인다. 기술 세미나, 코드랩, 가이드 문서 등 다양한 방식으로 사용자 교육을 진행해야 한다.
-
-4. **모니터링과 분석 초기 구축**: 시스템 효과를 측정할 수 있는 모니터링과 분석 도구를 초기부터 구축하는 것이 중요하다. 데이터 기반 의사결정을 통해 시스템의 가치를 증명하고 개선 방향을 명확히 할 수 있다.
-
-5. **유연성과 확장성의 균형**: 지나친 유연성 추구는 시스템 복잡도를 높인다. 현재 요구사항과 향후 확장 가능성 사이의 균형을 찾는 것이 중요하다.
-
-6. **크로스 플랫폼 전략 초기 수립**: 다양한 플랫폼에서 일관된 경험을 제공하기 위한 전략을 초기부터 수립해야 한다. 각 플랫폼의 특성을 고려한 SDK 설계로 개발자 경험을 최적화할 수 있다.
-
-7. **기술적 부채 관리**: 빠른 구현을 위한 타협이 기술적 부채로 누적되지 않도록 주기적인 리팩토링과 개선 작업을 계획해야 한다. 특히 핵심 기능의 안정성과 성능에 대한 지속적인 모니터링과 개선이 중요하다.
-
-8. **팀 간 협업 모델 구축**: 플랫폼 팀과 사용자 팀 간의 효과적인 협업 모델을 구축하는 것이 중요하다. 정기적인 피드백 수집, 사용자 그룹 운영, 공동 개발 세션 등을 통해 시스템 발전 방향을 함께 모색해야 한다.
-
-다음 프로젝트에서는 이러한 교훈을 바탕으로 더 완성도 높은 기술 플랫폼을 구축할 수 있을 것이다.
-
-## 10. 용어 정리
+## 9. 용어 정리
 
 **Feature Flag**
 : 코드 변경 없이 기능을 켜고 끌 수 있게 해주는 설정 값. 마치 전등 스위치처럼 언제든 기능을 활성화하거나 비활성화할 수 있다.
@@ -1074,74 +834,3 @@ FeatureFlagManager.getInstance().registerModuleFlags(ServiceFeatureFlags.class);
 ## 참고자료
 
 Martin Fowler의 ["Feature Toggles (Feature Flags)"](https://martinfowler.com/articles/feature-toggles.html) - Feature Flag의 개념과 사용 패턴
-
-<style>
-.mermaid {
-  width: 100%;
-  max-width: 100%;
-  margin: 20px auto;
-  font-size: 14px;
-  font-family: 'Arial', sans-serif;
-  overflow: hidden;
-}
-.mermaid .node rect, 
-.mermaid .node circle, 
-.mermaid .node ellipse, 
-.mermaid .node polygon, 
-.mermaid .node path {
-  fill: #f5f9ff;
-  stroke: #4a6da7;
-  stroke-width: 1.5px;
-}
-.mermaid .node text {
-  font-size: 14px;
-  font-weight: 500;
-}
-.mermaid .edgeLabel {
-  font-size: 12px;
-  background-color: white;
-  padding: 2px 4px;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-.mermaid .cluster rect {
-  fill: #f0f8ff;
-  stroke: #4a6da7;
-  stroke-width: 1px;
-  rx: 8px;
-  ry: 8px;
-}
-.mermaid .label {
-  font-size: 16px;
-  font-weight: bold;
-}
-.mermaid .timeline-event {
-  font-size: 14px;
-}
-.mermaid .journey-section {
-  font-size: 14px;
-  font-weight: bold;
-}
-
-/* 모바일 최적화를 위한 미디어 쿼리 */
-@media screen and (max-width: 768px) {
-  .mermaid {
-    font-size: 12px;
-    margin: 15px 0;
-  }
-  .mermaid .node text {
-    font-size: 12px;
-  }
-  .mermaid .edgeLabel {
-    font-size: 10px;
-    padding: 1px 2px;
-  }
-  .mermaid .label {
-    font-size: 14px;
-  }
-  .mermaid .timeline-event,
-  .mermaid .journey-section {
-    font-size: 12px;
-  }
-}
-</style>
