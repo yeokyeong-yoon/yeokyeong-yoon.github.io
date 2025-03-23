@@ -85,37 +85,30 @@ Feature Flag(기능 플래그)는 코드를 변경하지 않고도 기능을 켜
 시스템 개발 초기에는 Feature Flag 도입 여부를 두고 많은 고민이 있었다. 기존 배포 프로세스를 개선하자는 의견도 있었지만, 이는 여러 팀과의 협업이 필요한 큰 변화였고 당장의 문제 해결이 어려웠다. 또한 Hackle과 같은 국내 Feature Flag 솔루션 도입도 검토했으나, 회사의 특수한 요구사항과 보안 정책 등을 고려했을 때 자체 개발이 더 적합하다고 판단했다. 결국 Feature Flag 방식을 선택한 이유는 코드 배포와 기능 출시를 완전히 분리하여 비즈니스 부서가 개발팀에 의존하지 않고도 기능을 제어할 수 있게 하기 위함이었다.
 
 ## 2. 시스템 아키텍처
+시스템의 데이터 흐름과 주요 컴포넌트 간의 상호작용은 다음과 같다:
 
-시스템의 데이터 흐름과 주요 컴포넌트 간의 상호작용은 다음 시퀀스 다이어그램과 같다:
+1. 플래그 등록 과정
+- Client Application에서 @FeatureFlag 어노테이션으로 플래그 선언
+- Feature Flag Manager가 선언된 플래그를 Splitter API에 등록
+- Splitter API는 플래그 정의를 DynamoDB에 저장하고 Admin Page에 알림
+- Admin Page는 등록 확인을 API를 통해 Manager에게 전달
 
-```mermaid
-flowchart TD
-    Client[Client Application] -->|Flags declared via Annotation| Manager[Feature Flag Manager]
-    Manager -->|Register declared flags| API[Splitter API]
-    API -->|Store flag definitions| DB[DynamoDB]
-    API -->|Send flag registration| Admin[Admin Page]
-    Admin -->|Acknowledge registration| API
-    API -->|Respond with registration acknowledgment| Manager
+2. 주기적 업데이트 과정
+- Manager가 주기적으로 API에 최신 플래그 값 요청
+- API는 DB와 Admin Page에서 최신 값을 조회
+- 조회된 값을 Manager에게 전달하면 LRU Cache에 업데이트
 
-    subgraph Periodic Update
-        Manager -->|Request latest Flag Treatments| API
-        API -->|Query latest flag values| DB
-        API -->|Fetch latest Treatment values| Admin
-        Admin -->|Return latest Treatment values| API
-        API -->|Respond with latest Flag values| Manager
-        Manager -->|Update cache| Cache[LRU Cache]
-    end
+3. 플래그 값 조회 과정
+- Client가 Manager에 플래그 값 요청
+- Manager는 Cache에서 값을 조회하여 반환
+- Cache에 없는 경우 API를 통해 최신 값 조회
 
-    Client -->|Request Flag value| Manager
-    Manager -->|Retrieve cached Flag| Cache
-    Cache -->|Return cached value| Manager
-    Manager -->|Provide Flag value| Client
+4. 플래그 값 변경 과정
+- Admin Page에서 플래그 값 변경
+- API를 통해 DB에 업데이트된 값 저장
+- 다음 주기적 업데이트 시 변경사항이 전파됨
 
-    Admin -->|Update flag value| API
-    API -->|Store updated value| DB
-    DB -->|Acknowledge update| API
-```
-*시스템의 주요 컴포넌트 간 상호작용을 보여주는 플로우차트*
+이러한 구조는 시스템의 안정성과 성능을 모두 고려한 설계로, 특히 네트워크 장애 상황에서도 Cache를 통해 기본 동작을 보장한다.
 
 아키텍처 설계 시 중앙집중식과 분산식 접근법을 비교했다. 중앙집중식은 모든 Flag 결정을 중앙 서버에서 처리하는 방식으로, 즉각적인 업데이트와 일관된 제어가 가능하지만 네트워크 지연과 의존성이 증가한다. 분산식은 각 클라이언트가 로컬에서 결정을 내리는 방식으로, 성능은 좋지만 상태 동기화가 어렵다.
 
@@ -460,29 +453,32 @@ public static double boostFactor = 1.5;
 ### 6.4 전체 동작 흐름: 서비스 시작 시점
 
 ```mermaid
-sequenceDiagram
-    participant App as Application
-    participant Loader as JVM ClassLoader
-    participant JVM as JVM (Method Area + Heap)
-    participant FFManager as FeatureFlagManager
-    participant Code as 클래스 with @FeatureFlag
-
-    App->>Loader: 클래스 로딩
-    Loader->>JVM: 클래스 및 필드 + Annotation → Method Area 저장
-
-    App->>FFManager: 애플리케이션 초기화
-    FFManager->>JVM: 모든 클래스 탐색
-    FFManager->>Code: @FeatureFlag 필드 탐색 (reflection)
-    Code-->>FFManager: static primitive 필드 + 어노테이션 값
-    FFManager->>FFManager: 플래그 정보 ConcurrentHashMap에 저장
+flowchart TD
+    App[Application] -->|클래스 로딩| Loader[JVM ClassLoader]
+    Loader -->|클래스 및 필드 + Annotation 저장| JVM[JVM (Method Area + Heap)]
+    App -->|애플리케이션 초기화| FFManager[FeatureFlagManager]
+    FFManager -->|모든 클래스 탐색| JVM
+    FFManager -->|@FeatureFlag 필드 탐색 (reflection)| Code[클래스 with @FeatureFlag]
+    Code -->|static primitive 필드 + 어노테이션 값| FFManager
+    FFManager -->|플래그 정보 저장| FFManager
 ```
+*서비스 시작 시점의 전체 동작 흐름을 보여주는 플로우차트*
 
-| 항목 | 예시 | JVM 저장 위치 |
-|-----|------|--------------|
-| static primitive 필드 | useNewSearchAlgorithm, maxSearchResults | Method Area (필드 참조) + 값은 Heap 내부 primitive |
-| Annotation 메타데이터 | @FeatureFlag(...) | Method Area (클래스 메타정보로 저장됨) |
-| ConcurrentHashMap | Map<String, FlagMeta> | Heap (런타임 상태 저장) |
-| 리플렉션 조회 시 참조 객체 | Field, Annotation | Heap (reflection 시 생성되는 객체들) |
+• static primitive 필드
+  - 예시: useNewSearchAlgorithm, maxSearchResults
+  - JVM 저장 위치: Method Area (필드 참조) + 값은 Heap 내부 primitive
+
+• Annotation 메타데이터
+  - 예시: @FeatureFlag(...)
+  - JVM 저장 위치: Method Area (클래스 메타정보로 저장됨)
+
+• ConcurrentHashMap
+  - 예시: Map<String, FlagMeta>
+  - JVM 저장 위치: Heap (런타임 상태 저장)
+
+• 리플렉션 조회 시 참조 객체
+  - 예시: Field, Annotation
+  - JVM 저장 위치: Heap (reflection 시 생성되는 객체들)
 
 ### 6.5 FeatureFlagManager의 동작 방식 (예시 코드 기반)
 
@@ -736,21 +732,11 @@ Feature Flag 시스템은 현재 안정적으로 운영되고 있으며, 많은 
 이러한 개선 사항들은 프로젝트 진행 중 식별되었으나 조직 변경으로 인해 구현하지 못했다. 그럼에도 이 경험을 통해 얻은 교훈은 다음 프로젝트에 큰 도움이 되었다.
 
 ## 9. 용어 정리
-
 **Feature Flag**
 : 코드 변경 없이 기능을 켜고 끌 수 있게 해주는 설정 값. 마치 전등 스위치처럼 언제든 기능을 활성화하거나 비활성화할 수 있다.
 
 **Feature Toggle**
 : Feature Flag와 동의어로, 기능을 켜고 끄는 스위치 역할을 한다.
-
-**A/B Testing**
-: 두 가지 이상의 변형을 비교하여 더 효과적인 것을 결정하는 실험. 사용자를 A그룹과 B그룹으로 나누어 다른 경험을 제공하고 어떤 것이 더 좋은 결과를 내는지 측정한다.
-
-**Canary Release**
-: 새 기능을 일부 사용자에게만 점진적으로 배포하는 방식. 마치 광부들이 유독가스를 감지하기 위해 카나리아 새를 사용했던 것처럼, 일부 사용자를 통해 위험을 먼저 감지한다.
-
-**SDK(Software Development Kit)**
-: 특정 소프트웨어를 개발하기 위한 도구 모음. 라이브러리, 문서, 예제 코드 등을 포함한다.
 
 **Reflection**
 : Java에서 실행 중인 프로그램이 자신의 구조(클래스, 메서드, 필드 등)를 검사하고 조작할 수 있는 능력. 런타임에 클래스의 내부 구조를 살펴보고 동적으로 사용할 수 있게 해준다.
@@ -760,9 +746,6 @@ Feature Flag 시스템은 현재 안정적으로 운영되고 있으며, 많은 
 
 **Static Field**
 : 클래스의 모든 인스턴스가 공유하는 필드. 객체를 생성하지 않고도 접근할 수 있으며, 해당 클래스의 모든 객체에 동일한 값이 적용된다.
-
-**Thread-safe**
-: 여러 스레드(동시에 실행되는 작업)가 동시에 접근해도 안전하게 동작하는 코드나 데이터 구조. 경쟁 상태나 데이터 오염 없이 정확한 결과를 보장한다.
 
 **JVM(Java Virtual Machine)**
 : Java 코드를 실행하는 가상 머신. Java는 플랫폼 독립적인 바이트코드로 컴파일되고, JVM이 이를 실행 환경에 맞게 해석하여 실행한다.
@@ -779,47 +762,8 @@ Feature Flag 시스템은 현재 안정적으로 운영되고 있으며, 많은 
 **Primitive Type**
 : Java의 기본 데이터 타입(int, boolean, double 등). 객체가 아닌 값 자체를 저장하며, 메모리 효율성과 성능 면에서 유리하다.
 
-**MVP(Minimum Viable Product)**
-: 최소한의 기능을 갖춘 제품. 핵심 기능만 구현하여 빠르게 출시하고 사용자 피드백을 받아 개선하는 개발 전략이다.
-
 **ClassLoader**
 : JVM에서 클래스 파일을 메모리에 로드하는 컴포넌트. 필요할 때 클래스를 동적으로 로드하고 링크하는 역할을 한다.
-
-**Executable JAR**
-: 직접 실행 가능한 Java 아카이브 파일. 모든 의존성과 실행에 필요한 메타데이터를 포함하고 있어 별도의 설치 없이 `java -jar` 명령으로 실행할 수 있다.
-
-**Spring Boot**
-: Java 기반 애플리케이션 개발을 단순화하는 프레임워크. 복잡한 설정 없이 빠르게 독립 실행형 애플리케이션을 만들 수 있게 해준다.
-
-**Node.js**
-: JavaScript를 서버 측에서 실행할 수 있게 해주는 런타임 환경. 웹 서버, CLI 도구, 백엔드 API 등을 JavaScript로 개발할 수 있다.
-
-**Isomorphic JavaScript**
-: 서버와 클라이언트에서 동일한 코드로 실행되는 JavaScript. 코드 재사용성을 높이고 일관된 동작을 보장한다.
-
-**TypeScript**
-: Microsoft가 개발한 JavaScript의 정적 타입 확장 언어. 컴파일 시점에 타입 검사를 통해 오류를 미리 발견할 수 있다.
-
-**REST API**
-: 웹 서비스를 위한 아키텍처 스타일. HTTP 프로토콜의 기본 메서드(GET, POST, PUT, DELETE 등)를 활용하여 리소스를 표현하고 상태를 전송한다.
-
-**Circuit Breaker**
-: 장애 확산을 방지하는 소프트웨어 디자인 패턴. 전기 회로의 차단기처럼, 서비스 호출이 계속 실패하면 일정 시간 동안 호출을 차단하여 시스템 과부하를 방지한다.
-
-**Progressive Rollout**
-: 새 기능을 점진적으로 더 많은 사용자에게 배포하는 전략. 초기에는 소수의 사용자에게만 제공하고, 안정성이 확인되면 점차 확대한다.
-
-**Runtime Control**
-: 프로그램이 실행 중에 동적으로 동작을 변경할 수 있는 기능. 재시작 없이 설정이나 기능을 변경할 수 있다.
-
-**Cache Invalidation**
-: 캐시된 데이터를 무효화하는 과정. 원본 데이터가 변경되었을 때 캐시된 데이터도 갱신하거나 제거하여 일관성을 유지한다.
-
-**Dynamic Reflection**
-: 애플리케이션 실행 중에 클래스와 메서드 구조를 검사하고 조작하는 기능. 실행 시점에 유연하게 코드 동작을 변경할 수 있다.
-
-**Type Safety**
-: 데이터 타입이 올바르게 사용되는지 확인하는 컴파일러 검사. 잘못된 타입 사용으로 인한 오류를 사전에 방지한다.
 
 ## 참고자료
 
