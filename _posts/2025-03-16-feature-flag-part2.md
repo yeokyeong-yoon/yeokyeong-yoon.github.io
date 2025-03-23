@@ -17,23 +17,25 @@ mermaid: true
     margin: 0 auto;
     padding: 20px;     /* 기본 패딩 */
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 18px !important;  /* 글씨 크기 키우기 */
-    line-height: 1.6 !important;
+    font-size: 16px;   /* 기본 글씨 크기 */
+    line-height: 1.6;
   }
 
-  p, li, h1, h2, h3, h4, h5, h6 {
-    font-size: 120% !important;
-  }
-
-  h1 { font-size: 200% !important; }
-  h2 { font-size: 170% !important; }
-  h3 { font-size: 150% !important; }
+  /* 개별 요소 크기 설정 - 중첩된 증가 대신 명확한 크기 지정 */
+  p, li { font-size: 16px; }
+  
+  h1 { font-size: 32px; }
+  h2 { font-size: 28px; }
+  h3 { font-size: 24px; }
+  h4 { font-size: 20px; }
+  h5 { font-size: 18px; }
+  h6 { font-size: 16px; }
   
   code {
-    font-size: 110% !important;
+    font-size: 15px;
   }
 
-  /* 다이어그램 스타일 간소화 - mermaid 사용 대신 이미지 스타일만 정의 */
+  /* 다이어그램 스타일 조정 */
   .alternative-diagram {
     text-align: center !important;
     margin: 20px auto !important;
@@ -46,11 +48,30 @@ mermaid: true
     border-radius: 4px !important;
   }
 
+  /* mermaid 다이어그램 스타일 조정 */
+  .mermaid {
+    display: block;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 0.8em;
+    transform: scale(0.8);
+    transform-origin: center;
+  }
+
+  .mermaid svg {
+    max-width: 100%;
+  }
+
   /* 모바일 최적화 */
   @media screen and (max-width: 767px) {
     .post {
       padding: 10px 5px;
-      font-size: 16px !important;
+      font-size: 15px;
+    }
+    
+    .mermaid {
+      transform: scale(0.7);
     }
   }
 </style>
@@ -149,49 +170,4 @@ FeatureFlagManager manager = FeatureFlagManager.builder()
 ```
 
 #### 선언 예시
-```java
-@FeatureFlag(flagName = "Test2")
-public static int privateField = 3;
 ```
-
-SDK 설계 시 고려했던 대안적 접근법:
-
-1. **메서드 체이닝 패턴**
-   ```java
-   FeatureFlagManager manager = FeatureFlagManager.getInstance()
-       .withPackages("your.package.names")
-       .withEnvironment(ExpEnv.QA)
-       .withClassLoader(classLoader)
-       .build();
-   ```
-   - 장점: 유연한 구성, 가독성 좋음, 점진적 구성 가능
-   - 단점: 중간 객체가 변경 가능한 상태를 가짐, 스레드 안전성 보장 어려움
-   - 빌더 패턴과의 차이점: 빌더는 별도의 Builder 클래스를 통해 객체를 생성하여 원본 객체의 불변성을 보장하고, 필수값 검증이 용이함. 반면 메서드 체이닝은 자기 자신을 반환하여 상태를 직접 변경하므로 객체의 일관성을 유지하기 어려움
-
-2. **팩토리 메서드 패턴**
-   ```java
-   FeatureFlagManager manager = FeatureFlagManagerFactory.create(
-       "your.package.names", ExpEnv.QA, classLoader);
-   ```
-   - 장점: 단순한 인터페이스, 구현 세부사항 숨김
-   - 단점: 구성 옵션 확장성 제한, 가독성 저하 가능성
-   - 복잡한 설정 옵션을 지원하기에 제한적인 접근법
-
-3. **정적 구성 클래스**
-   ```java
-   FeatureFlagConfig.setPackageNames("your.package.names");
-   FeatureFlagConfig.setEnvironment(ExpEnv.QA);
-   FeatureFlagConfig.setClassLoader(classLoader);
-   FeatureFlagManager manager = FeatureFlagManager.getInstance();
-   ```
-   - 장점: 익숙한 접근법, 분리된 구성
-   - 단점: 글로벌 상태 의존, 멀티테넌시 어려움, 테스트 복잡성
-   - 여러 구성을 동시에 지원해야 하는 요구사항과 충돌
-
-빌더 패턴을 선택한 이유:
-
-- 명확하고 가독성 높은 API 디자인
-- 필수 및 선택적 매개변수 구분 용이
-- 객체 생성 과정의 유연성과 제어성
-- 불변 객체 생성 지원으로 스레드 안전성 향상
-- 자바 개발자에게 익숙한 디자인 패턴

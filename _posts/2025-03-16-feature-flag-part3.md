@@ -17,20 +17,22 @@ mermaid: true
     margin: 0 auto;
     padding: 20px;     /* 기본 패딩 */
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 18px !important;  /* 글씨 크기 키우기 */
-    line-height: 1.6 !important;
+    font-size: 16px;   /* 기본 글씨 크기 */
+    line-height: 1.6;
   }
 
-  p, li, h1, h2, h3, h4, h5, h6 {
-    font-size: 120% !important;
-  }
-
-  h1 { font-size: 200% !important; }
-  h2 { font-size: 170% !important; }
-  h3 { font-size: 150% !important; }
+  /* 개별 요소 크기 설정 - 중첩된 증가 대신 명확한 크기 지정 */
+  p, li { font-size: 16px; }
+  
+  h1 { font-size: 32px; }
+  h2 { font-size: 28px; }
+  h3 { font-size: 24px; }
+  h4 { font-size: 20px; }
+  h5 { font-size: 18px; }
+  h6 { font-size: 16px; }
   
   code {
-    font-size: 110% !important;
+    font-size: 15px;
   }
 
   /* 다이어그램 스타일 조정 */
@@ -48,28 +50,28 @@ mermaid: true
 
   /* mermaid 다이어그램 스타일 조정 */
   .mermaid {
-    display: block !important;
-    max-width: 600px !important;
-    margin: 0 auto !important;
-    text-align: center !important;
-    font-size: 0.8em !important;
-    transform: scale(0.8) !important;
-    transform-origin: center !important;
+    display: block;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 0.8em;
+    transform: scale(0.8);
+    transform-origin: center;
   }
 
   .mermaid svg {
-    max-width: 100% !important;
+    max-width: 100%;
   }
 
   /* 모바일 최적화 */
   @media screen and (max-width: 767px) {
     .post {
       padding: 10px 5px;
-      font-size: 16px !important;
+      font-size: 15px;
     }
     
     .mermaid {
-      transform: scale(0.7) !important;
+      transform: scale(0.7);
     }
   }
 </style>
@@ -693,11 +695,11 @@ Martin Fowler의 ["Feature Toggles (Feature Flags)"](https://martinfowler.com/ar
     A[Feature Flag 선언] --> B["@FeatureFlag 어노테이션 스캐닝"]
     B --> C["Flag 등록 (초기화 과정)"]
     C --> D["중앙 저장소에 저장"]
-    D --> E["Admin 페이지에서 Flag 제어"]
-    D --> F["Flag 값 조회 (서비스 런타임)"]
+    D --> E[Admin 페이지에서 Flag 제어]
+    D --> F[Flag 값 조회 (서비스 런타임)]
     E --> D
-    F --> G["비즈니스 로직에서 Flag 값 사용"]
-    F --> H["LRU 캐시에서 로컬 관리"]
+    F --> G[비즈니스 로직에서 Flag 값 사용]
+    F --> H[LRU 캐시에서 로컬 관리]
     H --> F
     style A fill:#f9f,stroke:#333
     style B fill:#bbf,stroke:#333
