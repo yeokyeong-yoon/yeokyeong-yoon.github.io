@@ -70,7 +70,7 @@ Feature Flag(기능 플래그)는 코드를 변경하지 않고도 기능을 켜
 
 <!-- mermaid 다이어그램을 제거하고 대체 이미지만 사용 -->
 <div class="alternative-diagram" style="text-align:center; margin:20px auto;">
-  <img src="https://www.plantuml.com/plantuml/svg/hLJBRjim4BppAnRk8JIaUsLP1Lj5i3Tfa70OKjuXPGIPsj0QQPUeAKmMstt6k_HKn3Kgq-3kttWvKszqQVNHHbSFQeZNPLgSgT9eX5akwCjHDcXKJMsRcn2JIrLVeUE3s2wq9YMTaMPQs0bY0qkfGCXqibqiABN9nWNjx9LFoZMx1V6QvvFoIrKI1QFWpGZV9jzPHgEIIbfICi82PaP8vqyIa4_b7eBNBv2WXMBqrZg9E1s0JV7jlOB1iZ1TLaJiZUKYH60pCgdVTsHiaTUQu8cJ-01pU0I6Pg4s8CaXaY8H9-f0l0B0a2gR0N0ECJOR24bWXTBrP68YOTXYMsLo3XAYfSQqoaDHfWaMJVWpR18_BI2AGcXXQ4z3fZSJJoVGX6lEHEeWC3sCCvYKLx7m4ow9RWbLjHAMmhc2jmrWn6tK7NlmWO6JgADhUqAFKJRr7YRsXUoNH-dv15XMjP0Kcz2G7ZSndSRNVJu7iFvaTVS9aF7QLBvDOmPx_sKb_vHrZNlrYB3_1VrWxW5e3kUFtlk-0m00" 
+  <img src="https://mermaid.ink/img/pako:eNptkctuwjAQRX9l5CWgiiJCEktYUG-7qyq1C7opC5NMwOBHZEwlQvj3OhBI6cLLeOfcuTMPh9BREQc01pvkeee5xycuMTyjIaManI5otCVO3aMntEyWmjOU4jl73gm0f7nGInr5MBpxvLLqbTjRGhn7uM3OWOEerK4MBDLS9eJxVeb5wKiodNNcQJFOtaXAXj6oTNCd0FEIFRlaE-CG-VjOQWfbIyks0Z9rK-Iwoj9nI5hIaEjZczvrA9LS4m4D8aDfiapHBS6joozonZTCOFKEkZFnmkLMMaXG9-T77kcfsvhi6jtdvWkqH8vZen0JT8Vq_wA57HHs?type=png" 
        alt="Feature Flag 시스템 시퀀스 다이어그램" 
        style="max-width:100%; height:auto; border:1px solid #ddd; border-radius:4px;">
   <p><small><i>시스템의 주요 컴포넌트 간 상호작용을 보여주는 시퀀스 다이어그램</i></small></p>

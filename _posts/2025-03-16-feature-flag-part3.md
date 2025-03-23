@@ -296,7 +296,7 @@ private Class<?>[] getClasses(String packageName) throws Exception {
 
 <!-- ClassLoader 계층 구조 다이어그램 - 대체 이미지 사용 -->
 <div class="alternative-diagram">
-  <img src="https://www.plantuml.com/plantuml/svg/TP31IiD048RlynH3VU0jxO0GtggGIjhQTX4dYNLXqTiOj4YItAlpxJXLTvs9jGGYUmddPf5Wkc3LQ1TmYDC51Lg2hh0F2w05nQxLXrCDp4lnU9a37FfpQlTVdRhArF-YbIi_ZtLrUJBgUzb5ZeADHo0mhqNmn-oFp4ZzCqpGUyoSAj_mJfhAyFUl1cXrUUgVLzkgIYblmJnvcXONTlwsYNPeXv_0lA9oYRkNErkFfO_K8IiRy39m2qzPLMjS2lgdPdIHFhLyb1CWMiHFJSPBDUcSN_0N" 
+  <img src="https://mermaid.ink/img/pako:eNptkctuwjAQRX9l5CUgBFJCEktYUKhUddNdVYkuuikLk0zA4EdkTCVC-Pc6QEjpwss5d-7LI_TgqOABjPU6eNlH_vwqJYZXsJBRBUFHMNoSp-7RQ2iZdTonKEF2_rJXYP_yvS3Q2bfRgOOVbT6HE62R0c_7GKwVYc_qqoBAQbpeP83dfF8Y5ZVt2g500qm2GbBX7pRF-BGapFCeIxsCbJmP2RTobHsijSX6c22FH0YMZ-0QKgklFDTtXvoDaaFw2EB86HfS1aMGmzFRRgxKSiEciMNIy1NNPsYYQuN7cn33ow-afDH2na4_NI2P4Wy1eguvJK__AMMjcPw?type=png" 
        alt="Java ClassLoader 계층 구조" 
        style="max-width:450px;">
   <p><small><i>Java ClassLoader 계층 구조 - 다양한 배포 환경에서 추가 ClassLoader가 생성될 수 있음</i></small></p>
