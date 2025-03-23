@@ -157,4 +157,16 @@ FeatureFlagManager manager = FeatureFlagManager.builder()
 ```
 
 #### 선언 예시
+```java
+// Flag를 선언할 클래스 내에서
+@FeatureFlag(flagName = "new-search-algorithm")
+public static boolean useNewSearchAlgorithm = false;
+
+@FeatureFlag(flagName = "premium-features-enabled")
+public static boolean premiumFeaturesEnabled = false;
+
+// 사용하는 곳에서는 일반 변수처럼 접근
+if (SearchConfig.useNewSearchAlgorithm) {
+    // 새 알고리즘 사용 로직
+}
 ```
