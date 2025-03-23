@@ -19,20 +19,22 @@ mermaid: true
     margin: 0 auto;
     padding: 20px;     /* 기본 패딩 */
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 18px !important;  /* 글씨 크기 키우기 */
-    line-height: 1.6 !important;
+    font-size: 16px;   /* 기본 글씨 크기 */
+    line-height: 1.6;
   }
 
-  p, li, h1, h2, h3, h4, h5, h6 {
-    font-size: 120% !important;
-  }
-
-  h1 { font-size: 200% !important; }
-  h2 { font-size: 170% !important; }
-  h3 { font-size: 150% !important; }
+  /* 개별 요소 크기 설정 - 중첩된 증가 대신 명확한 크기 지정 */
+  p, li { font-size: 16px; }
+  
+  h1 { font-size: 32px; }
+  h2 { font-size: 28px; }
+  h3 { font-size: 24px; }
+  h4 { font-size: 20px; }
+  h5 { font-size: 18px; }
+  h6 { font-size: 16px; }
   
   code {
-    font-size: 110% !important;
+    font-size: 15px;
   }
 
   /* 다이어그램 스타일 조정 */
@@ -50,28 +52,28 @@ mermaid: true
 
   /* mermaid 다이어그램 스타일 조정 */
   .mermaid {
-    display: block !important;
-    max-width: 600px !important;
-    margin: 0 auto !important;
-    text-align: center !important;
-    font-size: 0.8em !important;
-    transform: scale(0.8) !important;
-    transform-origin: center !important;
+    display: block;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 0.8em;
+    transform: scale(0.8);
+    transform-origin: center;
   }
 
   .mermaid svg {
-    max-width: 100% !important;
+    max-width: 100%;
   }
 
   /* 모바일 최적화 */
   @media screen and (max-width: 767px) {
     .post {
       padding: 10px 5px;
-      font-size: 16px !important;
+      font-size: 15px;
     }
     
     .mermaid {
-      transform: scale(0.7) !important;
+      transform: scale(0.7);
     }
   }
 </style>
