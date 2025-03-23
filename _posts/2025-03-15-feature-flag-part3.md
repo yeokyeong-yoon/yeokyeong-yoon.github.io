@@ -6,6 +6,7 @@ categories: [개발, 아키텍처]
 tags: [feature-flag, java, 시스템설계]
 series: feature-flag
 series_order: 3
+mermaid: true
 ---
 
 *이 글은 Feature Flag 시스템 구축에 관한 시리즈 중 3부입니다. [1부: 개념, 설계 고민, 그리고 Java SDK 개발 여정](../feature-flag-part1), [2부: 복잡한 엔터프라이즈 환경에서의 기술적 도전기](../feature-flag-part2)도 확인해보세요.*

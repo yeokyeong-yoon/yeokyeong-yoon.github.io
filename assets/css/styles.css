@@ -187,3 +187,52 @@ code {
   h2 { font-size: 22px; }
   h3 { font-size: 19px; }
 }
+
+.mermaid {
+  width: 100% !important;
+  max-width: 800px !important;  /* Adjusted maximum width for better fit */
+  margin: 1.5rem auto;
+  text-align: center;
+  background-color: white;
+  padding: 0.5rem 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  font-size: 10px;
+}
+
+.mermaid svg {
+  width: 100% !important;
+  max-width: 800px !important;  /* Adjusted maximum width for better fit */
+  height: auto !important;
+  display: block;
+  margin: 0 auto;
+}
+
+@media screen and (max-width: 1024px) {
+  .mermaid svg,
+  .mermaid > div {
+    max-width: 600px !important;  /* Adjusted for smaller screens */
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .mermaid {
+    padding: 0.25rem 0;
+    margin: 1rem auto;
+    font-size: 9px;
+  }
+  
+  .mermaid svg,
+  .mermaid > div {
+    max-width: 100% !important;
+  }
+  
+  .mermaid .messageText,
+  .mermaid .noteText {
+    font-size: 9px !important;
+  }
+  
+  .mermaid .actor text {
+    font-size: 10px !important;
+  }
+}
