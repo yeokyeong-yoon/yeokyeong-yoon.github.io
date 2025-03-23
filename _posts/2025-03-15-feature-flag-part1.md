@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Feature Flag 시스템 구축기 (1부): 개념, 설계 고민, 그리고 Java SDK 개발 여정"
-date: 2025-03-16 12:00:00 +0900
+date: 2025-03-15 12:00:00 +0900
 categories: [개발, 아키텍처]
 tags: [feature-flag, java, 시스템설계]
 series: feature-flag
@@ -11,61 +11,8 @@ mermaid: true
 
 *이 글은 Feature Flag 시스템 구축에 관한 시리즈 중 1부입니다. [2부: 복잡한 엔터프라이즈 환경에서의 기술적 도전기](../feature-flag-part2), [3부: 성능 최적화 및 모니터링](../feature-flag-part3)도 확인해보세요.*
 
-<style>
-  /* Custom styles to override theme */
-  .post {
-    width: 100%;
-    max-width: 900px;  /* 데스크톱에서의 최대 너비 */
-    margin: 0 auto;
-    padding: 20px;     /* 기본 패딩 */
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;   /* 기본 글씨 크기 */
-    line-height: 1.6;
-  }
-
-  /* 개별 요소 크기 설정 - 중첩된 증가 대신 명확한 크기 지정 */
-  p, li { 
-    font-size: 16px; 
-    margin-bottom: 0.8em;
-  }
-  
-  h1 { font-size: 28px; margin-top: 1.8em; margin-bottom: 0.8em; }
-  h2 { font-size: 24px; margin-top: 1.6em; margin-bottom: 0.7em; }
-  h3 { font-size: 20px; margin-top: 1.4em; margin-bottom: 0.6em; }
-  h4 { font-size: 18px; margin-top: 1.2em; margin-bottom: 0.5em; }
-  h5 { font-size: 16px; margin-top: 1.1em; margin-bottom: 0.4em; }
-  h6 { font-size: 15px; margin-top: 1em; margin-bottom: 0.3em; }
-  
-  code {
-    font-size: 14px;
-  }
-
-  /* 다이어그램 스타일 조정 */
-  .alternative-diagram {
-    text-align: center !important;
-    margin: 20px auto !important;
-  }
-  
-  .alternative-diagram img {
-    max-width: 100% !important;
-    height: auto !important;
-    border: 1px solid #ddd !important;
-    border-radius: 4px !important;
-  }
-
-  /* 모바일 최적화 */
-  @media screen and (max-width: 767px) {
-    .post {
-      padding: 10px 5px;
-      font-size: 15px;
-    }
-    
-    h1 { font-size: 26px; }
-    h2 { font-size: 22px; }
-    h3 { font-size: 19px; }
-  }
-</style>
-
+<!-- Reference common style file -->
+<link rel="stylesheet" href="/assets/css/common-style.css">
 
 ## 1. Feature Flag 시스템 개요
 

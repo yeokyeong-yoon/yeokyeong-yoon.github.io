@@ -1,3 +1,5 @@
+@import url("post.css");
+
 /* Custom styles for the GitHub blog */
 
 /* General styles */
@@ -131,4 +133,57 @@ a:hover {
   .next-project {
     margin-top: 10px;
   }
-} 
+}
+
+/* Common styles for blog posts */
+.post {
+  width: 100%;
+  max-width: 900px;  /* Maximum width for desktop */
+  margin: 0 auto;
+  padding: 20px;     /* Base padding */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 16px;   /* Base font size */
+  line-height: 1.6;
+}
+
+/* Individual element size settings - specify clear sizes instead of nested increases */
+p, li { 
+  font-size: 16px; 
+  margin-bottom: 0.8em;
+}
+
+h1 { font-size: 28px; margin-top: 1.8em; margin-bottom: 0.8em; }
+h2 { font-size: 24px; margin-top: 1.6em; margin-bottom: 0.7em; }
+h3 { font-size: 20px; margin-top: 1.4em; margin-bottom: 0.6em; }
+h4 { font-size: 18px; margin-top: 1.2em; margin-bottom: 0.5em; }
+h5 { font-size: 16px; margin-top: 1.1em; margin-bottom: 0.4em; }
+h6 { font-size: 15px; margin-top: 1em; margin-bottom: 0.3em; }
+
+code {
+  font-size: 14px;
+}
+
+/* Diagram style adjustments */
+.alternative-diagram {
+  text-align: center !important;
+  margin: 20px auto !important;
+}
+
+.alternative-diagram img {
+  max-width: 100% !important;
+  height: auto !important;
+  border: 1px solid #ddd !important;
+  border-radius: 4px !important;
+}
+
+/* Mobile optimization */
+@media screen and (max-width: 767px) {
+  .post {
+    padding: 10px 5px;
+    font-size: 15px;
+  }
+  
+  h1 { font-size: 26px; }
+  h2 { font-size: 22px; }
+  h3 { font-size: 19px; }
+}
