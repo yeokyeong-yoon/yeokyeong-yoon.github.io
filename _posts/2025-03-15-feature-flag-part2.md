@@ -172,14 +172,6 @@ if (SearchConfig.useNewSearchAlgorithm) {
 }
 ```
 
-### 5.3 Admin UI
-
-<!-- Admin UI 화면 예시 -->
-<div class="alternative-diagram">
-  <img src="https://mermaid.ink/img/pako:eNptksFugzAMhl8l8nFM4kClLRJ7F04bJ047ZYcITElFSSrHjDZV1HefKYPStsvf__tty3G60qQFiYhPVK2vxNnuCGb0ZOmkDcxSYK0EJKXB13eCDVGgNJjqiF64Q1JbdVSVpCCcVxpICCQhtVYp5FHZqH0Q3E-3HZXXRJnOa-I3pXpPLzgJgrww2jM63t8l1H2Bd_4jnCrZOLWJfHW06RHedZx913gDnPq_T0vTH1z0XTYvXa2ixnJeHWvstmCMNqOu91i8iX4fpn9hO58W2NlRD31J5B6NGl-TmKA9GUWSxEtcJhUx5D3H5ZKHYeG9bOXWapTkC0vGksUlBT_pF0RKvk6WVPWVqQYmO00RpbZ8m0yY0h38aJ3lBytZaqN2WLSY0sqYLHRvuFMpRq7lrRhCZL_pJifsJ8s1wg_XFN-2n6d_BPfPPe6_AeMi3hA" alt="Feature Flag Admin UI 예시">
-  <p style="text-align:center;"><small><i>Feature Flag Admin UI 화면 예시 - 직관적인 ON/OFF 토글과 상세 설정 제공</i></small></p>
-</div>
-
 ## 6. 결론 및 다음 내용 소개
 
 <!-- 구현 여정 개요 -->
@@ -203,8 +195,8 @@ journey
 <p style="text-align:center;"><small><i>Feature Flag 시스템 구현 여정과 각 단계별 성취도</i></small></p>
 </div>
 
-이번 2부에서는 Feature Flag 시스템의 기술 스택 선택 과정과 실제 구현 사례를 살펴보았다. 특히 Java 8 기반의 순수 Java SDK 개발, AWS 인프라 활용, Jib 및 Jenkins를 활용한 배포 환경 구성, 그리고 DynamoDB를 통한 데이터 관리 방식에 대해 다루었다. 이러한 기술 스택은 단순히 최신 트렌드를 따르는 것이 아닌, 우리 조직의 상황과 니즈에 맞게 신중하게 선택된 결과물이다.
+이번 2부에서는 우리가 Feature Flag 시스템을 만들면서 고민했던 기술 스택 선택과 실제 구현 과정을 공유했다. 순수 Java로 SDK를 만들고, AWS 인프라를 활용하고, Jib과 Jenkins로 배포 환경을 구성하고, DynamoDB로 데이터를 관리하기까지... 이 모든 선택들이 단순히 '최신 기술'이어서가 아니라, 우리 팀과 회사의 상황에 가장 잘 맞는 선택이었다.
 
-Feature Flag 시스템 개발을 통해 "완벽한 시스템보다는 확장 가능한 시스템"이라는 원칙의 중요성을 깨달았다. 초기에는 단순한 기능만으로 시작했지만, 점진적으로 필요한 기능을 추가하면서 시스템을 발전시켜 나갔다. 이러한 접근 방식은 빠른 출시와 사용자 피드백 기반의 개선을 가능하게 했다.
+이 과정에서 가장 크게 깨달은 건 '완벽한 시스템'을 만드는 것보다 '발전할 수 있는 시스템'을 만드는 게 더 중요하다는 것이었다. 처음엔 정말 기본적인 기능만 있었지만, 사용자들의 피드백을 들으며 하나씩 기능을 추가해나갔다. 이렇게 점진적으로 발전시켜 나가니까 빨리 출시할 수 있었고, 실제 사용자들의 의견을 반영해서 더 좋은 시스템을 만들 수 있었다.
 
-다음 [3부: 멀티모듈 환경에서의 ClassLoader 문제와 해결, 그리고 개선점](../feature-flag-part3)에서는 시스템 운영 중 마주한 가장 흥미로운 기술적 도전 과제인 ClassLoader 관련 문제와 그 해결 과정을 살펴볼 예정이다. 특히 다양한 배포 환경과 모듈 구조에서 발생할 수 있는 리플렉션 관련 이슈와 대응 방법에 대해 자세히 다룰 것이다. 또한 현재 시스템의 한계점과 향후 개선 방향에 대해서도 논의할 예정이다.
+다음 [3부: 멀티모듈 환경에서의 ClassLoader 문제와 해결, 그리고 개선점](../feature-flag-part3)에서는 제가 가장 어려웠던 기술적 도전을 다룰 예정이다. 여러 모듈이 얽혀있는 복잡한 환경에서 마주친 ClassLoader 문제와 그걸 해결해나간 과정을 자세히 풀어볼 것이며, 지금 시스템의 한계는 무엇인지, 앞으로 어떻게 개선해나갈지에 대한 이야기도 함께 나눠볼 예정이었다.
