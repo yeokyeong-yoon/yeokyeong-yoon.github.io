@@ -83,36 +83,51 @@ mermaid: true
 Feature Flag(기능 플래그)는 코드를 변경하지 않고도 기능을 켜고 끌 수 있게 해주는 소프트웨어 개발 기법이다. 마치 집안의 전등 스위치처럼, 개발자는 기능의 활성화 여부를 간단히 '스위치'로 제어할 수 있다. 이 기법은 코드 배포와 기능 출시를 분리함으로써, 새로운 기능을 안전하게 테스트하고 점진적으로 사용자에게 제공할 수 있게 해준다.
 
 시스템 개발 초기에는 Feature Flag 도입 여부를 두고 많은 고민이 있었다. 기존 배포 프로세스를 개선하자는 의견도 있었지만, 이는 여러 팀과의 협업이 필요한 큰 변화였고 당장의 문제 해결이 어려웠다. 또한 Hackle과 같은 국내 Feature Flag 솔루션 도입도 검토했으나, 회사의 특수한 요구사항과 보안 정책 등을 고려했을 때 자체 개발이 더 적합하다고 판단했다. 결국 Feature Flag 방식을 선택한 이유는 코드 배포와 기능 출시를 완전히 분리하여 비즈니스 부서가 개발팀에 의존하지 않고도 기능을 제어할 수 있게 하기 위함이었다.
-
 ## 2. 시스템 아키텍처
-시스템의 데이터 흐름과 주요 컴포넌트 간의 상호작용은 다음과 같다:
 
-1. 플래그 등록 과정
-- Client Application에서 @FeatureFlag 어노테이션으로 플래그 선언
-- Feature Flag Manager가 선언된 플래그를 Splitter API에 등록
-- Splitter API는 플래그 정의를 DynamoDB에 저장하고 Admin Page에 알림
-- Admin Page는 등록 확인을 API를 통해 Manager에게 전달
+시스템의 데이터 흐름과 주요 컴포넌트는 크게 4가지 프로세스로 구성됩니다:
 
-2. 주기적 업데이트 과정
-- Manager가 주기적으로 API에 최신 플래그 값 요청
-- API는 DB와 Admin Page에서 최신 값을 조회
-- 조회된 값을 Manager에게 전달하면 LRU Cache에 업데이트
+### 2.1 플래그 등록 프로세스
+- **Step 1**: Client Application에서 `@FeatureFlag` 어노테이션으로 플래그 선언
+- **Step 2**: Feature Flag Manager가 선언된 플래그를 Splitter API에 등록
+- **Step 3**: Splitter API가 플래그 정의를 DynamoDB에 저장
+- **Step 4**: Admin Page에 등록 알림 전송 및 확인
 
-3. 플래그 값 조회 과정
-- Client가 Manager에 플래그 값 요청
-- Manager는 Cache에서 값을 조회하여 반환
-- Cache에 없는 경우 API를 통해 최신 값 조회
+### 2.2 주기적 업데이트 프로세스
+- **Step 1**: Manager가 주기적으로 API에 최신 플래그 값 요청
+- **Step 2**: API가 DB와 Admin Page에서 최신 값 조회
+- **Step 3**: 조회된 값을 Manager의 LRU Cache에 업데이트
 
-4. 플래그 값 변경 과정
-- Admin Page에서 플래그 값 변경
-- API를 통해 DB에 업데이트된 값 저장
-- 다음 주기적 업데이트 시 변경사항이 전파됨
+### 2.3 플래그 값 조회 프로세스
+- **Step 1**: Client가 Manager에 플래그 값 요청
+- **Step 2**: Manager가 Cache에서 값을 조회하여 반환
+- **Step 3**: Cache Miss 시 API를 통해 최신 값 조회
 
-이러한 구조는 시스템의 안정성과 성능을 모두 고려한 설계로, 특히 네트워크 장애 상황에서도 Cache를 통해 기본 동작을 보장한다.
+### 2.4 플래그 값 변경 프로세스
+- **Step 1**: Admin Page에서 플래그 값 변경
+- **Step 2**: API를 통해 DB에 업데이트
+- **Step 3**: 다음 주기적 업데이트 시 변경사항 전파
 
-아키텍처 설계 시 중앙집중식과 분산식 접근법을 비교했다. 중앙집중식은 모든 Flag 결정을 중앙 서버에서 처리하는 방식으로, 즉각적인 업데이트와 일관된 제어가 가능하지만 네트워크 지연과 의존성이 증가한다. 분산식은 각 클라이언트가 로컬에서 결정을 내리는 방식으로, 성능은 좋지만 상태 동기화가 어렵다.
+### 2.5 아키텍처 선택 배경
 
-최종적으로 하이브리드 접근법을 채택했다. 클라이언트는 로컬에서 Flag 결정을 처리하지만 주기적으로 중앙 서버와 동기화하여 분산 시스템의 성능 이점과 중앙 관리의 일관성을 균형 있게 조합했다. 이 선택은 특히 네트워크 장애 시에도 기본값으로 작동하는 견고한 시스템을 구축하는 데 중요했다.
+시스템 설계 시 세 가지 접근법을 비교했습니다:
+
+1. **중앙집중식**
+   - 장점: 즉각적 업데이트, 일관된 제어
+   - 단점: 네트워크 지연, 높은 의존성
+
+2. **분산식**
+   - 장점: 빠른 성능
+   - 단점: 상태 동기화 어려움
+
+3. **하이브리드 (선택)**
+   - 장점: 
+     - 로컬 결정으로 빠른 성능 확보
+     - 주기적 동기화로 일관성 유지
+     - 네트워크 장애 시에도 기본값으로 동작
+   - 이유: 성능과 일관성의 최적 균형점
+
+이러한 하이브리드 구조는 시스템의 안정성과 성능을 모두 고려한 설계입니다.
 
 ## 3. 핵심 설계 원칙과 기술적 구현
 
@@ -463,10 +478,12 @@ flowchart TD
     FFManager --플래그 정보 저장--> FFManager
 ```
 *서비스 시작 시점의 전체 동작 흐름을 보여주는 플로우차트*
+
 | 구성 요소 | 예시 | JVM 저장 위치 | 설명 |
 |---------|------|--------------|------|
 | static primitive 필드 | useNewSearchAlgorithm, maxSearchResults | Method Area (필드 참조)<br>Heap (값 저장) | 기능 플래그의 실제 값을 저장하는 필드 |
 | Annotation 메타데이터 | @FeatureFlag(...) | Method Area | 클래스 메타정보의 일부로 저장되는 어노테이션 정보 |
+| ConcurrentHashMap | Map&lt;String, FlagMeta&gt; | Heap | 런타임에 플래그 상태를 관리하는 중앙 저장소 |
 | ConcurrentHashMap | Map<String, FlagMeta> | Heap | 런타임에 플래그 상태를 관리하는 중앙 저장소 |
 | 리플렉션 참조 객체 | Field, Annotation | Heap | 리플렉션 API 사용 시 생성되는 임시 객체들 |
 
@@ -601,12 +618,6 @@ graph TD
 
 **원래 클래스 이름**: `com.company.service.SearchService`  
 **Executable JAR에서의 클래스 이름**: `BOOT-INF.classes.com.company.service.SearchService`
-
-**원래 클래스 이름**: `com.company.flag.FeatureManager`  
-**Executable JAR에서의 클래스 이름**: `BOOT-INF.classes.com.company.flag.FeatureManager`
-
-**원래 클래스 이름**: `org.springframework.core.io.Resource`  
-**Executable JAR에서의 클래스 이름**: `org.springframework.boot.loader.jar.JarFileEntries`
 
 이러한 클래스 이름 변환은 Spring Boot의 LaunchedURLClassLoader가 수행하며, `Class.forName()`이나 패키지 스캔 시 이러한 변환된 이름을 고려하지 않으면 클래스를 찾지 못하게 된다.
 
