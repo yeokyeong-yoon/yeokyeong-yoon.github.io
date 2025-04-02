@@ -89,16 +89,47 @@ Feature Flag(기능 플래그)는 코드를 변경하지 않고도 기능을 켜
 
 ```mermaid
 flowchart TD
-    A[Client Application] -->|Declare Flag| B[Feature Flag Manager]
-    B -->|Register Flag| C[Splitter API]
-    C -->|Store Definition| D[DynamoDB]
-    C -->|Notify| E[Admin Page]
-    E -->|Confirm Registration| B
-    B -->|Store in Cache| F[ConcurrentHashMap]
-    E -->|Change Flag Value| C
-    C -->|Update DB| D
-    D -->|Update Manager Cache| B
-    F -->|Retrieve Flag Value| B
+
+  subgraph OurTeamEKSCluster[Data Team EKS 클러스터]
+    AdminUI[Admin UI]
+    FlagAPIServer[Flag API Server]
+    DynamoDB[(DynamoDB)]
+
+    AdminUI -->|Update Treatment| FlagAPIServer
+    FlagAPIServer -->|persist| DynamoDB
+  end
+
+  subgraph SharedEKSCluster[공용 EKS 클러스터]
+  
+    subgraph PodA
+      AppA[Application A]
+      AppA -->|load on startup| ManagerA[FeatureFlagManager A]
+      
+      ManagerA -->|Reflection scan<br/>@FeatureFlag| FlagMapA[ConcurrentHashMap<br/>flagName → defaultValue]
+      ManagerA -->|poll every 10s| FlagAPIServer
+      FlagAPIServer -->|treatments| ManagerA
+      ManagerA -->|override values| FlagMapA
+    end
+
+    subgraph PodB
+      AppB[Application B]
+      AppB --> ManagerB[FeatureFlagManager B]
+      ManagerB -->|Reflection scan| FlagMapB[ConcurrentHashMap]
+      ManagerB -->|poll| FlagAPIServer
+      FlagAPIServer --> ManagerB
+      ManagerB -->|override values| FlagMapB
+    end
+
+    subgraph PodC
+      AppC[Application C]
+      AppC --> ManagerC[FeatureFlagManager C]
+      ManagerC -->|Reflection scan| FlagMapC[ConcurrentHashMap]
+      ManagerC -->|poll| FlagAPIServer
+      FlagAPIServer --> ManagerC
+      ManagerC -->|override values| FlagMapC
+    end
+
+  end
 ```
 
 *Feature Flag 시스템의 전체 아키텍처를 보여주는 상세한 플로우차트*
