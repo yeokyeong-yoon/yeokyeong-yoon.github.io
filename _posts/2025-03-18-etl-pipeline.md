@@ -7,77 +7,6 @@ tags: [etl, databricks, aws-s3, data-engineering]
 mermaid: true
 ---
 
-<style>
-.mermaid {
-  width: 100%;
-  max-width: 100%;
-  margin: 20px auto;
-  font-size: 14px;
-  font-family: 'Arial', sans-serif;
-  overflow: hidden;
-}
-.mermaid .node rect, 
-.mermaid .node circle, 
-.mermaid .node ellipse, 
-.mermaid .node polygon, 
-.mermaid .node path {
-  fill: #f5f9ff;
-  stroke: #4a6da7;
-  stroke-width: 1.5px;
-}
-.mermaid .node text {
-  font-size: 14px;
-  font-weight: 500;
-}
-.mermaid .edgeLabel {
-  font-size: 12px;
-  background-color: white;
-  padding: 2px 4px;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-.mermaid .cluster rect {
-  fill: #f0f8ff;
-  stroke: #4a6da7;
-  stroke-width: 1px;
-  rx: 8px;
-  ry: 8px;
-}
-.mermaid .label {
-  font-size: 16px;
-  font-weight: bold;
-}
-.mermaid .timeline-event {
-  font-size: 14px;
-}
-.mermaid .journey-section {
-  font-size: 14px;
-  font-weight: bold;
-}
-
-/* 모바일 최적화를 위한 미디어 쿼리 */
-@media screen and (max-width: 768px) {
-  .mermaid {
-    font-size: 12px;
-    margin: 15px 0;
-  }
-  .mermaid .node text {
-    font-size: 12px;
-  }
-  .mermaid .edgeLabel {
-    font-size: 10px;
-    padding: 1px 2px;
-  }
-  .mermaid .label {
-    font-size: 14px;
-  }
-  .mermaid .timeline-event,
-  .mermaid .journey-section {
-    font-size: 12px;
-  }
-}
-</style>
-
 # ETL 파이프라인: 데이터 처리 시스템 구축기 - 초기 단계
 
 ## 1. 프로젝트 배경
@@ -256,10 +185,10 @@ graph TD
 ### 2.4 구조도: Task 분리 + 병렬 병합 처리
 ```mermaid
 graph TD
-    A[Start: Completed 파일 4개 감지] --> B[압축 해제 Task (Python Wheel)]
+    A[Start: Completed 파일 4개 감지] --> B[압축 해제 Task]
     B --> C[summary.txt 생성]
     C --> D[병합 Task (Spark 기반)]
-    D --> E[merged_<table>.csv 저장 및 리네이밍]
+    D --> E[merged_table.csv 저장 및 리네이밍]
     E --> F[summary.txt 업로드 및 알림]
 ```
 
