@@ -13,8 +13,9 @@ mermaid: true
 
 ### 1.1 Dynamic Pricing Solution이란?
 ```mermaid
-graph TD
+graph LR
     subgraph "Dynamic Pricing Solution"
+        direction LR
         Data[데이터 수집]
         ML[ML 모델]
         Price[가격 결정]
@@ -30,20 +31,23 @@ Dynamic Pricing Solution은 실시간으로 시장 상황과 경쟁사 가격을
 
 ### 1.2 ETL 파이프라인의 필요성
 ```mermaid
-graph TD
+graph LR
     subgraph "데이터 소스"
+        direction LR
         Partner[파트너사 데이터]
         Market[시장 데이터]
         Internal[내부 데이터]
     end
     
     subgraph "ETL 파이프라인"
+        direction LR
         Extract[데이터 추출]
         Transform[데이터 변환]
         Load[데이터 적재]
     end
     
     subgraph "ML 모델"
+        direction LR
         Training[모델 학습]
         Prediction[가격 예측]
     end
@@ -62,18 +66,20 @@ ML 모델의 정확한 학습을 위해서는 다양한 데이터 소스에서 �
 
 ### 1.3 Common Pipeline이 필요한 이유
 ```mermaid
-graph TD
+graph LR
     subgraph "현재"
         Current[현재 파트너사]
     end
     
     subgraph "하반기"
+        direction LR
         New1[새로운 파트너사 1]
         New2[새로운 파트너사 2]
         New3[새로운 파트너사 3]
     end
     
     subgraph "Common Pipeline"
+        direction LR
         Standard[표준화된 처리]
         Quality[품질 관리]
         Monitor[모니터링]
@@ -184,12 +190,22 @@ graph TD
 
 ### 2.4 구조도: Task 분리 + 병렬 병합 처리
 ```mermaid
-graph TD
-    A[Start: Completed 파일 4개 감지] --> B[압축 해제 Task]
-    B --> C[summary.txt 생성]
-    C --> D[병합 Task (Spark 기반)]
-    D --> E[merged_table.csv 저장 및 리네이밍]
-    E --> F[summary.txt 업로드 및 알림]
+graph LR
+    subgraph "처리 과정"
+        direction LR
+        A[Start: Completed 파일 4개 감지]
+        B[압축 해제 Task]
+        C[summary txt 생성]
+        D[병합 Task Spark 기반]
+        E[merged table csv 저장]
+        F[summary txt 업로드 및 알림]
+    end
+    
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
 ```
 
 ### 2.5 테이블별 정합성 검사 및 summary 기록
@@ -237,8 +253,9 @@ Table: fdrateplanchannelmapping
 
 ### 3.2 주요 작업
 ```mermaid
-graph TD
+graph LR
     subgraph "현재 작업"
+        direction LR
         Files[파일 처리]
         Merge[데이터 병합]
         Clean[데이터 정제]
