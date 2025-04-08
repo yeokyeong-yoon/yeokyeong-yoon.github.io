@@ -78,20 +78,20 @@ mermaid: true
 
 ### 1.4.5 단계적 접근 전략 시각화
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px', 'fontFamily': 'arial'}}}%%
 gantt
     title ETL 파이프라인 구축 단계별 계획
-    dateFormat YYYY-Q
-    axisFormat %Y-Q%q
+    dateFormat  YYYY-MM-DD
+    axisFormat %Y Q%q
 
     section Phase 1
-    SFTP → S3 → 병합 파이프라인 마이그레이션    :active, 2025-1, 2025-2
+    SFTP → S3 → 병합 파이프라인 마이그레이션    :active, 2025-01-01, 2025-06-30
     section Phase 2
-    데이터 입수, 스키마 처리, 저장 방식 유연화    :2025-2, 2025-3
+    데이터 입수, 스키마 처리, 저장 방식 유연화    :2025-04-01, 2025-09-30
     section Phase 3
-    데이터 품질 검증(DQA) 및 데이터 입수 표준화    :2025-3, 2025-4
+    데이터 품질 검증(DQA) 및 데이터 입수 표준화    :2025-07-01, 2025-12-31
     section Phase 4
-    스키마 통합 및 최적화    :2025-4, 2026-1
+    스키마 통합 및 최적화    :2025-10-01, 2026-03-31
 ```
 
 ### 1.5 Dynamic Pricing Solution 구조
@@ -621,6 +621,8 @@ graph LR
 이러한 경험을 통해 데이터 품질 관리는 단순한 기술적 문제가 아니라 지속적인 모니터링과 개선이 필요한 복잡한 프로세스라는 것을 배웠습니다.
 
 ### 5.1.3 데이터 품질 검증 프로세스
+데이터 품질 검증 프로세스는 데이터의 정확성과 신뢰성을 보장하기 위한 검증 단계를 보여줍니다. 이는 데이터가 실제로 사용되기 전에 수행되는 필수적인 검증 과정입니다.
+
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
 graph LR
@@ -672,6 +674,12 @@ graph LR
 - 병합 후 자동으로 S3에 업로드되어 워크플로우 오케스트레이션 도구나 알림 시스템으로 트리거 가능
 
 ### 5.2.2 Summary 로깅 상세 다이어그램
+Summary 로깅은 데이터 품질 검증과는 별개로, 전체 ETL 프로세스의 실행 결과와 성능을 모니터링하기 위한 메타데이터를 수집하고 기록하는 과정입니다. 이는 파이프라인의 운영 상태를 추적하고 문제 발생 시 빠른 대응을 가능하게 합니다.
+
+주요 차이점:
+- 데이터 품질 검증: 데이터 자체의 품질을 검증 (헤더 불일치, null 비율 등)
+- Summary 로깅: 파이프라인 실행의 메타데이터 수집 (처리 시간, 파일 수, 오류 발생 여부 등)
+
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
 graph LR
