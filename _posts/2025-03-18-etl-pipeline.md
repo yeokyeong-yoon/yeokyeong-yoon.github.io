@@ -78,20 +78,52 @@ mermaid: true
 
 ### 1.4.5 단계적 접근 전략 시각화
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px', 'fontFamily': 'arial'}}}%%
-gantt
-    title ETL 파이프라인 구축 단계별 계획 (현재: Phase 1 진행 중)
-    dateFormat  YYYY-MM-DD
-    axisFormat %Y Q%q
-
-    section Phase 1 (현재 진행중)
-    SFTP → S3 → 병합 파이프라인 마이그레이션    :active, 2025-01-01, 2025-06-30
-    section Phase 2 (예정)
-    데이터 입수, 스키마 처리, 저장 방식 유연화    :2025-04-01, 2025-09-30
-    section Phase 3 (예정)
-    데이터 품질 검증(DQA) 및 데이터 입수 표준화    :2025-07-01, 2025-12-31
-    section Phase 4 (예정)
-    스키마 통합 및 최적화    :2025-10-01, 2026-03-31
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'fontSize': '24px',
+    'fontFamily': 'arial',
+    'lineHeight': '2',
+    'textAlignment': 'center'
+  }
+}}%%
+graph TD
+    subgraph "데이터 소스"
+        SFTP[SFTP 서버]
+        TAR[.tar.gz 파일]
+        SFTP --> TAR
+    end
+    
+    subgraph "Task 1: 압축 해제"
+        SENSOR[완료 파일 센서]
+        EXTRACT[압축 해제 프로세스]
+        UPLOAD[S3 업로드]
+        SENSOR --> EXTRACT --> UPLOAD
+    end
+    
+    subgraph "Task 2: 병합"
+        MERGE[테이블별 병합]
+        VALIDATE[스키마 검증]
+        LOG[정합성 로깅]
+        MERGE --> VALIDATE --> LOG
+    end
+    
+    subgraph "Task 3: 요약"
+        SUMMARY[summary.txt 생성]
+        S3[S3 업로드]
+        SUMMARY --> S3
+    end
+    
+    TAR --> SENSOR
+    UPLOAD --> MERGE
+    LOG --> SUMMARY
+    
+    style SFTP fill:#f9f,stroke:#333,stroke-width:4px
+    style TAR fill:#f9f,stroke:#333,stroke-width:4px
+    style SENSOR fill:#bbf,stroke:#333,stroke-width:4px
+    style MERGE fill:#bbf,stroke:#333,stroke-width:4px
+    style SUMMARY fill:#bfb,stroke:#333,stroke-width:4px
+    style S3 fill:#bfb,stroke:#333,stroke-width:4px
 ```
 
 ## 1.2 Phase 1 범위
@@ -262,37 +294,52 @@ graph LR
 
 ### 3.1.2 Phase 1: SFTP → S3 → 병합 파이프라인 구성
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '20px', 'fontFamily': 'arial', 'lineHeight': '1.5', 'textAlignment': 'center' }, 'flowchart': { 'nodeSpacing': 50, 'rankSpacing': 100, 'padding': 20, 'width': '100%', 'height': '100%' }}}%%
-graph LR
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'fontSize': '24px',
+    'fontFamily': 'arial',
+    'lineHeight': '2',
+    'textAlignment': 'center'
+  }
+}}%%
+graph TD
     subgraph "데이터 소스"
-        direction LR
-        S1[SFTP 서버] --> S2[.tar.gz 파일]
+        SFTP[SFTP 서버]
+        TAR[.tar.gz 파일]
+        SFTP --> TAR
     end
     
     subgraph "Task 1: 압축 해제"
-        direction LR
-        T1[완료 파일 센서] --> T2[압축 해제 프로세스] --> T3[S3 업로드]
+        SENSOR[완료 파일 센서]
+        EXTRACT[압축 해제 프로세스]
+        UPLOAD[S3 업로드]
+        SENSOR --> EXTRACT --> UPLOAD
     end
     
     subgraph "Task 2: 병합"
-        direction LR
-        T4[테이블별 병합] --> T5[스키마 검증] --> T6[정합성 로깅]
+        MERGE[테이블별 병합]
+        VALIDATE[스키마 검증]
+        LOG[정합성 로깅]
+        MERGE --> VALIDATE --> LOG
     end
     
     subgraph "Task 3: 요약"
-        direction LR
-        T7[summary.txt 생성] --> T8[S3 업로드]
+        SUMMARY[summary.txt 생성]
+        S3[S3 업로드]
+        SUMMARY --> S3
     end
     
-    S2 --> T1
-    T3 --> T4
-    T6 --> T7
+    TAR --> SENSOR
+    UPLOAD --> MERGE
+    LOG --> SUMMARY
     
-    style S1 fill:#f9f,stroke:#333,stroke-width:2px
-    style S2 fill:#f9f,stroke:#333,stroke-width:2px
-    style T1 fill:#bbf,stroke:#333,stroke-width:2px
-    style T4 fill:#bbf,stroke:#333,stroke-width:2px
-    style T7 fill:#bfb,stroke:#333,stroke-width:2px
+    style SFTP fill:#f9f,stroke:#333,stroke-width:4px
+    style TAR fill:#f9f,stroke:#333,stroke-width:4px
+    style SENSOR fill:#bbf,stroke:#333,stroke-width:4px
+    style MERGE fill:#bbf,stroke:#333,stroke-width:4px
+    style SUMMARY fill:#bfb,stroke:#333,stroke-width:4px
+    style S3 fill:#bfb,stroke:#333,stroke-width:4px
 ```
 
 ## 3.2 Workflow 기반 전환
