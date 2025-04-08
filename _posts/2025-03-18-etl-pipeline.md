@@ -12,7 +12,7 @@ mermaid: true
 
 이 글은 대규모 호텔 예약 플랫폼의 동적 가격 책정 서비스(Dynamic Pricing Service)를 위한 ETL 파이프라인을 구축하면서 겪은 시행착오와 학습 과정을 기록한 기술 블로그입니다. 현재는 해외 파트너사 1곳의 데이터만 처리하고 있으나, 향후 국내 파트너사 1곳과 추가 해외 파트너사 1곳으로 확장할 계획에 따라 표준화된 파이프라인이 필요하게 되었습니다.
 
-> 이 글은 완성된 솔루션을 제시하는 것이 아니라, 대규모 데이터 엔지니어링과 배치 처리에 대해 배우면서 겪은 시행착오와 교훈을 기록한 학습 여정입니다.
+> 이 글은 완성된 솔루션을 제시하는 것이 아니라, 데이터 엔지니어링과 대규모 데이터 처리가 처음인 상황에서 대규모 데이터 엔지니어링과 배치 처리에 대해 배우면서 겪은 시행착오와 교훈을 기록한 학습 여정입니다. 각 단계에서 마주친 문제와 해결 과정, 그리고 얻은 인사이트를 공유합니다.
 
 ## 0.1 프로젝트 배경
 
@@ -25,7 +25,7 @@ mermaid: true
 3. **비효율적 적재 방식**: 변경 감지 메커니즘 부재로 중복 적재 및 리소스 낭비
 4. **품질 보장 체계 부재**: 실시간/배치 기반 DQA 체계 미흡
 
-따라서, 우리는 다음을 목표로 공통 ETL 파이프라인을 설계하고 있습니다:
+따라서, 다음을 목표로 공통 ETL 파이프라인을 설계하고 있습니다:
 - 데이터 입수 → 품질 검증 → 저장까지 전 과정 자동화 및 표준화
 - 테이블/스키마 구조가 다른 파트너사 대응 가능한 유연한 구조
 - 비용 효율적이고 안정적인 운영 (DQA 포함)
@@ -42,7 +42,7 @@ mermaid: true
 4. **데이터 품질 보장**: 자동화된 DQA 프로세스로 데이터 신뢰성 확보
 5. **확장 가능한 아키텍처**: 새로운 파트너사 추가 시 최소한의 변경으로 통합 가능한 구조
 
-이 글은 이러한 도전 과제를 해결하기 위한 시행착오와 학습 과정, 그리고 얻은 교훈을 정리한 기술 기록입니다.
+이 글은 이러한 도전 과제를 해결하기 위한 시행착오와 학습 과정, 그리고 얻은 교훈을 정리한 기술 기록입니다. 각 도전 과제에 대해 시도한 접근 방식, 실패한 경험, 그리고 그로부터 배운 교훈을 순차적으로 설명합니다.
 
 # 1. 프로젝트 배경
 
@@ -164,6 +164,8 @@ graph LR
 - 테이블별 스키마 불일치로 병합 실패
 - 실패 시 전체 Job 중단 → Retry 불가능
 ```
+
+이러한 초기 실패는 데이터 엔지니어링과 대규모 데이터 처리가 처음인 상황에서 중요한 교훈을 주었습니다: 대용량 데이터 처리에는 단순한 접근 방식이 아닌, 데이터 특성에 맞는 분산 처리 아키텍처가 필요하다는 점입니다.
 
 # 3. 구조 개선을 위한 의사결정 과정
 
@@ -399,6 +401,7 @@ Table: rate_plan_mapping
 - 데이터 접근 패턴에 맞는 최적화된 파티셔닝 전략 수립
 - 데이터 품질 검증 프로세스 개선 및 자동화 방안 모색
 
+
 ## 7.2 예상되는 확장
 - 국내 파트너사 1곳과 추가 해외 파트너사 1곳의 데이터 수집 방식 대응 (API, DB 등)
 - 다양한 데이터 소스 통합 방안 검토
@@ -409,9 +412,24 @@ Table: rate_plan_mapping
 - 데이터 수집 주기별 최적화된 처리 경로 설계
 - 파트너사별 특수 요구사항을 유연하게 처리할 수 있는 확장 가능한 구조 구현
 
-# 참고
-- Databricks Docs: https://docs.databricks.com/
-- Spark CSV Merge Best Practice: https://spark.apache.org/docs/latest/sql-data-sources-csv.html
-- AWS S3 Partitioning Best Practice: https://docs.aws.amazon.com/athena/latest/ug/partitions.html
-- Delta Lake Documentation: https://docs.databricks.com/delta/index.html
-- Databricks Workflow Best Practices: https://docs.databricks.com/workflows/index.html
+### 7.2.2 스키마 통합 계획
+- 데이터 사이언티스트들과 협력하여 파트너사별 스키마 통합 방안 수립 예정
+- 현재는 스키마 통합이 완료되지 않았으며, 데이터 사이언티스트들이 정의할 예정
+- 스키마 통합이 완료되면 파이프라인에 반영하여 데이터 품질 향상 계획
+- 통합된 스키마를 기반으로 ML 모델 학습 데이터 품질 개선 기대
+
+# 참고 자료
+- [Databricks Docs](https://docs.databricks.com/) - Databricks 관련 공식 문서
+- [Spark CSV Merge Best Practice](https://spark.apache.org/docs/latest/sql-data-sources-csv.html) - Spark에서 CSV 병합 시 모범 사례
+- [AWS S3 Partitioning Best Practice](https://docs.aws.amazon.com/athena/latest/ug/partitions.html) - S3 파티셔닝 관련 모범 사례
+- [Delta Lake Documentation](https://docs.databricks.com/delta/index.html) - Delta Lake에 대한 공식 문서
+- [Databricks Workflow Best Practices](https://docs.databricks.com/workflows/index.html) - Databricks Workflow의 모범 사례
+
+# 학습 자료 및 블로그
+- [Medium - Data Engineering](https://medium.com/tag/data-engineering) - 다양한 데이터 엔지니어링 사례 및 모범 사례
+- [Towards Data Science - ETL](https://towardsdatascience.com/tagged/etl) - ETL 파이프라인 설계 및 구현 관련 글
+- [AWS Big Data Blog](https://aws.amazon.com/blogs/big-data/) - AWS 기반 빅데이터 처리 사례
+- [Databricks Blog](https://www.databricks.com/blog) - Databricks 관련 최신 기술 및 사례
+- [Airflow Documentation](https://airflow.apache.org/docs/) - 워크플로우 오케스트레이션 관련 학습 자료
+- [Spark Documentation](https://spark.apache.org/docs/latest/) - Spark 기반 데이터 처리에 대한 공식 문서
+- [Data Engineering Weekly](https://www.dataengineeringweekly.com/) - 데이터 엔지니어링 관련 주간 뉴스레터
