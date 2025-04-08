@@ -253,7 +253,7 @@ graph LR
 
 ### 3.1.2 Phase 1: SFTP → S3 → 병합 파이프라인 구성
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '20px', 'width': '100%', 'height': '100%'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '20px', 'fontFamily': 'arial', 'lineHeight': '1.5', 'textAlignment': 'center' }, 'flowchart': { 'nodeSpacing': 50, 'rankSpacing': 100, 'padding': 20, 'width': '100%', 'height': '100%' }}}%%
 graph LR
     subgraph "데이터 소스"
         direction LR
@@ -323,11 +323,26 @@ graph LR
 
 ### 3.2.2 Databricks Workflow 구조
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'fontSize': '20px',
+    'fontFamily': 'arial',
+    'lineHeight': '1.5',
+    'textAlignment': 'center'
+  },
+  'flowchart': {
+    'nodeSpacing': 50,
+    'rankSpacing': 100,
+    'padding': 20,
+    'width': '100%',
+    'height': '100%'
+  }
+}}%%
 graph LR
     subgraph "초기화"
         direction LR
-        P1[process_date 파라미터]
+        P1[process_date<br/>파라미터]
         T1[pre_set_date]
         T2[wait_for_all_sources]
         P1 --> T1 --> T2
@@ -362,11 +377,18 @@ graph LR
         T8 --> T9
     end
     
-    style P1 fill:#f9f,stroke:#333,stroke-width:2px
-    style T1 fill:#bbf,stroke:#333,stroke-width:2px
-    style T3 fill:#bbf,stroke:#333,stroke-width:2px
-    style T8 fill:#bbf,stroke:#333,stroke-width:2px
-    style T9 fill:#bbf,stroke:#333,stroke-width:2px
+    style P1 fill:#f9f,stroke:#333,stroke-width:4px
+    style T1 fill:#bbf,stroke:#333,stroke-width:4px
+    style T3 fill:#bbf,stroke:#333,stroke-width:4px
+    style T8 fill:#bbf,stroke:#333,stroke-width:4px
+    style T9 fill:#bbf,stroke:#333,stroke-width:4px
+    
+    %% 노드 스타일 통일
+    style T2 stroke-width:4px
+    style T4 stroke-width:4px
+    style T5 stroke-width:4px
+    style T6 stroke-width:4px
+    style T7 stroke-width:4px
 ```
 
 ### 3.2.3 Workflow YAML 구조
@@ -469,23 +491,38 @@ resources:
 
 ### 4.1.2 Spark 분산 처리 아키텍처 상세 다이어그램
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'fontSize': '20px',
+    'fontFamily': 'arial',
+    'lineHeight': '1.5',
+    'textAlignment': 'center'
+  },
+  'flowchart': {
+    'nodeSpacing': 50,
+    'rankSpacing': 100,
+    'padding': 20,
+    'width': '100%',
+    'height': '100%'
+  }
+}}%%
 graph LR
     subgraph "Driver 노드"
         direction LR
-        D1[Spark Driver] --> D2[테이블별 병합 작업 관리]
+        D1[Spark Driver<br/>작업 관리] --> D2[테이블별<br/>병합 작업<br/>스케줄링]
     end
     
     subgraph "Executor 노드들"
         direction LR
-        E1[Executor 1: 파일 읽기/처리]
-        E3[Executor 2: 파일 읽기/처리]
-        E5[Executor N: 파일 읽기/처리]
+        E1[Executor 1<br/>파일 읽기/처리]
+        E3[Executor 2<br/>파일 읽기/처리]
+        E5[Executor N<br/>파일 읽기/처리]
     end
     
     subgraph "S3 저장소"
         direction LR
-        S1[병합된 CSV 파일] --> S2[_SUCCESS 파일]
+        S1[병합된<br/>CSV 파일] --> S2[_SUCCESS<br/>파일]
     end
     
     D2 --> E1
@@ -496,9 +533,13 @@ graph LR
     E3 --> S1
     E5 --> S1
     
-    style D1 fill:#f9f,stroke:#333,stroke-width:2px
-    style S1 fill:#bbf,stroke:#333,stroke-width:2px
-    style S2 fill:#bfb,stroke:#333,stroke-width:2px
+    style D1 fill:#f9f,stroke:#333,stroke-width:4px
+    style D2 fill:#f9f,stroke:#333,stroke-width:4px
+    style E1 fill:#bbf,stroke:#333,stroke-width:4px
+    style E3 fill:#bbf,stroke:#333,stroke-width:4px
+    style E5 fill:#bbf,stroke:#333,stroke-width:4px
+    style S1 fill:#bfb,stroke:#333,stroke-width:4px
+    style S2 fill:#bfb,stroke:#333,stroke-width:4px
 ```
 
 ## 4.2 데이터 처리 최적화
