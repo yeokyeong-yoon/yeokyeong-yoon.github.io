@@ -80,19 +80,28 @@ mermaid: true
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px', 'fontFamily': 'arial'}}}%%
 gantt
-    title ETL 파이프라인 구축 단계별 계획
+    title ETL 파이프라인 구축 단계별 계획 (현재: Phase 1 진행 중)
     dateFormat  YYYY-MM-DD
     axisFormat %Y Q%q
 
-    section Phase 1
+    section Phase 1 (현재 진행중)
     SFTP → S3 → 병합 파이프라인 마이그레이션    :active, 2025-01-01, 2025-06-30
-    section Phase 2
+    section Phase 2 (예정)
     데이터 입수, 스키마 처리, 저장 방식 유연화    :2025-04-01, 2025-09-30
-    section Phase 3
+    section Phase 3 (예정)
     데이터 품질 검증(DQA) 및 데이터 입수 표준화    :2025-07-01, 2025-12-31
-    section Phase 4
+    section Phase 4 (예정)
     스키마 통합 및 최적화    :2025-10-01, 2026-03-31
 ```
+
+## 1.2 Phase 1 범위
+현재 진행 중인 Phase 1은 다음과 같은 핵심 목표를 가지고 있습니다:
+1. SFTP에서 S3로의 데이터 이관
+2. Databricks를 활용한 병합 파이프라인 구축
+3. 기본적인 데이터 검증 로직 구현
+4. 파이프라인 모니터링 체계 수립
+
+이후의 Phase들은 데이터 품질 개선, 스키마 최적화 등을 다룰 예정이지만, 이 문서에서는 Phase 1의 구현 과정과 경험을 중점적으로 공유합니다.
 
 ### 1.5 Dynamic Pricing Solution 구조
 ```mermaid
