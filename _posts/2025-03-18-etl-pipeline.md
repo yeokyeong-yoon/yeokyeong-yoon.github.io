@@ -81,15 +81,15 @@ mermaid: true
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
 gantt
     title ETL 파이프라인 구축 단계별 계획
-    dateFormat  YY-MM
-    section 1단계
-    SFTP → S3 → 병합 파이프라인 마이그레이션    :25-01, 25-03
-    section 2단계
-    데이터 입수, 스키마 처리, 저장 방식 유연화    :25-04, 25-06
-    section 3단계
-    데이터 품질 검증(DQA) 및 데이터 입수 표준화    :25-07, 25-09
-    section 4단계
-    스키마 통합 및 최적화    :25-10, 25-12
+    dateFormat  YYYY-MM-DD
+    section Phase 1
+    SFTP → S3 → 병합 파이프라인 마이그레이션    :active, 2025-01-01, 90d
+    section Phase 2
+    데이터 입수, 스키마 처리, 저장 방식 유연화    :2025-04-01, 90d
+    section Phase 3
+    데이터 품질 검증(DQA) 및 데이터 입수 표준화    :2025-07-01, 90d
+    section Phase 4
+    스키마 통합 및 최적화    :2025-10-01, 90d
 ```
 
 ### 1.5 Dynamic Pricing Solution 구조
