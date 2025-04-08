@@ -78,6 +78,7 @@ mermaid: true
 
 ### 1.4.5 단계적 접근 전략 시각화
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
 gantt
     title ETL 파이프라인 구축 단계별 계획
     dateFormat  YY-MM
@@ -93,6 +94,7 @@ gantt
 
 ### 1.5 Dynamic Pricing Solution 구조
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
 graph LR
     subgraph "Dynamic Pricing Solution"
         direction LR
@@ -111,6 +113,7 @@ Dynamic Pricing Solution은 실시간으로 시장 상황과 경쟁사 가격을
 
 ### 1.6 ETL 파이프라인의 필요성
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
 graph LR
     subgraph "데이터 소스"
         direction LR
@@ -146,6 +149,7 @@ ML 모델의 효과적인 학습을 위해서는 다양한 소스에서 수집�
 
 ### 1.7 Common Pipeline이 필요한 이유
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
 graph LR
     subgraph "현재"
         Current[해외 파트너사 1]
@@ -229,6 +233,7 @@ graph LR
 
 ### 어떻게 분리했는가?
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
 graph LR
     A[Notebook: 완료 파일 센서] --> B[Python Script: 압축 해제]
     B --> C[Python Script: 병합 + 정합성 로그]
@@ -246,23 +251,24 @@ graph LR
 
 ### 3.1.2 Task 분리 아키텍처 상세 다이어그램
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
 graph LR
-    subgraph "Row 1: 데이터 소스"
+    subgraph "데이터 소스"
         direction LR
         S1[SFTP 서버] --> S2[.tar.gz 파일]
     end
     
-    subgraph "Row 2: Task 1: 압축 해제"
+    subgraph "Task 1: 압축 해제"
         direction LR
         T1[완료 파일 센서] --> T2[압축 해제 프로세스] --> T3[S3 업로드]
     end
     
-    subgraph "Row 3: Task 2: 병합"
+    subgraph "Task 2: 병합"
         direction LR
         T4[테이블별 병합] --> T5[스키마 검증] --> T6[정합성 로깅]
     end
     
-    subgraph "Row 4: Task 3: 요약"
+    subgraph "Task 3: 요약"
         direction LR
         T7[summary.txt 생성] --> T8[S3 업로드]
     end
@@ -313,8 +319,9 @@ graph LR
 
 ### 3.2.2 Databricks Workflow 구조
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
 graph LR
-    subgraph "Row 1: 초기화"
+    subgraph "초기화"
         direction LR
         P1[process_date 파라미터]
         T1[pre_set_date]
@@ -322,13 +329,13 @@ graph LR
         P1 --> T1 --> T2
     end
     
-    subgraph "Row 2: 데이터 추출"
+    subgraph "데이터 추출"
         direction LR
         T3[batch_extract]
         T2 --> T3
     end
     
-    subgraph "Row 3: 병렬 병합"
+    subgraph "병렬 병합"
         direction LR
         T4[merge_table_1]
         T5[merge_table_2]
@@ -340,7 +347,7 @@ graph LR
         T3 --> T7
     end
     
-    subgraph "Row 4: 검증"
+    subgraph "검증"
         direction LR
         T8[merge_summary]
         T9[post_merge_check]
@@ -458,20 +465,21 @@ resources:
 
 ### 4.1.2 Spark 분산 처리 아키텍처 상세 다이어그램
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
 graph LR
-    subgraph "Row 1: Driver 노드"
+    subgraph "Driver 노드"
         direction LR
         D1[Spark Driver] --> D2[테이블별 병합 작업 관리]
     end
     
-    subgraph "Row 2: Executor 노드들"
+    subgraph "Executor 노드들"
         direction LR
         E1[Executor 1: 파일 읽기/처리]
         E3[Executor 2: 파일 읽기/처리]
         E5[Executor N: 파일 읽기/처리]
     end
     
-    subgraph "Row 3: S3 저장소"
+    subgraph "S3 저장소"
         direction LR
         S1[병합된 CSV 파일] --> S2[_SUCCESS 파일]
     end
@@ -507,28 +515,29 @@ graph LR
 
 ### 4.2.2 데이터 처리 최적화 상세 다이어그램
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
 graph LR
-    subgraph "Row 1: 초기 접근"
+    subgraph "초기 접근"
         direction LR
         A1[단일 Python 스크립트] --> A2[로컬 파일 시스템 사용] --> A3[메모리 부족 오류]
     end
     
-    subgraph "Row 2: Spark 도입"
+    subgraph "Spark 도입"
         direction LR
         B1[Spark 기반 병합] --> B2[Driver OOM 오류] --> B3[테이블별 분리 필요성 발견]
     end
     
-    subgraph "Row 3: Task 분리"
+    subgraph "Task 분리"
         direction LR
         C1[압축 해제 Task] --> C2[병합 Task] --> C3[요약 Task]
     end
     
-    subgraph "Row 4: Workflow 전환"
+    subgraph "Workflow 전환"
         direction LR
         D1[Databricks Workflow] --> D2[파라미터 전달 문제] --> D3[경로 구성 오류]
     end
     
-    subgraph "Row 5: 최종 구현"
+    subgraph "최종 구현"
         direction LR
         E1[병렬 처리 최적화] --> E2[데이터 품질 검증] --> E3[자동화된 Workflow]
     end
@@ -568,14 +577,15 @@ graph LR
 
 ### 5.1.3 데이터 품질 검증 프로세스
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
 graph LR
-    subgraph "Row 1: 데이터 소스"
+    subgraph "데이터 소스"
         direction LR
         S1[병합된 CSV 파일]
         S2[원본 파일 목록]
     end
     
-    subgraph "Row 2: 데이터 품질 검증"
+    subgraph "데이터 품질 검증"
         direction LR
         V1[헤더 불일치 검사]
         V2[null 비율 체크]
@@ -583,7 +593,7 @@ graph LR
         V4[데이터 타입 검증]
     end
     
-    subgraph "Row 3: 결과 처리"
+    subgraph "결과 처리"
         direction LR
         R1[summary.txt 생성]
         R2[경고/오류 로깅]
@@ -618,44 +628,41 @@ graph LR
 
 ### 5.2.2 Summary 로깅 상세 다이어그램
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
 graph LR
-    subgraph "Row 1: 데이터 소스"
+    subgraph "데이터 소스"
         direction LR
         S1[병합된 CSV 파일]
         S2[원본 파일 목록]
     end
     
-    subgraph "Row 2: 데이터 품질 검증"
+    subgraph "Summary 생성"
         direction LR
-        V1[헤더 불일치 검사]
-        V2[null 비율 체크]
-        V3[파일 개수 누락 여부]
-        V4[데이터 타입 검증]
+        L1[파일 수 집계]
+        L2[처리 시간 기록]
+        L3[오류/경고 수집]
     end
     
-    subgraph "Row 3: 결과 처리"
+    subgraph "결과 저장"
         direction LR
         R1[summary.txt 생성]
-        R2[경고/오류 로깅]
-        R3[알림 트리거]
+        R2[S3 업로드]
+        R3[알림 발송]
     end
     
-    S1 --> V1
-    S1 --> V2
-    S1 --> V4
-    S2 --> V3
+    S1 --> L1
+    S1 --> L2
+    S2 --> L1
     
-    V1 --> R1
-    V2 --> R1
-    V3 --> R1
-    V4 --> R1
+    L1 --> R1
+    L2 --> R1
+    L3 --> R1
     
     R1 --> R2 --> R3
     
-    style V1 fill:#f9f,stroke:#333,stroke-width:2px
-    style V2 fill:#f9f,stroke:#333,stroke-width:2px
-    style V3 fill:#f9f,stroke:#333,stroke-width:2px
-    style V4 fill:#f9f,stroke:#333,stroke-width:2px
+    style L1 fill:#f9f,stroke:#333,stroke-width:2px
+    style L2 fill:#f9f,stroke:#333,stroke-width:2px
+    style L3 fill:#f9f,stroke:#333,stroke-width:2px
     style R1 fill:#bbf,stroke:#333,stroke-width:2px
 ```
 
@@ -667,27 +674,33 @@ graph LR
 - 성능 테스트 부족: 실제 데이터 규모의 10%로만 테스트하여 실제 운영 시 문제 발생
 - 오류 처리 미흡: 예외 상황에 대한 명확한 처리 전략 없이 개발하여 복구 어려움
 
-### 6.1.1 기술적 교훈 구현 세부사항
-- 초기 설계 시 확장성을 고려하지 않은 것이 가장 큰 실수: 데이터 양 증가에 대비한 설계 필요
-- 단일 책임 원칙(SRP)을 무시한 모놀리식 구조는 유지보수와 디버깅을 어렵게 함
-- 성능 테스트 부족: 실제 데이터 규모의 10%로만 테스트하여 실제 운영 시 문제 발생
-- 오류 처리 미흡: 예외 상황에 대한 명확한 처리 전략 없이 개발하여 복구 어려움
+### 6.1.1 기술적 교훈의 구체적 사례
+- **메모리 관리 실패**: 초기에는 단일 프로세스로 모든 파일을 처리하려 했으나, 4만 개의 파일을 처리하는 과정에서 OOM 발생
+- **Spark 설정 미흡**: `spark.default.parallelism`과 `spark.sql.shuffle.partitions` 설정을 데이터 특성에 맞게 조정하지 않아 성능 저하
+- **리소스 할당 오류**: Driver 노드에 과도한 메모리를 할당하여 Executor 노드의 리소스가 부족했던 경험
+- **병렬 처리 한계**: 모든 테이블을 동시에 처리하려 했던 것이 Driver OOM의 주요 원인
 
 ## 6.2 프로세스 개선 교훈
 - 데이터 품질 검증 프로세스 구현 및 자동화
 - 다양한 파트너사의 데이터 입수 방식을 표준화된 방식으로 통합
 - 데이터 품질 모니터링 대시보드 구축
 
-### 6.2.1 프로세스 개선 교훈 구현 세부사항
-- 데이터 품질 검증 프로세스 구현 및 자동화
-- 다양한 파트너사의 데이터 입수 방식을 표준화된 방식으로 통합
-- 데이터 품질 모니터링 대시보드 구축
+### 6.2.1 프로세스 개선의 실제 적용
+- **품질 검증 자동화**: 헤더 불일치, null 비율, 파일 개수 등 자동 검증 로직 구현
+- **표준화된 입수 프로세스**: 모든 파트너사 데이터에 대해 동일한 검증 단계 적용
+- **모니터링 체계**: 처리 시간, 오류율, 데이터 품질 지표 등을 실시간으로 모니터링하는 대시보드 구축
+- **알림 시스템**: 데이터 품질 이슈 발생 시 즉시 알림을 받을 수 있는 체계 구축
 
 ## 6.3 팀 협업 교훈
-- 현재는 1단계로, SFTP에서 S3로 파일을 저장하고 병합하는 작업을 Airflow에서 Databricks로 마이그레이션하는 데 집중하고 있습니다.
+- 데이터 엔지니어링 팀과 ML 팀 간의 긴밀한 협업 필요성 발견
+- 파트너사와의 데이터 품질 기준 공유 및 합의 과정의 중요성
+- 문서화와 지식 공유의 필요성
 
-### 6.3.1 팀 협업 교훈 구현 세부사항
-- 현재는 1단계로, SFTP에서 S3로 파일을 저장하고 병합하는 작업을 Airflow에서 Databricks로 마이그레이션하는 데 집중하고 있습니다.
+### 6.3.1 팀 협업 개선 사례
+- **크로스 팀 협업**: ML 팀과 함께 데이터 품질 기준을 정의하고 공유하는 프로세스 구축
+- **파트너사 커뮤니케이션**: 데이터 제공 방식과 품질 기준에 대한 명확한 가이드라인 수립
+- **지식 베이스 구축**: 문제 해결 과정과 교훈을 문서화하여 팀 내 지식 공유 체계 확립
+- **정기적인 리뷰**: 주간 기술 리뷰를 통해 지속적인 개선점 도출
 
 # 7. 다음 단계
 
