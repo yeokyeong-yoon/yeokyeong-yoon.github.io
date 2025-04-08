@@ -244,37 +244,29 @@ graph LR
 ### 3.1.2 Task 분리 아키텍처 상세 다이어그램
 ```mermaid
 graph LR
-    subgraph "데이터 소스"
-        S1[SFTP 서버]
-        S2[.tar.gz 파일]
+    subgraph "Row 1: 데이터 소스"
+        direction LR
+        S1[SFTP 서버] --> S2[.tar.gz 파일]
     end
     
-    subgraph "Task 1: 압축 해제"
-        T1[완료 파일 센서]
-        T2[압축 해제 프로세스]
-        T3[S3 업로드]
+    subgraph "Row 2: Task 1: 압축 해제"
+        direction LR
+        T1[완료 파일 센서] --> T2[압축 해제 프로세스] --> T3[S3 업로드]
     end
     
-    subgraph "Task 2: 병합"
-        T4[테이블별 병합]
-        T5[스키마 검증]
-        T6[정합성 로깅]
+    subgraph "Row 3: Task 2: 병합"
+        direction LR
+        T4[테이블별 병합] --> T5[스키마 검증] --> T6[정합성 로깅]
     end
     
-    subgraph "Task 3: 요약"
-        T7[summary.txt 생성]
-        T8[S3 업로드]
+    subgraph "Row 4: Task 3: 요약"
+        direction LR
+        T7[summary.txt 생성] --> T8[S3 업로드]
     end
     
-    S1 --> S2
     S2 --> T1
-    T1 --> T2
-    T2 --> T3
     T3 --> T4
-    T4 --> T5
-    T5 --> T6
     T6 --> T7
-    T7 --> T8
     
     style T1 fill:#f9f,stroke:#333,stroke-width:2px
     style T4 fill:#bbf,stroke:#333,stroke-width:2px
@@ -286,6 +278,7 @@ graph LR
 ### 왜 전환했는가?
 - Notebook 단일 실행 시 Task 상태 추적 어려움
 - 실패한 테이블만 재시도 불가 → 전체 Notebook 재시작 필요
+- 리소스 관리와 병렬 처리의 한계
 
 ### 어떻게 전환했는가?
 - `Databricks Workflow`를 사용해 각 단계(Task)를 독립적으로 실행
@@ -293,55 +286,67 @@ graph LR
 - S3 경로와 병합 대상 테이블만 매개변수로 주입
 
 ### 3.2.1 Workflow 구성 세부사항
-- 각 Task는 독립적인 재시도 정책 설정: 압축 해제는 최대 3회, 병합은 최대 5회
-- Task 간 의존성은 Databricks Workflow UI에서 시각적으로 구성하여 가시성 확보
-- 실패 알림은 메시징 시스템으로 자동 발송되며, 실패 원인과 영향 범위 포함
-- 테이블별 병합 Task는 동적 생성되어 병렬 실행: `for table in tables: create_task(table)`
+- **초기화 단계**
+  - `pre_set_date`: process_date 파라미터가 비어있을 경우 어제 날짜로 설정
+  - `wait_for_all_sources`: 모든 소스 파일이 준비되었는지 확인
+
+- **데이터 처리 단계**
+  - `batch_extract`: .tar.gz 파일 추출 및 S3 업로드
+  - 각 테이블별 `merge_*` task: 독립적인 병합 작업 수행
+  - 모든 병합 task는 `batch_extract`에만 의존하여 병렬 실행 가능
+
+- **검증 단계**
+  - `merge_summary`: 모든 병합이 완료된 후 summary.txt 생성
+  - `post_merge_check`: 최종 결과 검증
+
+- **리소스 관리**
+  - 모든 task가 동일한 클러스터 사용으로 리소스 일관성 유지
+  - `timeout_seconds: 10800` (3시간)으로 충분한 실행 시간 확보
+  - `max_concurrent_runs: 6`으로 동시 실행 제한
+
+- **스케줄링**
+  - 매일 오전 9시 27분 실행 (`quartz_cron_expression: 27 0 9 * * ?`)
+  - 한국 시간 기준 (`timezone_id: Asia/Seoul`)
 
 ### 3.2.2 Databricks Workflow 구조
 ```mermaid
 graph LR
-    subgraph "Workflow 파라미터"
-        P1[process_date]
-        P2[input_path]
-        P3[output_path]
-    end
-    
-    subgraph "초기화 Task"
+    subgraph "Row 1: 초기화"
+        direction LR
+        P1[process_date 파라미터]
         T1[pre_set_date]
         T2[wait_for_all_sources]
+        P1 --> T1 --> T2
     end
     
-    subgraph "데이터 처리 Task"
+    subgraph "Row 2: 데이터 추출"
+        direction LR
         T3[batch_extract]
+        T2 --> T3
+    end
+    
+    subgraph "Row 3: 병렬 병합"
+        direction LR
         T4[merge_table_1]
         T5[merge_table_2]
         T6[merge_table_3]
         T7[merge_table_N]
+        T3 --> T4
+        T3 --> T5
+        T3 --> T6
+        T3 --> T7
     end
     
-    subgraph "결과 처리 Task"
-        T8[upload_summary]
+    subgraph "Row 4: 검증"
+        direction LR
+        T8[merge_summary]
         T9[post_merge_check]
+        T4 --> T8
+        T5 --> T8
+        T6 --> T8
+        T7 --> T8
+        T8 --> T9
     end
-    
-    P1 --> T1
-    P2 --> T3
-    P3 --> T3
-    
-    T1 --> T2
-    T2 --> T3
-    T3 --> T4
-    T3 --> T5
-    T3 --> T6
-    T3 --> T7
-    
-    T4 --> T8
-    T5 --> T8
-    T6 --> T8
-    T7 --> T8
-    
-    T8 --> T9
     
     style P1 fill:#f9f,stroke:#333,stroke-width:2px
     style T1 fill:#bbf,stroke:#333,stroke-width:2px
@@ -349,6 +354,85 @@ graph LR
     style T8 fill:#bbf,stroke:#333,stroke-width:2px
     style T9 fill:#bbf,stroke:#333,stroke-width:2px
 ```
+
+### 3.2.3 Workflow YAML 구조
+```yaml
+resources:
+  jobs:
+    merge_all_tables_complete_flow:
+      name: merge_all_tables_complete_flow
+      timeout_seconds: 10800
+      max_concurrent_runs: 6
+      schedule:
+        quartz_cron_expression: 27 0 9 * * ?
+        timezone_id: Asia/Seoul
+      tasks:
+        - task_key: pre_set_date
+          notebook_task:
+            notebook_path: /batch_processor/set_process_date_if_empty
+            base_parameters:
+              default_to_yesterday: "true"
+        
+        - task_key: wait_for_all_sources
+          depends_on:
+            - task_key: pre_set_date
+          notebook_task:
+            notebook_path: /batch_processor/check_all_4_completed_files
+            
+        - task_key: batch_extract
+          depends_on:
+            - task_key: wait_for_all_sources
+          spark_python_task:
+            python_file: /batch_processor/__main__.py
+            parameters:
+              - --input
+              - s3://bucket/input/{{job.parameters.PROCESS_DATE}}
+              - --output
+              - s3://bucket/output/{{job.parameters.PROCESS_DATE}}
+              
+        # 각 테이블별 병합 task
+        - task_key: merge_table_1
+          depends_on:
+            - task_key: batch_extract
+          notebook_task:
+            notebook_path: /batch_processor/merge_single_table_notebook
+            
+        # ... 다른 테이블 병합 task들 ...
+        
+        - task_key: merge_summary
+          depends_on:
+            - task_key: merge_table_1
+            # ... 다른 테이블 의존성 ...
+          notebook_task:
+            notebook_path: /batch_processor/upload_summary
+            
+        - task_key: post_merge_check
+          depends_on:
+            - task_key: merge_summary
+          notebook_task:
+            notebook_path: /batch_processor/validate_merge_results
+```
+
+### 3.2.4 Workflow 전환의 이점
+1. **병렬 처리 효율화**
+   - 각 테이블 병합을 독립적으로 실행하여 전체 처리 시간 단축
+   - 리소스 활용도 최적화
+
+2. **장애 복구 용이성**
+   - 실패한 task만 선택적으로 재실행 가능
+   - 의존성 기반으로 안전한 재시작 보장
+
+3. **모니터링 강화**
+   - 각 task의 상태를 실시간으로 추적 가능
+   - 실행 시간, 리소스 사용량 등 상세 모니터링
+
+4. **유지보수성 향상**
+   - 각 task의 책임이 명확히 분리됨
+   - 코드 변경 시 영향 범위 최소화
+
+5. **확장성**
+   - 새로운 테이블 추가가 용이
+   - 파라미터화를 통한 유연한 구성 가능
 
 # 4. 대용량 데이터 병합 구조 설계
 
@@ -372,23 +456,23 @@ graph LR
 ### 4.1.2 Spark 분산 처리 아키텍처
 ```mermaid
 graph LR
-    subgraph "Driver 노드"
-        D1[Spark Driver]
-        D2[테이블별 병합 작업 관리]
+    subgraph "Row 1: Driver 노드"
+        direction LR
+        D1[Spark Driver] --> D2[테이블별 병합 작업 관리]
     end
     
-    subgraph "Executor 노드들"
+    subgraph "Row 2: Executor 노드들"
+        direction LR
         E1[Executor 1: 파일 읽기/처리]
         E3[Executor 2: 파일 읽기/처리]
         E5[Executor N: 파일 읽기/처리]
     end
     
-    subgraph "S3 저장소"
-        S1[병합된 CSV 파일]
-        S2[_SUCCESS 파일]
+    subgraph "Row 3: S3 저장소"
+        direction LR
+        S1[병합된 CSV 파일] --> S2[_SUCCESS 파일]
     end
     
-    D1 --> D2
     D2 --> E1
     D2 --> E3
     D2 --> E5
@@ -396,8 +480,6 @@ graph LR
     E1 --> S1
     E3 --> S1
     E5 --> S1
-    
-    S1 --> S2
     
     style D1 fill:#f9f,stroke:#333,stroke-width:2px
     style S1 fill:#bbf,stroke:#333,stroke-width:2px
@@ -450,19 +532,22 @@ graph LR
 ### 5.1.2 데이터 품질 검증 프로세스
 ```mermaid
 graph LR
-    subgraph "데이터 소스"
+    subgraph "Row 1: 데이터 소스"
+        direction LR
         S1[병합된 CSV 파일]
         S2[원본 파일 목록]
     end
     
-    subgraph "데이터 품질 검증"
+    subgraph "Row 2: 데이터 품질 검증"
+        direction LR
         V1[헤더 불일치 검사]
         V2[null 비율 체크]
         V3[파일 개수 누락 여부]
         V4[데이터 타입 검증]
     end
     
-    subgraph "결과 처리"
+    subgraph "Row 3: 결과 처리"
+        direction LR
         R1[summary.txt 생성]
         R2[경고/오류 로깅]
         R3[알림 트리거]
@@ -633,41 +718,35 @@ Table: rate_plan_mapping
 ### 6.4.3 구현 여정 시각화
 ```mermaid
 graph LR
-    subgraph "초기 접근"
-        A1[단일 Python 스크립트]
-        A2[로컬 파일 시스템 사용]
-        A3[메모리 부족 오류]
+    subgraph "Row 1: 초기 접근"
+        direction LR
+        A1[단일 Python 스크립트] --> A2[로컬 파일 시스템 사용] --> A3[메모리 부족 오류]
     end
     
-    subgraph "Spark 도입"
-        B1[Spark 기반 병합]
-        B2[Driver OOM 오류]
-        B3[테이블별 분리 필요성 발견]
+    subgraph "Row 2: Spark 도입"
+        direction LR
+        B1[Spark 기반 병합] --> B2[Driver OOM 오류] --> B3[테이블별 분리 필요성 발견]
     end
     
-    subgraph "Task 분리"
-        C1[압축 해제 Task]
-        C2[병합 Task]
-        C3[요약 Task]
+    subgraph "Row 3: Task 분리"
+        direction LR
+        C1[압축 해제 Task] --> C2[병합 Task] --> C3[요약 Task]
     end
     
-    subgraph "Workflow 전환"
-        D1[Databricks Workflow]
-        D2[파라미터 전달 문제]
-        D3[경로 구성 오류]
+    subgraph "Row 4: Workflow 전환"
+        direction LR
+        D1[Databricks Workflow] --> D2[파라미터 전달 문제] --> D3[경로 구성 오류]
     end
     
-    subgraph "최종 구현"
-        E1[병렬 처리 최적화]
-        E2[데이터 품질 검증]
-        E3[자동화된 Workflow]
+    subgraph "Row 5: 최종 구현"
+        direction LR
+        E1[병렬 처리 최적화] --> E2[데이터 품질 검증] --> E3[자동화된 Workflow]
     end
     
-    A1 --> A2 --> A3
-    A3 --> B1 --> B2 --> B3
-    B3 --> C1 --> C2 --> C3
-    C3 --> D1 --> D2 --> D3
-    D3 --> E1 --> E2 --> E3
+    A3 --> B1
+    B3 --> C1
+    C3 --> D1
+    D3 --> E1
     
     style A3 fill:#f99,stroke:#333,stroke-width:2px
     style B2 fill:#f99,stroke:#333,stroke-width:2px
