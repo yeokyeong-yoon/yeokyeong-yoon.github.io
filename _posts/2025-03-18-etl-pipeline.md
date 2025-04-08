@@ -44,6 +44,48 @@ mermaid: true
 
 이 글은 이러한 도전 과제를 해결하기 위한 시행착오와 학습 과정, 그리고 얻은 교훈을 정리한 기술 기록입니다. 각 도전 과제에 대해 시도한 접근 방식, 실패한 경험, 그리고 그로부터 배운 교훈을 순차적으로 설명합니다.
 
+## 0.3 단계적 접근 전략
+
+이 프로젝트는 문제를 작은 단위로 분해하여 단계적으로 접근하고 있습니다:
+
+### 1단계: SFTP → S3 → 병합 파이프라인 마이그레이션
+- 기존 Airflow 기반 SFTP 수신 및 S3 저장 파이프라인을 Databricks로 마이그레이션
+- 40,000개 이상의 파일을 효율적으로 처리하는 병합 작업 구현
+- 현재 진행 중인 단계로, 이 문서는 이 단계의 구현 과정과 교훈을 중심으로 작성됨
+
+### 2단계: 데이터 입수, 스키마 처리, 저장 방식 유연화
+- 다양한 파트너사의 데이터 입수 방식을 수용할 수 있도록 파이프라인 리팩토링
+- 스키마 처리 로직을 유연하게 설계하여 다양한 데이터 구조 대응
+- 저장 방식(CSV, Delta Lake 등)을 선택적으로 사용할 수 있는 구조로 개선
+- 타사에서도 활용할 수 있는 모듈화된 구조 구현
+
+### 3단계: 데이터 품질 검증(DQA) 및 데이터 입수 표준화
+- 데이터 품질 검증 프로세스 구현 및 자동화
+- 다양한 파트너사의 데이터 입수 방식을 표준화된 방식으로 통합
+- 향후 구현 예정
+
+### 4단계: 스키마 통합 및 최적화
+- 파트너사별 상이한 스키마를 통합된 형태로 정리
+- 데이터 사이언티스트들과 협력하여 최적의 스키마 설계
+- 향후 구현 예정
+
+이러한 단계적 접근을 통해 복잡한 문제를 관리 가능한 크기로 분해하고, 각 단계에서 얻은 교훈을 다음 단계에 적용하여 지속적으로 개선하는 전략을 취하고 있습니다.
+
+### 0.3.1 단계적 접근 전략 시각화
+```mermaid
+gantt
+    title ETL 파이프라인 구축 단계별 계획
+    dateFormat  YYYY-MM-DD
+    section 1단계
+    SFTP → S3 → 병합 파이프라인 마이그레이션    :2025-01-01, 2025-03-31
+    section 2단계
+    데이터 입수, 스키마 처리, 저장 방식 유연화    :2025-04-01, 2025-06-30
+    section 3단계
+    데이터 품질 검증(DQA) 및 데이터 입수 표준화    :2025-07-01, 2025-09-30
+    section 4단계
+    스키마 통합 및 최적화    :2025-10-01, 2025-12-31
+```
+
 # 1. 프로젝트 배경
 
 ### 1.1 Dynamic Pricing Solution이란?
@@ -135,6 +177,12 @@ graph LR
 - 기본적인 구조는 현재 파트너사 데이터 기준으로 하되, 나중에 최소한의 변경사항이 있도록 설계하려고 신경쓰고 있습니다.
 - 데이터 품질과 처리 효율성을 위해 표준화된 방식으로 수집하고 처리하는 것이 중요합니다.
 
+### 1.5 프로젝트 목표
+- 해외 파트너사로부터 수신한 `.tar.gz` 압축 데이터를 테이블 단위로 추출 및 병합하고, 최종적으로 `merged_<table>.csv` 파일과 `_SUCCESS` 파일을 S3에 저장하는 공통 ETL 파이프라인을 Databricks Workflow 기반으로 자동화합니다.
+- 파이프라인은 확장 가능하고 유지보수가 용이한 구조로 설계하여, 향후 추가 파트너사 데이터 통합에 대비합니다.
+- 데이터 품질 검증 및 모니터링 기능을 포함하여 신뢰할 수 있는 데이터 파이프라인을 구축합니다.
+- **현재는 1단계로, SFTP에서 S3로 파일을 저장하고 병합하는 작업을 Airflow에서 Databricks로 마이그레이션하는 데 집중하고 있습니다.**
+
 # 2. 문제 정의 및 초기 시도
 
 ## 2.1 일일 수신 데이터 특성
@@ -193,6 +241,46 @@ graph TD
 - 각 Task는 독립적인 Databricks 클러스터에서 실행되어 리소스 경합 방지
 - Task 간 데이터 전달은 S3 경로를 매개변수로 전달하여 느슨한 결합 구현
 
+### 3.1.2 Task 분리 아키텍처 상세 다이어그램
+```mermaid
+graph TD
+    subgraph "데이터 소스"
+        S1[SFTP 서버]
+        S2[.tar.gz 파일]
+    end
+    
+    subgraph "Task 1: 압축 해제"
+        T1[완료 파일 센서]
+        T2[압축 해제 프로세스]
+        T3[S3 업로드]
+    end
+    
+    subgraph "Task 2: 병합"
+        T4[테이블별 병합]
+        T5[스키마 검증]
+        T6[정합성 로깅]
+    end
+    
+    subgraph "Task 3: 요약"
+        T7[summary.txt 생성]
+        T8[S3 업로드]
+    end
+    
+    S1 --> S2
+    S2 --> T1
+    T1 --> T2
+    T2 --> T3
+    T3 --> T4
+    T4 --> T5
+    T5 --> T6
+    T6 --> T7
+    T7 --> T8
+    
+    style T1 fill:#f9f,stroke:#333,stroke-width:2px
+    style T4 fill:#bbf,stroke:#333,stroke-width:2px
+    style T7 fill:#bfb,stroke:#333,stroke-width:2px
+```
+
 ## 3.2 Workflow 기반 전환
 
 ### 왜 전환했는가?
@@ -209,6 +297,58 @@ graph TD
 - Task 간 의존성은 Databricks Workflow UI에서 시각적으로 구성하여 가시성 확보
 - 실패 알림은 메시징 시스템으로 자동 발송되며, 실패 원인과 영향 범위 포함
 - 테이블별 병합 Task는 동적 생성되어 병렬 실행: `for table in tables: create_task(table)`
+
+### 3.2.2 Databricks Workflow 구조
+```mermaid
+graph TD
+    subgraph "Workflow 파라미터"
+        P1[process_date]
+        P2[input_path]
+        P3[output_path]
+    end
+    
+    subgraph "초기화 Task"
+        T1[pre_set_date]
+        T2[wait_for_all_sources]
+    end
+    
+    subgraph "데이터 처리 Task"
+        T3[batch_extract]
+        T4[merge_table_1]
+        T5[merge_table_2]
+        T6[merge_table_3]
+        T7[merge_table_N]
+    end
+    
+    subgraph "결과 처리 Task"
+        T8[upload_summary]
+        T9[post_merge_check]
+    end
+    
+    P1 --> T1
+    P2 --> T3
+    P3 --> T3
+    
+    T1 --> T2
+    T2 --> T3
+    T3 --> T4
+    T3 --> T5
+    T3 --> T6
+    T3 --> T7
+    
+    T4 --> T8
+    T5 --> T8
+    T6 --> T8
+    T7 --> T8
+    
+    T8 --> T9
+    
+    style P1 fill:#f9f,stroke:#333,stroke-width:2px
+    style T1 fill:#bbf,stroke:#333,stroke-width:2px
+    style T3 fill:#bbf,stroke:#333,stroke-width:2px
+    style T8 fill:#bbf,stroke:#333,stroke-width:2px
+    style T9 fill:#bbf,stroke:#333,stroke-width:2px
+```
 
 # 4. 대용량 데이터 병합 구조 설계
 
@@ -227,7 +367,55 @@ graph TD
 - `spark.default.parallelism`을 Executor 코어 수의 2배로 설정하여 병렬성 극대화
 - `spark.sql.shuffle.partitions`를 데이터 크기에 따라 동적 조정 (기본값: 200)
 - `spark.memory.fraction`을 0.8로 증가시켜 shuffle 메모리 할당 최적화
-- `spark.sql.adaptive.enabled=true`로 설정하여 동적 파티션 조정 활성화
+- `spark.sql.adaptive.enabled=true`로 설정하여 동적 파티셔닝 조정 활성화
+
+### 4.1.2 Spark 분산 처리 아키텍처
+```mermaid
+graph TD
+    subgraph "Driver 노드"
+        D1[Spark Driver]
+        D2[테이블별 병합 작업 관리]
+    end
+    
+    subgraph "Executor 노드 1"
+        E1[Executor 1]
+        E2[파일 읽기/처리]
+    end
+    
+    subgraph "Executor 노드 2"
+        E3[Executor 2]
+        E4[파일 읽기/처리]
+    end
+    
+    subgraph "Executor 노드 N"
+        E5[Executor N]
+        E6[파일 읽기/처리]
+    end
+    
+    subgraph "S3 저장소"
+        S1[병합된 CSV 파일]
+        S2[_SUCCESS 파일]
+    end
+    
+    D1 --> D2
+    D2 --> E1
+    D2 --> E3
+    D2 --> E5
+    
+    E1 --> E2
+    E3 --> E4
+    E5 --> E6
+    
+    E2 --> S1
+    E4 --> S1
+    E6 --> S1
+    
+    S1 --> S2
+    
+    style D1 fill:#f9f,stroke:#333,stroke-width:2px
+    style S1 fill:#bbf,stroke:#333,stroke-width:2px
+    style S2 fill:#bfb,stroke:#333,stroke-width:2px
+```
 
 ## 4.2 자동 스케일링 클러스터 활용
 
@@ -271,6 +459,47 @@ graph TD
 - ML 모델 학습에 사용되는 데이터의 품질은 최종 예측 정확도에 직접적 영향
 - 파트너사 데이터 제공 방식 변경 시 자동으로 감지하여 대응 필요
 - 데이터 누락이나 오류는 비즈니스 의사결정에 치명적 영향 가능성
+
+### 5.1.2 데이터 품질 검증 프로세스
+```mermaid
+graph TD
+    subgraph "데이터 소스"
+        S1[병합된 CSV 파일]
+        S2[원본 파일 목록]
+    end
+    
+    subgraph "데이터 품질 검증"
+        V1[헤더 불일치 검사]
+        V2[null 비율 체크]
+        V3[파일 개수 누락 여부]
+        V4[데이터 타입 검증]
+    end
+    
+    subgraph "결과 처리"
+        R1[summary.txt 생성]
+        R2[경고/오류 로깅]
+        R3[알림 트리거]
+    end
+    
+    S1 --> V1
+    S1 --> V2
+    S1 --> V4
+    S2 --> V3
+    
+    V1 --> R1
+    V2 --> R1
+    V3 --> R1
+    V4 --> R1
+    
+    R1 --> R2
+    R2 --> R3
+    
+    style V1 fill:#f9f,stroke:#333,stroke-width:2px
+    style V2 fill:#f9f,stroke:#333,stroke-width:2px
+    style V3 fill:#f9f,stroke:#333,stroke-width:2px
+    style V4 fill:#f9f,stroke:#333,stroke-width:2px
+    style R1 fill:#bbf,stroke:#333,stroke-width:2px
+```
 
 ## 5.2 어떤 검증을 했는가?
 - **헤더 불일치 여부 검사** (파일 간 컬럼 수/이름 비교)
@@ -388,6 +617,79 @@ Table: rate_plan_mapping
 
 > **핵심 교훈**: 데이터 엔지니어링은 "완성"이 아닌 "지속적인 개선"의 과정입니다. 각 단계에서 새로운 도전 과제가 발견되며, 이는 데이터의 특성과 비즈니스 요구사항의 변화에 따라 계속해서 진화합니다.
 
+## 6.4 상세 구현 여정: `.tar.gz → S3 CSV 병합 → Summary 업로드` 자동화 과정
+
+이 섹션에서는 실제 구현 과정에서 마주친 구체적인 문제들과 해결 방법을 단계별로 정리했습니다. 이는 데이터 엔지니어링 초보자로서 겪은 시행착오와 학습 과정을 상세히 기록한 것입니다.
+
+### 6.4.1 여정 요약
+
+| 단계 | 설명 | 주요 이슈 | 해결 방법 |
+|------|------|-----------|-----------|
+| 1단계 | `.tar.gz` 압축 해제 및 S3 업로드 | 이미 압축 해제된 경우 중복 업로드 | S3 prefix에 CSV 존재 시 skip 로직 추가 |
+| 2단계 | Spark 기반 테이블별 CSV 병합 | `process_date` 미포함 경로 오류 | 경로 조립 수정: `{input_path}/{process_date}/{table}` |
+| 3단계 | Notebook 기반 단일 테이블 병합 작업 | Spark 종료 hang / driver keep-alive | `os._exit(0)`으로 강제 종료 처리 |
+| 4단계 | Notebook → Workflow parameter 연결 | 빈 `process_date` 처리 / 경로 누락 | `dbutils.widgets` + 어제 날짜 fallback 적용 |
+| 5단계 | 전체 병합 Workflow 자동 생성 스크립트 | JSON boolean 오류 (`true` vs `True`) | Python-native JSON 객체 사용 |
+| 6단계 | 병합 완료 후 `summary.txt` 생성 | 이전 단계 실패 시 summary 없음 | `_SUCCESS` 존재 여부로 조건 분기 처리 |
+| 7단계 | 최종 검증 단계 (`post_merge_check`) | 테이블 누락 여부 확인 | S3 key 존재 여부 검증 로직 추가 |
+
+### 6.4.2 최종 구성
+
+```
+/batch_processor/
+├── processor.py                    # .tar.gz → CSV 추출 및 업로드
+├── merge_single_table_notebook    # 테이블별 Spark 병합 (Notebook)
+├── upload_summary                 # 병합된 테이블 summary 업로드
+├── validate_merge_results         # post-merge S3 검증
+├── databricks_auto_workflow.py    # 전체 Workflow 자동 생성 스크립트
+```
+
+### 6.4.3 구현 여정 시각화
+```mermaid
+graph TD
+    subgraph "초기 접근"
+        A1[단일 Python 스크립트]
+        A2[로컬 파일 시스템 사용]
+        A3[메모리 부족 오류]
+    end
+    
+    subgraph "Spark 도입"
+        B1[Spark 기반 병합]
+        B2[Driver OOM 오류]
+        B3[테이블별 분리 필요성 발견]
+    end
+    
+    subgraph "Task 분리"
+        C1[압축 해제 Task]
+        C2[병합 Task]
+        C3[요약 Task]
+    end
+    
+    subgraph "Workflow 전환"
+        D1[Databricks Workflow]
+        D2[파라미터 전달 문제]
+        D3[경로 구성 오류]
+    end
+    
+    subgraph "최종 구현"
+        E1[병렬 처리 최적화]
+        E2[데이터 품질 검증]
+        E3[자동화된 Workflow]
+    end
+    
+    A1 --> A2 --> A3
+    A3 --> B1 --> B2 --> B3
+    B3 --> C1 --> C2 --> C3
+    C3 --> D1 --> D2 --> D3
+    D3 --> E1 --> E2 --> E3
+    
+    style A3 fill:#f99,stroke:#333,stroke-width:2px
+    style B2 fill:#f99,stroke:#333,stroke-width:2px
+    style D2 fill:#f99,stroke:#333,stroke-width:2px
+    style D3 fill:#f99,stroke:#333,stroke-width:2px
+    style E3 fill:#9f9,stroke:#333,stroke-width:2px
+```
+
 # 7. 다음 단계
 
 ## 7.1 고도화 방향
@@ -400,7 +702,6 @@ Table: rate_plan_mapping
 - 스키마 변경에 유연하게 대응할 수 있는 구조 도입 고려
 - 데이터 접근 패턴에 맞는 최적화된 파티셔닝 전략 수립
 - 데이터 품질 검증 프로세스 개선 및 자동화 방안 모색
-
 
 ## 7.2 예상되는 확장
 - 국내 파트너사 1곳과 추가 해외 파트너사 1곳의 데이터 수집 방식 대응 (API, DB 등)
@@ -416,7 +717,43 @@ Table: rate_plan_mapping
 - 데이터 사이언티스트들과 협력하여 파트너사별 스키마 통합 방안 수립 예정
 - 현재는 스키마 통합이 완료되지 않았으며, 데이터 사이언티스트들이 정의할 예정
 - 스키마 통합이 완료되면 파이프라인에 반영하여 데이터 품질 향상 계획
-- 통합된 스키마를 기반으로 ML 모델 학습 데이터 품질 개선 기대
+- 통합된 스키마를 기반으로 ML 모델 학습 데이터 품질 개선
+
+## 7.3 다음 목표
+- Delta Lake 기반 저장으로 효율화
+- Airflow 연동 or 외부 Trigger 구성
+- 파트너사 추가 대응 (테이블 확장성 고려 구조)
+
+## 7.4 향후 개선 아이디어
+- **Feature**: Slack 알림 연동
+- **Feature**: 추출 및 병합 대상 테이블 파라미터화
+- **Feature**: 파트너사별 파이프라인 구성 자동화
+- **추후 도입 검토**: Databricks Asset Bundles (YAML 템플릿 기반)
+
+## 7.5 단계별 구현 계획
+
+### 7.5.1 1단계: SFTP → S3 → 병합 파이프라인 (현재 진행 중)
+- SFTP에서 파일 수신 및 S3 업로드 자동화
+- 40,000개 이상의 파일을 효율적으로 병합하는 Databricks Workflow 구현
+- 병합 결과 검증 및 요약 정보 생성
+
+### 7.5.2 2단계: 데이터 입수, 스키마 처리, 저장 방식 유연화
+- 다양한 데이터 소스(SFTP, API, DB 등)에서 데이터를 수집할 수 있는 추상화 레이어 구현
+- 파트너사별 상이한 스키마를 유연하게 처리할 수 있는 스키마 처리 로직 설계
+- 다양한 저장 형식(CSV, Delta Lake, Parquet 등)을 선택적으로 사용할 수 있는 저장 레이어 구현
+- 모듈화된 구조로 설계하여 타사에서도 활용 가능한 형태로 개발
+
+### 7.5.3 3단계: 데이터 품질 검증(DQA) 및 데이터 입수 표준화
+- 데이터 품질 검증 프로세스 구현 및 자동화
+- 다양한 파트너사의 데이터 입수 방식을 표준화된 방식으로 통합
+- 데이터 품질 모니터링 대시보드 구축
+
+### 7.5.4 4단계: 스키마 통합 및 최적화
+- 파트너사별 상이한 스키마를 통합된 형태로 정리
+- 데이터 사이언티스트들과 협력하여 최적의 스키마 설계
+- 통합된 스키마를 기반으로 ML 모델 학습 데이터 품질 개선
+
+이러한 단계적 접근을 통해 복잡한 문제를 관리 가능한 크기로 분해하고, 각 단계에서 얻은 교훈을 다음 단계에 적용하여 지속적으로 개선하는 전략을 취하고 있습니다.
 
 # 참고 자료
 - [Databricks Docs](https://docs.databricks.com/) - Databricks 관련 공식 문서
