@@ -81,15 +81,17 @@ mermaid: true
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
 gantt
     title ETL 파이프라인 구축 단계별 계획
-    dateFormat  YYYY-MM-DD
+    dateFormat YYYY-Q
+    axisFormat %Y-Q%q
+
     section Phase 1
-    SFTP → S3 → 병합 파이프라인 마이그레이션    :active, 2025-01-01, 90d
+    SFTP → S3 → 병합 파이프라인 마이그레이션    :active, 2025-1, 2025-2
     section Phase 2
-    데이터 입수, 스키마 처리, 저장 방식 유연화    :2025-04-01, 90d
+    데이터 입수, 스키마 처리, 저장 방식 유연화    :2025-2, 2025-3
     section Phase 3
-    데이터 품질 검증(DQA) 및 데이터 입수 표준화    :2025-07-01, 90d
+    데이터 품질 검증(DQA) 및 데이터 입수 표준화    :2025-3, 2025-4
     section Phase 4
-    스키마 통합 및 최적화    :2025-10-01, 90d
+    스키마 통합 및 최적화    :2025-4, 2026-1
 ```
 
 ### 1.5 Dynamic Pricing Solution 구조
@@ -249,9 +251,9 @@ graph LR
 - 각 Task는 독립적인 Databricks 클러스터에서 실행되어 리소스 경합 방지
 - Task 간 데이터 전달은 S3 경로를 매개변수로 전달하여 느슨한 결합 구현
 
-### 3.1.2 Task 분리 아키텍처 상세 다이어그램
+### 3.1.2 Phase 1: SFTP → S3 → 병합 파이프라인 구성
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '20px', 'width': '100%', 'height': '100%'}}}%%
 graph LR
     subgraph "데이터 소스"
         direction LR
@@ -277,7 +279,9 @@ graph LR
     T3 --> T4
     T6 --> T7
     
-    style T1 fill:#f9f,stroke:#333,stroke-width:2px
+    style S1 fill:#f9f,stroke:#333,stroke-width:2px
+    style S2 fill:#f9f,stroke:#333,stroke-width:2px
+    style T1 fill:#bbf,stroke:#333,stroke-width:2px
     style T4 fill:#bbf,stroke:#333,stroke-width:2px
     style T7 fill:#bfb,stroke:#333,stroke-width:2px
 ```
