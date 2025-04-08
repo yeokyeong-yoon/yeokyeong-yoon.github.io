@@ -226,7 +226,7 @@ graph LR
 
 ### 어떻게 분리했는가?
 ```mermaid
-graph TD
+graph LR
     A[Notebook: 완료 파일 센서] --> B[Python Script: 압축 해제]
     B --> C[Python Script: 병합 + 정합성 로그]
     C --> D[Notebook: summary.txt 업로드]
@@ -243,7 +243,7 @@ graph TD
 
 ### 3.1.2 Task 분리 아키텍처 상세 다이어그램
 ```mermaid
-graph TD
+graph LR
     subgraph "데이터 소스"
         S1[SFTP 서버]
         S2[.tar.gz 파일]
@@ -300,7 +300,7 @@ graph TD
 
 ### 3.2.2 Databricks Workflow 구조
 ```mermaid
-graph TD
+graph LR
     subgraph "Workflow 파라미터"
         P1[process_date]
         P2[input_path]
@@ -371,25 +371,16 @@ graph TD
 
 ### 4.1.2 Spark 분산 처리 아키텍처
 ```mermaid
-graph TD
+graph LR
     subgraph "Driver 노드"
         D1[Spark Driver]
         D2[테이블별 병합 작업 관리]
     end
     
-    subgraph "Executor 노드 1"
-        E1[Executor 1]
-        E2[파일 읽기/처리]
-    end
-    
-    subgraph "Executor 노드 2"
-        E3[Executor 2]
-        E4[파일 읽기/처리]
-    end
-    
-    subgraph "Executor 노드 N"
-        E5[Executor N]
-        E6[파일 읽기/처리]
+    subgraph "Executor 노드들"
+        E1[Executor 1: 파일 읽기/처리]
+        E3[Executor 2: 파일 읽기/처리]
+        E5[Executor N: 파일 읽기/처리]
     end
     
     subgraph "S3 저장소"
@@ -402,13 +393,9 @@ graph TD
     D2 --> E3
     D2 --> E5
     
-    E1 --> E2
-    E3 --> E4
-    E5 --> E6
-    
-    E2 --> S1
-    E4 --> S1
-    E6 --> S1
+    E1 --> S1
+    E3 --> S1
+    E5 --> S1
     
     S1 --> S2
     
@@ -462,7 +449,7 @@ graph TD
 
 ### 5.1.2 데이터 품질 검증 프로세스
 ```mermaid
-graph TD
+graph LR
     subgraph "데이터 소스"
         S1[병합된 CSV 파일]
         S2[원본 파일 목록]
@@ -491,8 +478,7 @@ graph TD
     V3 --> R1
     V4 --> R1
     
-    R1 --> R2
-    R2 --> R3
+    R1 --> R2 --> R3
     
     style V1 fill:#f9f,stroke:#333,stroke-width:2px
     style V2 fill:#f9f,stroke:#333,stroke-width:2px
@@ -646,7 +632,7 @@ Table: rate_plan_mapping
 
 ### 6.4.3 구현 여정 시각화
 ```mermaid
-graph TD
+graph LR
     subgraph "초기 접근"
         A1[단일 Python 스크립트]
         A2[로컬 파일 시스템 사용]
