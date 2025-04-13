@@ -20,6 +20,52 @@
   <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   
+  <!-- Global Styles -->
+  <style>
+    /* Override all wrapper and container styles */
+    .wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .page-content {
+      padding: 30px 0;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      
+      .wrapper {
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+      }
+      
+      .page-content {
+        padding: 0;
+        margin: 0;
+      }
+      
+      .post-content {
+        padding: 1rem;
+      }
+      
+      .site-header {
+        padding: 1rem;
+        margin: 0;
+      }
+      
+      .site-footer {
+        padding: 1rem;
+        margin: 0;
+      }
+    }
+  </style>
+  
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore-compat.js"></script>
