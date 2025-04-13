@@ -8,33 +8,214 @@ layout: default
     <p class="lead">{{ site.description }}</p>
   </section>
 
-  <div class="posts-grid">
-    {%- for post in site.posts -%}
-    <article class="post-card">
-      <span class="post-date">{{ post.date | date: "%B %-d, %Y" }}</span>
-      
-      <h2>
-        <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
-      </h2>
-      
-      {% if post.categories.size > 0 %}
-      <div class="post-categories">
-        {% for category in post.categories %}
-        <span class="category-tag">{{ category }}</span>
-        {% endfor %}
+  <div class="posts-section">
+    <div class="section-header">
+      <h2 class="section-title">Blog Posts</h2>
+      <div class="sort-options">
+        <button class="sort-btn" data-sort="date">Latest</button>
+        <button class="sort-btn active" data-sort="views">Most Viewed</button>
       </div>
-      {% endif %}
-      
-      <div class="post-excerpt">
-        {{ post.excerpt | strip_html | truncatewords: 30 }}
-      </div>
-      
-      <a href="{{ post.url | relative_url }}" class="read-more">Read more →</a>
-    </article>
-    {%- endfor -%}
+    </div>
+
+    <div class="posts-grid">
+      {%- for post in site.posts -%}
+      <article class="post-card" data-post-id="{{ post.url | slugify }}" data-date="{{ post.date | date: '%s' }}">
+        <span class="post-date">{{ post.date | date: "%B %-d, %Y" }}</span>
+        
+        <h2>
+          <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+        </h2>
+        
+        {% if post.categories.size > 0 %}
+        <div class="post-categories">
+          {% for category in post.categories %}
+          <span class="category-tag">{{ category }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+        
+        <div class="post-excerpt">
+          {{ post.excerpt | strip_html | truncatewords: 30 }}
+        </div>
+        
+        <div class="post-footer">
+          <a href="{{ post.url | relative_url }}" class="read-more">Read more →</a>
+          <span class="view-count" id="view-count-{{ post.url | slugify }}">
+            <i class="fas fa-eye"></i> Loading...
+          </span>
+        </div>
+      </article>
+      {%- endfor -%}
+    </div>
   </div>
 
   <div class="home-footer">
-    <a href="{{ '/projects' | relative_url }}" class="btn">My Projects</a>
+    <a href="{{ '/projects' | relative_url }}" class="btn">View All Projects</a>
+    <a href="{{ '/feed.xml' | relative_url }}" class="btn">RSS Feed</a>
   </div>
-</div> 
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const db = firebase.firestore();
+  let posts = [];
+  
+  // Fetch view counts for all posts
+  db.collection('page_views').get().then((snapshot) => {
+    const viewCounts = {};
+    snapshot.forEach((doc) => {
+      viewCounts[doc.id] = doc.data().views;
+    });
+    
+    // Prepare posts data
+    document.querySelectorAll('.post-card').forEach((card) => {
+      const postId = card.dataset.postId;
+      const views = viewCounts[postId] || 0;
+      const date = parseInt(card.dataset.date);
+      
+      // Update view count display
+      const viewCountElement = card.querySelector('.view-count');
+      if (viewCountElement) {
+        viewCountElement.innerHTML = `<i class="fas fa-eye"></i> ${views} views`;
+      }
+      
+      posts.push({
+        element: card,
+        views: views,
+        date: date
+      });
+    });
+    
+    // Initial sort by views
+    sortPosts('views');
+    
+    // Set up sorting buttons
+    document.querySelectorAll('.sort-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        // Update active button
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Sort posts
+        sortPosts(this.dataset.sort);
+      });
+    });
+  });
+  
+  function sortPosts(sortBy) {
+    const container = document.querySelector('.posts-grid');
+    
+    posts.sort((a, b) => {
+      if (sortBy === 'views') {
+        return b.views - a.views;
+      } else {
+        return b.date - a.date;
+      }
+    });
+    
+    // Reorder DOM elements
+    container.innerHTML = '';
+    posts.forEach(post => {
+      container.appendChild(post.element);
+    });
+  }
+});
+</script>
+
+<style>
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.sort-options {
+  display: flex;
+  gap: 1rem;
+}
+
+.sort-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  color: #666;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.sort-btn:hover {
+  background: #f0f0f0;
+}
+
+.sort-btn.active {
+  background: #007bff;
+  color: white;
+}
+
+.posts-section {
+  margin-bottom: 3rem;
+}
+
+.section-title {
+  font-size: 1.8rem;
+  color: #333;
+  margin: 0;
+}
+
+.post-card {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+
+.post-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.post-date {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.post-categories {
+  margin: 0.5rem 0;
+}
+
+.category-tag {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  margin-right: 0.5rem;
+  background: #f0f0f0;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.read-more {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.view-count {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.view-count i {
+  margin-right: 0.3rem;
+}
+</style> 
