@@ -1,10 +1,11 @@
 # Firebase Configuration
-firebase_api_key: "your-api-key"
-firebase_auth_domain: "your-project.firebaseapp.com"
-firebase_project_id: "your-project-id"
-firebase_storage_bucket: "your-project.appspot.com"
-firebase_messaging_sender_id: "your-sender-id"
-firebase_app_id: "your-app-id"
+firebase_api_key: "AIzaSyC4XvOHbMnPNyjR3IbU0fZkNWKExMI6dEE"
+firebase_auth_domain: "yeokyeongyy.firebaseapp.com"
+firebase_project_id: "yeokyeongyy"
+firebase_storage_bucket: "yeokyeongyy.firebasestorage.app"
+firebase_messaging_sender_id: "113030891564"
+firebase_app_id: "1:113030891564:web:a08ea569a7fb93a5c46989"
+firebase_measurement_id: "G-TP6F1R7FD3"
 
 # Site settings
 title: "yoon's blog"
