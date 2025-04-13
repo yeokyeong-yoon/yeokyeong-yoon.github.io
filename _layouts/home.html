@@ -4,7 +4,10 @@ layout: default
 
 <div class="home">
   <section class="intro-section">
-    <h1>{{ site.author.name | default: site.title }}</h1>
+    <h1 class="author-name">
+      <span class="full-name">yeokyeong.yoon</span>
+      <span class="short-name">y.yoon</span>
+    </h1>
     <p class="lead">{{ site.description }}</p>
   </section>
 
@@ -22,7 +25,7 @@ layout: default
       <article class="post-card" data-post-id="{{ post.url | slugify }}" data-date="{{ post.date | date: '%s' }}">
         <span class="post-date">{{ post.date | date: "%B %-d, %Y" }}</span>
         
-        <h2>
+        <h2 class="post-title">
           <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
         </h2>
         
@@ -54,6 +57,179 @@ layout: default
     <a href="{{ '/feed.xml' | relative_url }}" class="btn">RSS Feed</a>
   </div>
 </div>
+
+<style>
+.intro-section {
+  margin: 4rem 0;
+  text-align: left;
+}
+
+.author-name {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  font-weight: 800;
+}
+
+.author-name .short-name {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .author-name .full-name {
+    display: none;
+  }
+  .author-name .short-name {
+    display: inline;
+  }
+}
+
+.lead {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.sort-options {
+  display: flex;
+  gap: 1rem;
+}
+
+.sort-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  color: #666;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.sort-btn:hover {
+  background: #f0f0f0;
+}
+
+.sort-btn.active {
+  background: #007bff;
+  color: white;
+}
+
+.posts-section {
+  margin-bottom: 3rem;
+}
+
+.section-title {
+  font-size: 1.8rem;
+  color: #333;
+  margin: 0;
+}
+
+.posts-grid {
+  display: grid;
+  gap: 2rem;
+}
+
+.post-card {
+  padding: 1.5rem;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+
+.post-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.post-date {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.post-title {
+  font-size: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.post-title a {
+  color: #333;
+  text-decoration: none;
+}
+
+.post-title a:hover {
+  color: #007bff;
+}
+
+.post-categories {
+  margin: 0.5rem 0;
+}
+
+.category-tag {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  margin-right: 0.5rem;
+  background: #f0f0f0;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.post-excerpt {
+  color: #666;
+  margin: 1rem 0;
+  line-height: 1.6;
+}
+
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.read-more {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.view-count {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.view-count i {
+  margin-right: 0.3rem;
+}
+
+@media (max-width: 768px) {
+  .intro-section {
+    margin: 2rem 0;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .sort-options {
+    width: 100%;
+  }
+  
+  .sort-btn {
+    flex: 1;
+    text-align: center;
+  }
+}
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -120,102 +296,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
-</script>
-
-<style>
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.sort-options {
-  display: flex;
-  gap: 1rem;
-}
-
-.sort-btn {
-  background: none;
-  border: none;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  color: #666;
-  font-size: 0.9rem;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-}
-
-.sort-btn:hover {
-  background: #f0f0f0;
-}
-
-.sort-btn.active {
-  background: #007bff;
-  color: white;
-}
-
-.posts-section {
-  margin-bottom: 3rem;
-}
-
-.section-title {
-  font-size: 1.8rem;
-  color: #333;
-  margin: 0;
-}
-
-.post-card {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease;
-}
-
-.post-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.post-date {
-  color: #666;
-  font-size: 0.9rem;
-}
-
-.post-categories {
-  margin: 0.5rem 0;
-}
-
-.category-tag {
-  display: inline-block;
-  padding: 0.2rem 0.5rem;
-  margin-right: 0.5rem;
-  background: #f0f0f0;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  color: #666;
-}
-
-.post-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 1rem;
-}
-
-.read-more {
-  color: #007bff;
-  text-decoration: none;
-}
-
-.view-count {
-  color: #666;
-  font-size: 0.9rem;
-}
-
-.view-count i {
-  margin-right: 0.3rem;
-}
-</style> 
+</script> 
