@@ -1,5 +1,14 @@
-title: yoon's blog
-description: This is a blog about my projects and career
+# Firebase Configuration
+firebase_api_key: "your-api-key"
+firebase_auth_domain: "your-project.firebaseapp.com"
+firebase_project_id: "your-project-id"
+firebase_storage_bucket: "your-project.appspot.com"
+firebase_messaging_sender_id: "your-sender-id"
+firebase_app_id: "your-app-id"
+
+# Site settings
+title: "yoon's blog"
+description: "Software Engineer passionate about solving meaningful problems"
 author: yoon
 email: yeokyeongy@gmail.com
 
@@ -60,6 +69,8 @@ exclude:
   - functions
   - functions_temp
   - vendor
+  - .git/
+  - .github/
   - .gitignore
   - README.md
   - _site
