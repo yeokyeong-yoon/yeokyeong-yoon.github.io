@@ -3,20 +3,33 @@ layout: default
 ---
 
 <style>
-/* Add these styles at the top to override default wrapper styles */
+/* Override all wrapper and container styles */
 .wrapper {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem;
 }
 
+.page-content {
+  padding: 30px 0;
+}
+
 @media (max-width: 768px) {
   .wrapper {
-    padding: 0 1rem;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
   }
   
   .page-content {
     padding: 0;
+    margin: 0;
+  }
+  
+  .home {
+    margin: 0;
+    padding: 0;
+    width: 100%;
   }
 }
 </style>
@@ -231,7 +244,7 @@ layout: default
 
 @media (max-width: 768px) {
   .intro-section {
-    margin: 2rem 0;
+    margin: 2rem 1rem;
   }
   
   .section-header {
@@ -239,26 +252,24 @@ layout: default
     align-items: flex-start;
     gap: 1rem;
     width: 100%;
+    padding: 0 1rem;
   }
   
   .sort-options {
-    width: 100%;
-  }
-  
-  .sort-btn {
-    flex: 1;
-    text-align: center;
+    width: calc(100% - 2rem);
+    margin: 0 1rem;
   }
   
   .posts-grid {
-    margin: 0 -1rem;  /* Negative margin to counteract wrapper padding */
+    margin: 0;
   }
   
   .post-card {
-    border-radius: 0;  /* Remove border radius on mobile */
-    margin: 0 0 1rem 0;  /* Adjust margins */
-    box-shadow: none;  /* Optional: remove shadow on mobile */
-    border-bottom: 1px solid #eee;  /* Optional: add separator */
+    border-radius: 0;
+    margin: 0;
+    padding: 1rem;
+    box-shadow: none;
+    border-bottom: 1px solid #eee;
   }
   
   .post-card:last-child {
@@ -267,7 +278,8 @@ layout: default
   }
   
   .home-footer {
-    padding: 0 1rem;
+    padding: 1rem;
+    margin: 0;
   }
 }
 </style>
