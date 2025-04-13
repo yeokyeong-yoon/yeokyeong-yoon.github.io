@@ -2,6 +2,25 @@
 layout: default
 ---
 
+<style>
+/* Add these styles at the top to override default wrapper styles */
+.wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 0 1rem;
+  }
+  
+  .page-content {
+    padding: 0;
+  }
+}
+</style>
+
 <div class="home">
   <section class="intro-section">
     <h1 class="author-name">
@@ -62,6 +81,7 @@ layout: default
 .intro-section {
   margin: 4rem 0;
   text-align: left;
+  width: 100%;
 }
 
 .author-name {
@@ -218,6 +238,7 @@ layout: default
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
+    width: 100%;
   }
   
   .sort-options {
@@ -227,6 +248,26 @@ layout: default
   .sort-btn {
     flex: 1;
     text-align: center;
+  }
+  
+  .posts-grid {
+    margin: 0 -1rem;  /* Negative margin to counteract wrapper padding */
+  }
+  
+  .post-card {
+    border-radius: 0;  /* Remove border radius on mobile */
+    margin: 0 0 1rem 0;  /* Adjust margins */
+    box-shadow: none;  /* Optional: remove shadow on mobile */
+    border-bottom: 1px solid #eee;  /* Optional: add separator */
+  }
+  
+  .post-card:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+  }
+  
+  .home-footer {
+    padding: 0 1rem;
   }
 }
 </style>
