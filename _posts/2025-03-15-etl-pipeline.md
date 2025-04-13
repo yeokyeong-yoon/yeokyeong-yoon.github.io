@@ -2,7 +2,7 @@
 layout: post
 # Start of Selection
 title: "ETL 파이프라인: 확장 가능한 데이터 처리 시스템 구축기"
-date: 2025-03-18
+date: 2025-03-15
 categories: [Data Engineering, ETL, Databricks]
 tags: [ETL, Databricks, Data Engineering, Python, Spark]
 mermaid: true

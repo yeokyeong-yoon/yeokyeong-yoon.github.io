@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Feature Flag SDK: Java 기반 기능 제어 SDK 설계와 구현"
-date: 2025-03-16 22:00:00 +0900
+date: 2025-03-15 22:00:00 +0900
 categories: [개발, 시스템설계]
 tags: [feature-flag, sdk, java, system-design]
 mermaid: true
