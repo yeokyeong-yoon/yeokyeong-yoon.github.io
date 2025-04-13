@@ -354,7 +354,7 @@ title: Home
     <h2 class="section-heading">Latest Writing</h2>
     
     <div class="portfolio-grid">
-      {% for post in site.posts limit:3 %}
+      {% for post in site.posts limit:5 %}
       <div class="portfolio-item">
         <h3 class="portfolio-title">{{ post.title }}</h3>
         <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%B %d, %Y" }}</time>
