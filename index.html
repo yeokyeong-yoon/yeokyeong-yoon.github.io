@@ -383,47 +383,10 @@ title: Home
   </footer>
 
   <!-- Include Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-
-  <!-- Include the Firebase configuration script -->
-  <script>
-    // Check if firebase-config.js exists, if not use the simple counter
-    function loadScript(src, fallback) {
-      return new Promise((resolve, reject) => {
-        var script = document.createElement('script');
-        script.src = src;
-        script.onerror = function() {
-          console.warn("Failed to load script:", src);
-          if (fallback) fallback();
-          reject();
-        };
-        script.onload = function() {
-          console.log("Successfully loaded:", src);
-          resolve();
-        };
-        document.head.appendChild(script);
-        console.log("Script tag added for:", src);
-      });
-    }
-
-    // First load Firebase config
-    loadScript("{{ '/assets/js/firebase-config.js' | relative_url }}")
-      .then(() => {
-        // After Firebase config is loaded, check if Firebase is properly initialized
-        if (typeof firebase !== 'undefined' && firebase.firestore) {
-          console.log("Firebase ready, loading site-visitors.js");
-          return loadScript("{{ '/assets/js/site-visitors.js' | relative_url }}");
-        } else {
-          console.warn("Firebase not initialized properly, using simple counter");
-          throw new Error("Firebase not initialized");
-        }
-      })
-      .catch(() => {
-        console.warn("Falling back to simple counter");
-        loadScript("{{ '/assets/js/simple-counter.js' | relative_url }}");
-      });
-  </script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+  <script type="module" src="/assets/js/firebase-config.js"></script>
+  <script type="module" src="/assets/js/initialize-counter.js"></script>
   
   <!-- Debug helper for Firebase (development mode only) -->
   {% if jekyll.environment != 'production' %}
