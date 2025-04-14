@@ -38,10 +38,19 @@ title: Home
     console.error('Failed to load initialize-counter.js as a module');
     // Try loading it as a regular script as a fallback
     const fallbackScript = document.createElement('script');
-    fallbackScript.src = '/assets/js/simple-counter.js';
+    fallbackScript.src = '/assets/js/firebase-counter.js';
     document.head.appendChild(fallbackScript);
   };
+  
+  // Add a direct script tag for the counter as a backup
+  const backupScript = document.createElement('script');
+  backupScript.src = '/assets/js/simple-counter.js';
+  backupScript.id = 'simple-counter-backup';
+  document.head.appendChild(backupScript);
 </script>
+
+<!-- Add a direct script tag for the counter as a backup -->
+<script src="/assets/js/simple-counter.js" id="simple-counter-direct"></script>
 
 <style>
   body {
