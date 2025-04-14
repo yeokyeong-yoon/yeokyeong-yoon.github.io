@@ -9,6 +9,8 @@ title: Home
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
   
+  console.log('Starting Firebase initialization...');
+  
   // Your web app's Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyC4XvOHbMnPNyjR3IbU0fZkNWKExMI6dEE",
@@ -20,33 +22,42 @@ title: Home
     measurementId: "G-TP6F1R7FD3"
   };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  
-  // Make db available globally
-  window.db = db;
-  
-  // Load the counter script after Firebase is initialized
-  const script = document.createElement('script');
-  script.type = 'module';
-  script.src = '/assets/js/initialize-counter.js';
-  document.head.appendChild(script);
-  
-  // Add a fallback in case the module script fails to load
-  script.onerror = function() {
-    console.error('Failed to load initialize-counter.js as a module');
-    // Try loading it as a regular script as a fallback
+  try {
+    console.log('Attempting to initialize Firebase app...');
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    console.log('Firebase app initialized successfully');
+    
+    console.log('Attempting to initialize Firestore...');
+    const db = getFirestore(app);
+    console.log('Firestore initialized successfully');
+    
+    // Make db available globally
+    window.db = db;
+    console.log('Firebase db object made available globally');
+    
+    // Load the counter script after Firebase is initialized
+    console.log('Loading initialize-counter.js...');
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = '/assets/js/initialize-counter.js';
+    document.head.appendChild(script);
+    console.log('initialize-counter.js script tag added to document head');
+  } catch (error) {
+    console.error('Firebase initialization error:', error);
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    });
+    
+    // Load fallback counter if Firebase fails
+    console.log('Loading fallback simple-counter.js...');
     const fallbackScript = document.createElement('script');
-    fallbackScript.src = '/assets/js/firebase-counter.js';
+    fallbackScript.src = '/assets/js/simple-counter.js';
     document.head.appendChild(fallbackScript);
-  };
-  
-  // Add a direct script tag for the counter as a backup
-  const backupScript = document.createElement('script');
-  backupScript.src = '/assets/js/simple-counter.js';
-  backupScript.id = 'simple-counter-backup';
-  document.head.appendChild(backupScript);
+    console.log('simple-counter.js fallback script added');
+  }
 </script>
 
 <!-- Add a direct script tag for the counter as a backup -->
@@ -423,9 +434,6 @@ title: Home
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
           <p style="margin: 0; color: rgba(0, 0, 0, 0.6);">© {{ site.time | date: '%Y' }} {{ site.title | escape }}. All rights reserved.</p>
-          <div class="site-stats" style="font-size: 12px; color: rgba(0, 0, 0, 0.4); margin-top: 5px;">
-            <span class="visitors">Visitors: <span id="site-visitors">0</span></span>
-          </div>
         </div>
       </div>
     </div>
@@ -447,13 +455,12 @@ title: Home
       const db = window.db;
       
       // Reset the site visitors counter to 1
-      setDoc(doc(collection(db, 'siteVisitors'), 'counter'), {
-        count: 1
+      setDoc(doc(collection(db, 'counters'), 'global'), {
+        count: 1,
+        lastUpdated: new Date().toISOString()
       }).then(() => {
         console.log('Site visitors counter reset to 1');
         alert('Site visitors counter reset to 1');
-        // Refresh the page
-        window.location.reload();
       }).catch(error => {
         console.error('Failed to reset counter:', error);
         alert('Failed to reset counter: ' + error.message);
@@ -468,12 +475,6 @@ title: Home
       }
       
       const db = window.db;
-      
-      const visitorElement = document.getElementById('site-visitors');
-      if (!visitorElement) {
-        alert('Site visitors element not found');
-        return;
-      }
       
       // Create debug element
       const debugOutput = document.createElement('div');
@@ -498,16 +499,13 @@ title: Home
       log('Testing Firebase connection...');
       
       // First try to list all documents
-      log('Listing all documents in siteVisitors collection...');
-      getDoc(doc(collection(db, 'siteVisitors'), 'counter'))
+      log('Listing all documents in counters collection...');
+      getDoc(doc(collection(db, 'counters'), 'global'))
         .then(docSnapshot => {
           if (docSnapshot.exists()) {
             log(`Found counter document: ${JSON.stringify(docSnapshot.data())}`);
             const count = docSnapshot.data().count || 0;
-            
-            // Update the display
-            visitorElement.textContent = count;
-            log(`Updated visitor count display to: ${count}`);
+            log(`Current visitor count: ${count}`);
             
             // Add a button to increment
             const incrementBtn = document.createElement('button');
@@ -517,15 +515,15 @@ title: Home
             debugOutput.appendChild(incrementBtn);
             
             incrementBtn.onclick = function() {
-              updateDoc(doc(collection(db, 'siteVisitors'), 'counter'), {
-                count: increment(1)
+              updateDoc(doc(collection(db, 'counters'), 'global'), {
+                count: increment(1),
+                lastUpdated: new Date().toISOString()
               })
               .then(() => {
-                return getDoc(doc(collection(db, 'siteVisitors'), 'counter'));
+                return getDoc(doc(collection(db, 'counters'), 'global'));
               })
               .then(updatedDoc => {
                 const newCount = updatedDoc.data().count;
-                visitorElement.textContent = newCount;
                 log(`Incremented count to: ${newCount}`);
               })
               .catch(err => {
@@ -545,12 +543,12 @@ title: Home
             };
           } else {
             log('Counter document does not exist, creating it...');
-            return setDoc(doc(collection(db, 'siteVisitors'), 'counter'), {
-              count: 1
+            return setDoc(doc(collection(db, 'counters'), 'global'), {
+              count: 1,
+              lastUpdated: new Date().toISOString()
             })
             .then(() => {
               log('Created counter document with count 1');
-              visitorElement.textContent = '1';
               
               // Add a close button
               const closeBtn = document.createElement('button');
@@ -591,14 +589,6 @@ title: Home
       
       document.body.appendChild(debugButton);
     });
-    
-    // Check if counters are working after a delay
-    setTimeout(function() {
-      const visitorElement = document.getElementById('site-visitors');
-      if (visitorElement && visitorElement.textContent === '0') {
-        console.warn('Visitor counter is still 0. Firebase may not be working correctly.');
-      }
-    }, 3000);
   </script>
   {% endif %}
 </div> 

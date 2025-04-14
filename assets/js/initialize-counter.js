@@ -1,60 +1,81 @@
 // Initialize and fix Firebase counters
-import { collection, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { collection, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('Initializing counters manually (module mode)');
+  console.log('initialize-counter.js: DOM Content Loaded');
+  console.log('Checking Firebase initialization status...');
   
-  // Wait a bit to ensure Firebase is fully loaded
-  setTimeout(function() {
-    // Check if Firebase is initialized
-    if (typeof window.db === 'undefined') {
-      console.error('Firebase or Firestore not available');
+  // Function to update the counter
+  async function updateCounter() {
+    console.log('updateCounter: Starting counter update process');
+    
+    if (!window.db) {
+      console.error('updateCounter: Firebase db object not found in window object');
+      console.error('Current window.db value:', window.db);
       return;
     }
+
+    console.log('updateCounter: Firebase db object found, proceeding with counter update');
     
-    const db = window.db;
-    console.log('Connected to Firestore for counter initialization');
-    
-    // Initialize site visitors counter if we're on the home page
-    const siteVisitorsElement = document.getElementById('site-visitors');
-    if (siteVisitorsElement) {
-      console.log('Found site-visitors element, checking counter');
+    try {
+      const db = window.db;
+      console.log('updateCounter: Creating reference to counters/global document');
+      const counterRef = doc(collection(db, 'counters'), 'global');
       
-      // Get the reference to the counter document
-      const visitorRef = doc(collection(db, 'siteVisitors'), 'counter');
-      
-      // First check if the document exists
-      getDoc(visitorRef).then(docSnapshot => {
-        console.log('Visitor counter document exists:', docSnapshot.exists());
-        
-        if (!docSnapshot.exists()) {
-          // Create it with count 1
-          console.log('Creating initial counter document');
-          return setDoc(visitorRef, { 
-            count: 1,
-            createdAt: new Date().toISOString()
-          });
-        } else {
-          // Document exists, get current count and increment
-          const currentCount = docSnapshot.data().count || 0;
-          console.log('Current visitor count:', currentCount);
-          
-          // Always increment the count for testing
-          const newCount = currentCount + 1;
-          
-          // Update the counter
-          return updateDoc(visitorRef, {
-            count: newCount,
-            lastVisit: new Date().toISOString()
-          }).then(() => {
-            console.log('Incremented visitor count to:', newCount);
-            // Display the count
-            siteVisitorsElement.textContent = newCount;
-          });
-        }
-      }).catch(error => {
-        console.error('Error updating visitor count:', error);
+      console.log('updateCounter: Fetching current counter document');
+      const docSnap = await getDoc(counterRef);
+      console.log('updateCounter: Document exists:', docSnap.exists());
+
+      if (!docSnap.exists()) {
+        console.log('updateCounter: Creating new counter document');
+        // Create initial counter
+        await setDoc(counterRef, {
+          count: 1,
+          lastUpdated: new Date().toISOString()
+        });
+        console.log('updateCounter: Created initial counter with count 1');
+      } else {
+        console.log('updateCounter: Current counter value:', docSnap.data().count);
+        // Increment existing counter
+        console.log('updateCounter: Incrementing counter');
+        await updateDoc(counterRef, {
+          count: increment(1),
+          lastUpdated: new Date().toISOString()
+        });
+        const newCount = (docSnap.data().count || 0) + 1;
+        console.log('updateCounter: Successfully incremented counter to:', newCount);
+      }
+    } catch (error) {
+      console.error('updateCounter: Error updating counter:', error);
+      console.error('Error details:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
       });
     }
-  }, 1000); // Wait 1 second for Firebase to initialize
+  }
+
+  // Wait for Firebase to be initialized
+  console.log('Setting up Firebase initialization check interval');
+  let checkCount = 0;
+  const checkFirebase = setInterval(() => {
+    checkCount++;
+    console.log(`Checking for Firebase initialization (attempt ${checkCount})...`);
+    
+    if (window.db) {
+      console.log('Firebase db object found, clearing interval');
+      clearInterval(checkFirebase);
+      updateCounter();
+    } else {
+      console.log('Firebase db object not found yet');
+    }
+  }, 100);
+
+  // Clear interval after 10 seconds to prevent infinite checking
+  setTimeout(() => {
+    if (checkFirebase) {
+      console.log('Firebase initialization check timed out after 10 seconds');
+      clearInterval(checkFirebase);
+    }
+  }, 10000);
 }); 
