@@ -3,6 +3,37 @@ layout: default
 title: Home
 ---
 
+<!-- Firebase initialization -->
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyC4XvOHbMnPNyjR3IbU0fZkNWKExMI6dEE",
+    authDomain: "yeokyeongyy.firebaseapp.com",
+    projectId: "yeokyeongyy",
+    storageBucket: "yeokyeongyy.firebasestorage.app",
+    messagingSenderId: "113030891564",
+    appId: "1:113030891564:web:a08ea569a7fb93a5c46989",
+    measurementId: "G-TP6F1R7FD3"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  
+  // Make db available globally
+  window.db = db;
+  
+  // Load the counter script after Firebase is initialized
+  const script = document.createElement('script');
+  script.type = 'module';
+  script.src = '/assets/js/initialize-counter.js';
+  document.head.appendChild(script);
+</script>
+
 <style>
   body {
     margin: 0;
@@ -382,136 +413,126 @@ title: Home
     </div>
   </footer>
 
-  <!-- Include Firebase SDK -->
-  <script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyC4XvOHbMnPNyjR3IbU0fZkNWKExMI6dEE",
-      authDomain: "yeokyeongyy.firebaseapp.com",
-      projectId: "yeokyeongyy",
-      storageBucket: "yeokyeongyy.firebasestorage.app",
-      messagingSenderId: "113030891564",
-      appId: "1:113030891564:web:a08ea569a7fb93a5c46989",
-      measurementId: "G-TP6F1R7FD3"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    
-    // Make db available globally
-    window.db = db;
-  </script>
-  <script type="module" src="/assets/js/initialize-counter.js"></script>
-  
   <!-- Debug helper for Firebase (development mode only) -->
   {% if jekyll.environment != 'production' %}
-  <script>
+  <script type="module">
     // This script will only run in development mode
+    import { doc, getDoc, setDoc, updateDoc, collection, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     
     // Add a manual reset function for the Firestore counter
     window.resetFirebaseCounter = function() {
-      if (typeof firebase !== 'undefined' && firebase.firestore) {
-        const db = firebase.firestore();
-        
-        // Reset the site visitors counter to 1
-        db.collection('siteVisitors').doc('counter').set({
-          count: 1
-        }).then(() => {
-          console.log('Site visitors counter reset to 1');
-          alert('Site visitors counter reset to 1');
-          // Refresh the page
-          window.location.reload();
-        }).catch(error => {
-          console.error('Failed to reset counter:', error);
-          alert('Failed to reset counter: ' + error.message);
-        });
-      } else {
+      if (typeof window.db === 'undefined') {
         alert('Firebase is not available');
+        return;
       }
+      
+      const db = window.db;
+      
+      // Reset the site visitors counter to 1
+      setDoc(doc(collection(db, 'siteVisitors'), 'counter'), {
+        count: 1
+      }).then(() => {
+        console.log('Site visitors counter reset to 1');
+        alert('Site visitors counter reset to 1');
+        // Refresh the page
+        window.location.reload();
+      }).catch(error => {
+        console.error('Failed to reset counter:', error);
+        alert('Failed to reset counter: ' + error.message);
+      });
     };
     
     // Add a direct test function for the counter
     window.testFirebaseCounter = function() {
-      if (typeof firebase !== 'undefined' && firebase.firestore) {
-        const db = firebase.firestore();
-        
-        const visitorElement = document.getElementById('site-visitors');
-        if (!visitorElement) {
-          alert('Site visitors element not found');
-          return;
-        }
-        
-        // Create debug element
-        const debugOutput = document.createElement('div');
-        debugOutput.style.position = 'fixed';
-        debugOutput.style.top = '0';
-        debugOutput.style.left = '0';
-        debugOutput.style.width = '100%';
-        debugOutput.style.background = 'rgba(0,0,0,0.8)';
-        debugOutput.style.color = 'white';
-        debugOutput.style.padding = '10px';
-        debugOutput.style.zIndex = '9999';
-        debugOutput.style.fontFamily = 'monospace';
-        debugOutput.style.fontSize = '12px';
-        document.body.appendChild(debugOutput);
-        
-        // Update debug output
-        function log(message) {
-          console.log(message);
-          debugOutput.innerHTML += message + '<br>';
-        }
-        
-        log('Testing Firebase connection...');
-        
-        // First try to list all documents
-        log('Listing all documents in siteVisitors collection...');
-        db.collection('siteVisitors').get()
-          .then(snapshot => {
-            log(`Found ${snapshot.size} documents in siteVisitors collection`);
-            snapshot.forEach(doc => {
-              log(`Document ID: ${doc.id}, Data: ${JSON.stringify(doc.data())}`);
-            });
+      if (typeof window.db === 'undefined') {
+        alert('Firebase is not available');
+        return;
+      }
+      
+      const db = window.db;
+      
+      const visitorElement = document.getElementById('site-visitors');
+      if (!visitorElement) {
+        alert('Site visitors element not found');
+        return;
+      }
+      
+      // Create debug element
+      const debugOutput = document.createElement('div');
+      debugOutput.style.position = 'fixed';
+      debugOutput.style.top = '0';
+      debugOutput.style.left = '0';
+      debugOutput.style.width = '100%';
+      debugOutput.style.background = 'rgba(0,0,0,0.8)';
+      debugOutput.style.color = 'white';
+      debugOutput.style.padding = '10px';
+      debugOutput.style.zIndex = '9999';
+      debugOutput.style.fontFamily = 'monospace';
+      debugOutput.style.fontSize = '12px';
+      document.body.appendChild(debugOutput);
+      
+      // Update debug output
+      function log(message) {
+        console.log(message);
+        debugOutput.innerHTML += message + '<br>';
+      }
+      
+      log('Testing Firebase connection...');
+      
+      // First try to list all documents
+      log('Listing all documents in siteVisitors collection...');
+      getDoc(doc(collection(db, 'siteVisitors'), 'counter'))
+        .then(docSnapshot => {
+          if (docSnapshot.exists()) {
+            log(`Found counter document: ${JSON.stringify(docSnapshot.data())}`);
+            const count = docSnapshot.data().count || 0;
             
-            // Now check or create the counter document
-            return db.collection('siteVisitors').doc('counter').get();
-          })
-          .then(doc => {
-            if (doc.exists) {
-              log(`Found counter document: ${JSON.stringify(doc.data())}`);
-              const count = doc.data().count || 0;
-              
-              // Update the display
-              visitorElement.textContent = count;
-              log(`Updated visitor count display to: ${count}`);
-              
-              // Add a button to increment
-              const incrementBtn = document.createElement('button');
-              incrementBtn.textContent = 'Increment Counter';
-              incrementBtn.style.margin = '5px';
-              incrementBtn.style.padding = '5px';
-              debugOutput.appendChild(incrementBtn);
-              
-              incrementBtn.onclick = function() {
-                db.collection('siteVisitors').doc('counter').update({
-                  count: firebase.firestore.FieldValue.increment(1)
-                })
-                .then(() => {
-                  return db.collection('siteVisitors').doc('counter').get();
-                })
-                .then(updatedDoc => {
-                  const newCount = updatedDoc.data().count;
-                  visitorElement.textContent = newCount;
-                  log(`Incremented count to: ${newCount}`);
-                })
-                .catch(err => {
-                  log(`Error incrementing: ${err.message}`);
-                });
-              };
+            // Update the display
+            visitorElement.textContent = count;
+            log(`Updated visitor count display to: ${count}`);
+            
+            // Add a button to increment
+            const incrementBtn = document.createElement('button');
+            incrementBtn.textContent = 'Increment Counter';
+            incrementBtn.style.margin = '5px';
+            incrementBtn.style.padding = '5px';
+            debugOutput.appendChild(incrementBtn);
+            
+            incrementBtn.onclick = function() {
+              updateDoc(doc(collection(db, 'siteVisitors'), 'counter'), {
+                count: increment(1)
+              })
+              .then(() => {
+                return getDoc(doc(collection(db, 'siteVisitors'), 'counter'));
+              })
+              .then(updatedDoc => {
+                const newCount = updatedDoc.data().count;
+                visitorElement.textContent = newCount;
+                log(`Incremented count to: ${newCount}`);
+              })
+              .catch(err => {
+                log(`Error incrementing: ${err.message}`);
+              });
+            };
+            
+            // Add a close button
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = 'Close Debug';
+            closeBtn.style.margin = '5px';
+            closeBtn.style.padding = '5px';
+            debugOutput.appendChild(closeBtn);
+            
+            closeBtn.onclick = function() {
+              debugOutput.remove();
+            };
+          } else {
+            log('Counter document does not exist, creating it...');
+            return setDoc(doc(collection(db, 'siteVisitors'), 'counter'), {
+              count: 1
+            })
+            .then(() => {
+              log('Created counter document with count 1');
+              visitorElement.textContent = '1';
               
               // Add a close button
               const closeBtn = document.createElement('button');
@@ -523,34 +544,12 @@ title: Home
               closeBtn.onclick = function() {
                 debugOutput.remove();
               };
-            } else {
-              log('Counter document does not exist, creating it...');
-              return db.collection('siteVisitors').doc('counter').set({
-                count: 1
-              })
-              .then(() => {
-                log('Created counter document with count 1');
-                visitorElement.textContent = '1';
-                
-                // Add a close button
-                const closeBtn = document.createElement('button');
-                closeBtn.textContent = 'Close Debug';
-                closeBtn.style.margin = '5px';
-                closeBtn.style.padding = '5px';
-                debugOutput.appendChild(closeBtn);
-                
-                closeBtn.onclick = function() {
-                  debugOutput.remove();
-                };
-              });
-            }
-          })
-          .catch(error => {
-            log(`Error: ${error.message}`);
-          });
-      } else {
-        alert('Firebase is not available');
-      }
+            });
+          }
+        })
+        .catch(error => {
+          log(`Error: ${error.message}`);
+        });
     };
     
     // Add a debug button to the page
