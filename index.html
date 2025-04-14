@@ -32,6 +32,15 @@ title: Home
   script.type = 'module';
   script.src = '/assets/js/initialize-counter.js';
   document.head.appendChild(script);
+  
+  // Add a fallback in case the module script fails to load
+  script.onerror = function() {
+    console.error('Failed to load initialize-counter.js as a module');
+    // Try loading it as a regular script as a fallback
+    const fallbackScript = document.createElement('script');
+    fallbackScript.src = '/assets/js/simple-counter.js';
+    document.head.appendChild(fallbackScript);
+  };
 </script>
 
 <style>

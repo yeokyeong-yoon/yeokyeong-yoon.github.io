@@ -55,4 +55,27 @@ document.addEventListener('DOMContentLoaded', function() {
       siteVisitorsElement.textContent = siteVisitors.toString();
     }
   }
+});
+
+// Simple counter fallback
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Using simple counter fallback');
+  
+  // Get the visitor element
+  const visitorElement = document.getElementById('site-visitors');
+  if (visitorElement) {
+    // Get the current count from localStorage or start at 1
+    let count = parseInt(localStorage.getItem('visitorCount')) || 1;
+    
+    // Increment the count
+    count++;
+    
+    // Save the new count
+    localStorage.setItem('visitorCount', count);
+    
+    // Update the display
+    visitorElement.textContent = count;
+    
+    console.log('Simple counter updated to:', count);
+  }
 }); 
