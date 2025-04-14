@@ -41,6 +41,21 @@ title: Home
     const script = document.createElement('script');
     script.type = 'module';
     script.src = '/assets/js/initialize-counter.js';
+    
+    // Add error handling for script loading
+    script.onerror = (error) => {
+      console.error('Failed to load initialize-counter.js:', error);
+      console.log('Loading fallback simple-counter.js...');
+      const fallbackScript = document.createElement('script');
+      fallbackScript.src = '/assets/js/simple-counter.js';
+      document.head.appendChild(fallbackScript);
+    };
+    
+    // Add load event handler
+    script.onload = () => {
+      console.log('initialize-counter.js loaded successfully');
+    };
+    
     document.head.appendChild(script);
     console.log('initialize-counter.js script tag added to document head');
   } catch (error) {
@@ -59,9 +74,6 @@ title: Home
     console.log('simple-counter.js fallback script added');
   }
 </script>
-
-<!-- Add a direct script tag for the counter as a backup -->
-<script src="/assets/js/simple-counter.js" id="simple-counter-direct"></script>
 
 <style>
   body {
