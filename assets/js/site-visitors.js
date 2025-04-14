@@ -1,3 +1,5 @@
+import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
+
 // Site Visitors Counter
 document.addEventListener('DOMContentLoaded', function() {
   // Only run on home page
@@ -14,23 +16,14 @@ document.addEventListener('DOMContentLoaded', function() {
     return;
   }
   
-  // Check if Firebase is loaded
-  if (typeof firebase === 'undefined') {
-    console.error('Firebase is not loaded');
+  // Check if Firebase db is available globally
+  if (!window.db) {
+    console.error('Firestore db is not available');
     useLocalStorage();
     return;
   }
   
-  // Get Firestore instance
   try {
-    // Check if Firestore is available
-    if (!firebase.firestore) {
-      console.error('Firestore is not available');
-      useLocalStorage();
-      return;
-    }
-    
-    const db = firebase.firestore();
     console.log('Using Firestore for site visitors');
     
     // Use a random ID for testing to always count as a new visit
@@ -41,24 +34,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const alwaysIncrement = true;
     
     // Reference to the document for site visitors
-    const visitorRef = db.collection('siteVisitors').doc('counter');
+    const visitorRef = doc(window.db, 'siteVisitors', 'counter');
     
     // Now always increment the counter during testing
     console.log('Always incrementing visitor count for testing');
     
     // Increment the visitor count
-    visitorRef.get().then((doc) => {
-      console.log('Visitor counter document exists:', doc.exists);
+    getDoc(visitorRef).then((docSnapshot) => {
+      console.log('Visitor counter document exists:', docSnapshot.exists());
       
-      if (doc.exists) {
+      if (docSnapshot.exists()) {
         // Document exists, increment the count
-        const currentCount = doc.data().count || 0;
+        const currentCount = docSnapshot.data().count || 0;
         console.log('Current visitor count:', currentCount);
         
         // Increment by 1
         const newCount = currentCount + 1;
         
-        return visitorRef.update({
+        return updateDoc(visitorRef, {
           count: newCount,
           lastVisit: new Date().toISOString()
         }).then(() => {
@@ -69,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
       } else {
         // Document doesn't exist, create it with count 1
         console.log('Creating new visitor counter document');
-        return visitorRef.set({
+        return setDoc(visitorRef, {
           count: 1,
           createdAt: new Date().toISOString()
         }).then(() => {
