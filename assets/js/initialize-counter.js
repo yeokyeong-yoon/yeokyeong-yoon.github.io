@@ -60,32 +60,48 @@ try {
   // Wait for Firebase to be initialized
   console.log('Setting up Firebase initialization check interval');
   let checkCount = 0;
-  const checkFirebase = setInterval(() => {
+  let checkFirebase = null;
+  
+  // Function to check for Firebase initialization
+  const checkForFirebase = () => {
     checkCount++;
     console.log(`Checking for Firebase initialization (attempt ${checkCount})...`);
     
     if (window.db) {
       console.log('Firebase db object found, clearing interval');
-      clearInterval(checkFirebase);
+      if (checkFirebase) {
+        clearInterval(checkFirebase);
+        checkFirebase = null;
+      }
       updateCounter().catch(error => {
         console.error('Failed to update counter:', error);
-        // Trigger fallback by throwing error
-        throw error;
+        // Don't throw here, just log the error
       });
     } else {
       console.log('Firebase db object not found yet');
     }
-  }, 100);
-
+  };
+  
+  // Start checking
+  checkFirebase = setInterval(checkForFirebase, 100);
+  
   // Clear interval after 10 seconds to prevent infinite checking
   setTimeout(() => {
     if (checkFirebase) {
       console.log('Firebase initialization check timed out after 10 seconds');
       clearInterval(checkFirebase);
-      throw new Error('Firebase initialization timeout');
+      checkFirebase = null;
+      
+      // Only throw if Firebase is still not initialized
+      if (!window.db) {
+        console.error('Firebase initialization timed out - Firebase not available');
+        throw new Error('Firebase initialization timeout');
+      } else {
+        console.log('Firebase is already initialized, timeout is safe to ignore');
+      }
     }
   }, 10000);
 } catch (error) {
   console.error('initialize-counter.js: Initialization failed:', error);
-  throw error; // Re-throw to trigger fallback
+  // Don't re-throw here, just log the error
 } 
