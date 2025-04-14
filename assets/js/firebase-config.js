@@ -1,6 +1,6 @@
 // Firebase configuration
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, doc, getDoc, setDoc } from 'firebase/firestore';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // Using a more secure approach to load Firebase configuration
 if (typeof window.firebaseConfigLoaded === 'undefined') {
@@ -25,30 +25,27 @@ if (typeof window.firebaseConfigLoaded === 'undefined') {
     const db = getFirestore(app);
     console.log("Firestore initialized successfully");
     
-    // Check and initialize counter document
-    const counterRef = doc(collection(db, 'siteVisitors'), 'counter');
-    getDoc(counterRef)
-      .then(docSnapshot => {
-        if (!docSnapshot.exists()) {
-          console.log("Creating siteVisitors counter document");
-          return setDoc(counterRef, {
-            count: 0,
-            createdAt: new Date().toISOString()
-          });
-        } else {
-          console.log("siteVisitors counter document exists:", docSnapshot.data());
-          return Promise.resolve();
-        }
-      })
-      .then(() => {
-        console.log("Firestore setup completed");
-        // Make db available globally
-        window.db = db;
-      })
-      .catch(error => {
-        console.error("Firestore setup error:", error);
-        console.log("Collections may need to be created manually in the Firebase console");
-      });
+    // Make db available globally
+    window.db = db;
+
+    // Initialize counter document if it doesn't exist
+    const counterRef = doc(collection(db, 'counters'), 'global');
+    getDoc(counterRef).then((doc) => {
+      if (!doc.exists()) {
+        console.log("Creating global counter document");
+        setDoc(counterRef, {
+          count: 0,
+          lastUpdated: new Date().toISOString()
+        });
+      } else {
+        console.log("global counter document exists:", doc.data());
+        return Promise.resolve();
+      }
+    }).then(() => {
+      console.log("Firestore setup completed");
+    }).catch((error) => {
+      console.error("Error initializing counter:", error);
+    });
   } catch (error) {
     console.error("Firebase initialization error:", error);
   }

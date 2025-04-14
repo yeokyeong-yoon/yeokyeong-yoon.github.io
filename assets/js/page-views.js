@@ -1,109 +1,53 @@
-// Page Views Counter
-document.addEventListener('DOMContentLoaded', function() {
-  // Only run on post pages
-  if (!document.querySelector('.post')) {
-    console.log('Not a post page, skipping page view counter');
+import { collection, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+// Function to create a safe document ID from URL path
+function createSafeDocId(path) {
+  return path.replace(/\//g, '_').replace(/^_+|_+$/g, '');
+}
+
+// Function to track page view
+async function trackPageView() {
+  if (!window.db) {
+    console.error('Firebase not initialized');
     return;
   }
 
-  console.log('Initializing page view counter');
-  
-  // Get current page URL path as the unique identifier
-  const pagePath = window.location.pathname;
-  console.log('Current page path:', pagePath);
-  
-  // Create a safe document ID by replacing all slashes with underscores
-  const safeDocId = pagePath.replace(/\//g, '_');
-  console.log('Safe document ID:', safeDocId);
-  
-  // Get the counter element
-  const pageViewsElement = document.getElementById('page-views');
-  if (!pageViewsElement) {
-    console.error('Page views element not found');
-    return;
-  }
-  
-  // Check if Firebase is loaded
-  if (typeof firebase === 'undefined') {
-    console.error('Firebase is not loaded');
-    useLocalStorage();
-    return;
-  }
-  
-  // Get Firestore instance
+  const path = window.location.pathname;
+  const docId = createSafeDocId(path);
+  const pageRef = doc(collection(window.db, 'pageViews'), docId);
+
   try {
-    // Check if Firestore is available
-    if (!firebase.firestore) {
-      console.error('Firestore is not available');
-      useLocalStorage();
-      return;
+    const docSnap = await getDoc(pageRef);
+    
+    if (!docSnap.exists()) {
+      // Create new document for this page
+      await setDoc(pageRef, {
+        path: path,
+        views: 1,
+        lastViewed: new Date().toISOString()
+      });
+    } else {
+      // Update existing document
+      await updateDoc(pageRef, {
+        views: increment(1),
+        lastViewed: new Date().toISOString()
+      });
     }
-    
-    const db = firebase.firestore();
-    console.log('Using Firestore for page views');
-    
-    // Reference to the document for this page
-    const pageRef = db.collection('pageViews').doc(safeDocId);
-    
-    // Increment the view count
-    pageRef.get().then((doc) => {
-      console.log('Firestore document exists:', doc.exists);
-      
-      if (doc.exists) {
-        // Document exists, increment the count
-        const currentCount = doc.data().count || 0;
-        console.log('Current view count:', currentCount);
-        
-        return pageRef.update({
-          count: firebase.firestore.FieldValue.increment(1)
-        }).then(() => {
-          // Get the updated count
-          return pageRef.get();
-        }).then((updatedDoc) => {
-          // Display the updated count
-          const newCount = updatedDoc.data().count;
-          console.log('Updated view count:', newCount);
-          pageViewsElement.textContent = newCount;
-        });
-      } else {
-        // Document doesn't exist, create it with count 1
-        console.log('Creating new page view document');
-        return pageRef.set({
-          count: 1,
-          path: pagePath, // Store original path
-          createdAt: new Date().toISOString()
-        }).then(() => {
-          console.log('New document created with count: 1');
-          pageViewsElement.textContent = '1';
-        });
-      }
-    }).catch((error) => {
-      console.error("Error with Firestore operation:", error);
-      useLocalStorage();
-    });
   } catch (error) {
-    console.error("Error initializing Firestore:", error);
-    useLocalStorage();
+    console.error('Error tracking page view:', error);
   }
-  
-  // Fallback to localStorage if Firebase is not available or fails
-  function useLocalStorage() {
-    console.log('Falling back to localStorage for page views');
-    try {
-      const viewsData = localStorage.getItem('pageViews');
-      const views = viewsData ? JSON.parse(viewsData) : {};
-      
-      if (!views[pagePath]) {
-        views[pagePath] = 0;
-      }
-      
-      views[pagePath]++;
-      localStorage.setItem('pageViews', JSON.stringify(views));
-      console.log('Local storage page views:', views[pagePath]);
-      pageViewsElement.textContent = views[pagePath].toString();
-    } catch (error) {
-      console.error("Error using localStorage:", error);
-      pageViewsElement.textContent = '0';
+}
+
+// Track page view when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  // Wait for Firebase to be initialized
+  const checkFirebase = setInterval(() => {
+    if (window.db) {
+      clearInterval(checkFirebase);
+      trackPageView();
     }
-  }
+  }, 100);
+
+  // Clear interval after 10 seconds to prevent infinite checking
+  setTimeout(() => clearInterval(checkFirebase), 10000);
 }); 
