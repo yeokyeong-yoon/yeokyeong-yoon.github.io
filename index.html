@@ -41,19 +41,6 @@ title: Home
     const script = document.createElement('script');
     script.type = 'module';
     script.src = '/assets/js/initialize-counter.js';
-    
-    // Add error handling for script loading
-    script.onerror = (error) => {
-      console.error('Failed to load initialize-counter.js:', error);
-      console.log('Loading fallback simple-counter.js...');
-      loadSimpleCounter();
-    };
-    
-    // Add load event handler
-    script.onload = () => {
-      console.log('initialize-counter.js loaded successfully');
-    };
-    
     document.head.appendChild(script);
     console.log('initialize-counter.js script tag added to document head');
   } catch (error) {
@@ -63,25 +50,6 @@ title: Home
       message: error.message,
       stack: error.stack
     });
-    
-    // Load fallback counter if Firebase fails
-    console.log('Loading fallback simple-counter.js...');
-    loadSimpleCounter();
-  }
-  
-  // Function to load the simple counter
-  function loadSimpleCounter() {
-    // Check if simple counter is already loaded
-    if (document.getElementById('simple-counter-loaded')) {
-      console.log('Simple counter already loaded, skipping');
-      return;
-    }
-    
-    const fallbackScript = document.createElement('script');
-    fallbackScript.src = '/assets/js/simple-counter.js';
-    fallbackScript.id = 'simple-counter-loaded';
-    document.head.appendChild(fallbackScript);
-    console.log('simple-counter.js fallback script added');
   }
 </script>
 

@@ -50,7 +50,6 @@ async function updateCounter() {
       message: error.message,
       stack: error.stack
     });
-    throw error; // Re-throw the error to trigger fallback
   }
 }
 

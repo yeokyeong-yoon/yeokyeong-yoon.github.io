@@ -51,4 +51,13 @@ if (typeof window.firebaseConfigLoaded === 'undefined') {
   }
 } else {
   console.log("Firebase config already loaded, skipping initialization");
+}
+
+// Export the initialization function for potential reuse
+export function initializeFirebase() {
+  if (!window.db) {
+    console.error("Firebase not initialized");
+    return null;
+  }
+  return window.db;
 } 
