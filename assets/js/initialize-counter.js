@@ -53,8 +53,7 @@ async function updateCounter() {
   }
 }
 
-// Initialize when the module loads
-console.log('initialize-counter.js: Starting initialization');
+// Initialize the counter
 try {
   // Wait for Firebase to be initialized
   console.log('Setting up Firebase initialization check interval');
