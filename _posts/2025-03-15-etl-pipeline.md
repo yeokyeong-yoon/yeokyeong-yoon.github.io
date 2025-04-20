@@ -174,7 +174,7 @@ Databricks로 전환하면서 다음과 같은 이점을 얻을 수 있었습니
      - 상태 저장이 안 된 상태에서 전처리와 후처리를 결합하면 idempotency 보장도 어렵고, check-pointing이 불가능해집니다.
    - 이미 성공한 작업도 반복 실행
      - 부분 성공을 기록하지 않는 구조라서, 병합 실패 시 이전까지 성공했던 것도 모두 재시작되어 비효율적입니다.
-     - 해결 방법: 단계별로 intermediate output을 저장(Delta Lake checkpoint, S3 단계별 output 등), 실패 시 해당 단계만 재시작 가능하게 설계해야 합니다.
+     - 해결 방법: 단계별로 intermediate output을 저장(Delta Lake checkpoint, S3 단계별 output 등), 실패 시 해당 단계만 재실행 가능하게 설계해야 합니다.
 
 #### 구조 개선 방향 요약 (DE Best Practice 관점)
 
@@ -217,7 +217,7 @@ Databricks로 전환하면서 다음과 같은 이점을 얻을 수 있었습니
 
 **트레이드오프**:
 - **직접 데이터 전달 vs S3 경로 기반 연결**:
-  - 직접 데이터 전달: 빠른 전송, 메모리 효율성 | 작업 간 강한 결합, 장애 복구 어려움
+  - 직접 데이터 전달: 빠른 전송, 메모리 효율성, 작업 간 강한 결합, 장애 복구 어려움
   - S3 경로 기반: 작업 독립성, 장애 복구 용이, 확장성의 장점이 있지만 추가 I/O 오버헤드, 지연 시간 증가
 - **장기적 고려사항**: 느슨한 결합(loose coupling)은 데이터 파이프라인의 안정성과 확장성을 높입니다. 작업 간 직접 의존성을 줄이고 중간 저장소를 활용하는 것이 장기적으로 유지보수에 유리합니다.
 
@@ -251,26 +251,10 @@ Workflow 기반 전환 후, Spark 분산 처리 아키텍처를 최적화하여 
   - 테이블별 개별 `SparkSession` 생성
   - Spark에서 `coalesce(1)`로 단일 CSV로 저장하되, 읽기/셔플은 분산 처리 유지
 
-- **Spark 튜닝 파라미터**:
-  - `spark.default.parallelism`: Executor 코어 수의 2배로 설정하여 병렬성 극대화
-  - `spark.sql.shuffle.partitions`: 데이터 볼륨에 최적화된 파티션 수로 동적 조정
-  - `spark.memory.fraction`: 0.8로 상향 조정하여 셔플 메모리 할당 최적화
-  - `spark.sql.adaptive.enabled=true`: AQE(Adaptive Query Execution) 활성화로 동적 최적화
-
-### 5.7 리소스 최적화
-
-Spark 분산 처리 아키텍처 최적화 후, 리소스 사용을 최적화하여 비용 효율성을 높였습니다:
-
-- **솔루션**:
-  - 적절한 수의 워커로 구성된 Auto-scaling 클러스터 구성
-  - 워크로드 증가 시 자동 스케일 아웃
-  - 비용 효율성과 성능 사이의 균형점 확보
-
-- **클러스터 컨피그레이션**:
-  - 인스턴스 타입: 표준 VM으로 설정하여 비용 대비 성능 최적화
-  - 오토스케일링 트리거: CPU 사용률 임계치 초과 시 스케일 아웃
-  - 스케일 다운 지연: 적절한 시간으로 설정하여 일시적 부하 변동 시 불필요한 스케일 다운 방지
-  - 스팟 인스턴스: 비용 절감을 위해 스팟 인스턴스 활용
+- **실제 구현**: 
+  - 테이블별로 별도의 Databricks 작업을 생성하여 병렬 처리
+  - 각 작업은 독립적으로 실행되며, 실패 시 해당 테이블만 재실행 가능
+  - 기본적인 Spark 설정을 사용하여 안정적인 처리를 우선시
 
 ## 6. 성능 최적화 전략
 
@@ -283,77 +267,22 @@ Spark 분산 처리 아키텍처 최적화 후, 리소스 사용을 최적화하
   - 테이블별 개별 `SparkSession` 생성
   - Spark에서 `coalesce(1)`로 단일 CSV로 저장하되, 읽기/셔플은 분산 처리 유지
 
-- **Spark 튜닝 파라미터**:
-  - `spark.default.parallelism`: Executor 코어 수의 2배로 설정하여 병렬성 극대화
-  - `spark.sql.shuffle.partitions`: 데이터 볼륨에 최적화된 파티션 수로 동적 조정
-  - `spark.memory.fraction`: 0.8로 상향 조정하여 셔플 메모리 할당 최적화
-  - `spark.sql.adaptive.enabled=true`: AQE(Adaptive Query Execution) 활성화로 동적 최적화
-
-### 6.1.2 Spark 분산 처리 아키텍처 상세 다이어그램
-```mermaid
-%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'fontSize': '20px',
-    'fontFamily': 'arial',
-    'lineHeight': '1.5',
-    'textAlignment': 'center'
-  },
-  'flowchart': {
-    'nodeSpacing': 50,
-    'rankSpacing': 100,
-    'padding': 20,
-    'width': '100%',
-    'height': '100%'
-  }
-}}%%
-graph LR
-    subgraph "Driver 노드"
-        direction LR
-        D1[Spark Driver<br/>작업 관리] --> D2[테이블별<br/>병합 작업<br/>스케줄링]
-    end
-    
-    subgraph "Executor 노드들"
-        direction LR
-        E1[Executor 1<br/>파일 읽기/처리]
-        E3[Executor 2<br/>파일 읽기/처리]
-        E5[Executor N<br/>파일 읽기/처리]
-    end
-    
-    subgraph "S3 저장소"
-        direction LR
-        S1[병합된<br/>CSV 파일] --> S2[_SUCCESS<br/>파일]
-    end
-    
-    D2 --> E1
-    D2 --> E3
-    D2 --> E5
-    
-    E1 --> S1
-    E3 --> S1
-    E5 --> S1
-    
-    style D1 fill:#f9f,stroke:#333,stroke-width:4px
-    style D2 fill:#f9f,stroke:#333,stroke-width:4px
-    style E1 fill:#bbf,stroke:#333,stroke-width:4px
-    style E3 fill:#bbf,stroke:#333,stroke-width:4px
-    style E5 fill:#bbf,stroke:#333,stroke-width:4px
-    style S1 fill:#bfb,stroke:#333,stroke-width:4px
-    style S2 fill:#bfb,stroke:#333,stroke-width:4px
-```
+- **실제 구현**: 
+  - 테이블별로 별도의 Databricks 작업을 생성하여 병렬 처리
+  - 각 작업은 독립적으로 실행되며, 실패 시 해당 테이블만 재실행 가능
+  - 기본적인 Spark 설정을 사용하여 안정적인 처리를 우선시
 
 ### 6.2 리소스 최적화
 
-- **솔루션**:
-  - 적절한 수의 워커로 구성된 Auto-scaling 클러스터 구성
-  - 워크로드 증가 시 자동 스케일 아웃
-  - 비용 효율성과 성능 사이의 균형점 확보
+- **현재 상태**:
+  - 기본적인 클러스터 설정으로 운영 중
+  - 워크로드 증가 시 수동으로 클러스터 크기 조정
+  - 비용 효율성과 성능 사이의 균형점을 찾는 과정 중
 
-- **클러스터 컨피그레이션**:
-  - 인스턴스 타입: 표준 VM으로 설정하여 비용 대비 성능 최적화
-  - 오토스케일링 트리거: CPU 사용률 임계치 초과 시 스케일 아웃
-  - 스케일 다운 지연: 적절한 시간으로 설정하여 일시적 부하 변동 시 불필요한 스케일 다운 방지
-  - 스팟 인스턴스: 비용 절감을 위해 스팟 인스턴스 활용
+- **향후 계획**:
+  - Auto-scaling 클러스터 구성 검토
+  - 워크로드 패턴 분석을 통한 최적 클러스터 크기 결정
+  - 비용 효율적인 인스턴스 타입 및 스케일링 전략 수립
 
 ## 7. 데이터 품질 검증 및 summary 로깅
 
