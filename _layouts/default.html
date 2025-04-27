@@ -96,13 +96,13 @@
     }
   </style>
   
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-analytics-compat.js"></script>
-  
-  <!-- Initialize Firebase -->
-  <script>
+  <!-- Firebase initialization -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    
+    // Your web app's Firebase configuration
     const firebaseConfig = {
       apiKey: "{{ site.firebase_api_key }}",
       authDomain: "{{ site.firebase_auth_domain }}",
@@ -112,10 +112,23 @@
       appId: "{{ site.firebase_app_id }}",
       measurementId: "{{ site.firebase_measurement_id }}"
     };
-    
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const analytics = firebase.analytics();
+
+    try {
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      
+      // Make db available globally
+      window.db = db;
+      
+      // Load the counter script after Firebase is initialized
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.src = '{{ "/assets/js/initialize-counter.js" | relative_url }}';
+      document.head.appendChild(script);
+    } catch (error) {
+      console.error('Firebase initialization error:', error);
+    }
   </script>
   
   <!-- Highlight.js for syntax highlighting -->
@@ -178,12 +191,9 @@
     </footer>
   </div>
   
-  <!-- Counter initialization script -->
-  <script src="{{ '/assets/js/initialize-counter.js' | relative_url }}"></script>
-  
   <!-- Debug script for counters (development mode only) -->
   {% if jekyll.environment != 'production' %}
-  <script src="{{ '/assets/js/counter-debug.js' | relative_url }}"></script>
+  <script type="module" src="{{ '/assets/js/counter-debug.js' | relative_url }}"></script>
   {% endif %}
 </body>
 </html> 

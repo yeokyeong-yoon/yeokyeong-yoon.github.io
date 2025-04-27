@@ -100,6 +100,5 @@ try {
     }
   }, 10000);
 } catch (error) {
-  console.error('initialize-counter.js: Initialization failed:', error);
-  // Don't re-throw here, just log the error
+  console.error('Error in counter initialization:', error);
 } 

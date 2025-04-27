@@ -1,4 +1,6 @@
 // Counter Debug Tool
+import { doc, collection, setDoc, query, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
 document.addEventListener('DOMContentLoaded', function() {
   // Log browser info
   console.log('================================');
@@ -63,26 +65,4 @@ document.addEventListener('DOMContentLoaded', function() {
   console.log('- visitedSite:', visitedSite);
   console.log('- siteVisitors:', siteVisitors);
   console.log('- pageViews:', pageViews ? JSON.parse(pageViews) : null);
-  
-  // Add debug elements to the page
-  const debugInfo = document.createElement('div');
-  debugInfo.style.position = 'fixed';
-  debugInfo.style.bottom = '10px';
-  debugInfo.style.right = '10px';
-  debugInfo.style.background = 'rgba(0,0,0,0.8)';
-  debugInfo.style.color = 'white';
-  debugInfo.style.padding = '10px';
-  debugInfo.style.borderRadius = '4px';
-  debugInfo.style.fontFamily = 'monospace';
-  debugInfo.style.fontSize = '12px';
-  debugInfo.style.zIndex = '9999';
-  
-  // Add debug info content
-  debugInfo.innerHTML = `
-    <div>Debug Info:</div>
-    <div>Firebase: ${typeof window.db !== 'undefined' ? '✅' : '❌'}</div>
-    <div>localStorage: ${typeof localStorage !== 'undefined' ? '✅' : '❌'}</div>
-  `;
-  
-  document.body.appendChild(debugInfo);
 }); 
