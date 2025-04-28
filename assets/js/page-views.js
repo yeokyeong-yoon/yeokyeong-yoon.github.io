@@ -3,6 +3,10 @@ import { collection, doc, getDoc, setDoc, updateDoc, increment } from "https://w
 
 // Function to create a safe document ID from URL path
 function createSafeDocId(path) {
+  // Check if we have root path
+  if (path === '/' || path === '') {
+    return 'home';
+  }
   return path.replace(/\//g, '_').replace(/^_+|_+$/g, '');
 }
 
