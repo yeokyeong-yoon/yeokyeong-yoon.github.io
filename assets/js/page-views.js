@@ -1,3 +1,4 @@
+// Import the functions you need from the SDKs you need
 import { collection, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // Function to create a safe document ID from URL path
@@ -9,6 +10,16 @@ function createSafeDocId(path) {
 async function trackPageView() {
   if (!window.db) {
     console.error('Firebase not initialized');
+    return;
+  }
+
+  // Check if we're in fallback mode
+  if (window.db.fallback) {
+    console.warn('Using localStorage fallback for page views');
+    const path = window.location.pathname;
+    const key = `page_view_${createSafeDocId(path)}`;
+    const views = parseInt(localStorage.getItem(key) || '0') + 1;
+    localStorage.setItem(key, views.toString());
     return;
   }
 
@@ -35,6 +46,10 @@ async function trackPageView() {
     }
   } catch (error) {
     console.error('Error tracking page view:', error);
+    // Fallback to localStorage if Firestore fails
+    const key = `page_view_${docId}`;
+    const views = parseInt(localStorage.getItem(key) || '0') + 1;
+    localStorage.setItem(key, views.toString());
   }
 }
 
@@ -49,5 +64,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 100);
 
   // Clear interval after 10 seconds to prevent infinite checking
-  setTimeout(() => clearInterval(checkFirebase), 10000);
+  setTimeout(() => {
+    clearInterval(checkFirebase);
+    if (!window.db) {
+      console.warn('Firebase initialization timed out, using localStorage fallback');
+      trackPageView(); // This will use the fallback mode
+    }
+  }, 10000);
 }); 

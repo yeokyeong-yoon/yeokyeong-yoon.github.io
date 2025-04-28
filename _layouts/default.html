@@ -100,7 +100,7 @@
   <script type="module">
     // Import the functions you need from the SDKs you need
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     
     // Your web app's Firebase configuration
     const firebaseConfig = {
@@ -118,16 +118,41 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
       
+      // Enable offline persistence
+      enableIndexedDbPersistence(db).catch((err) => {
+        if (err.code === 'failed-precondition') {
+          // Multiple tabs open, persistence can only be enabled in one tab at a time
+          console.warn('Firebase persistence failed: Multiple tabs open');
+        } else if (err.code === 'unimplemented') {
+          // The current browser doesn't support persistence
+          console.warn('Firebase persistence not supported in this browser');
+        }
+      });
+      
       // Make db available globally
       window.db = db;
       
       // Load the counter script after Firebase is initialized
-      const script = document.createElement('script');
-      script.type = 'module';
-      script.src = '{{ "/assets/js/initialize-counter.js" | relative_url }}';
-      document.head.appendChild(script);
+      const counterScript = document.createElement('script');
+      counterScript.type = 'module';
+      counterScript.src = '{{ "/assets/js/initialize-counter.js" | relative_url }}';
+      document.head.appendChild(counterScript);
+      
+      // Load the page views script
+      const pageViewsScript = document.createElement('script');
+      pageViewsScript.type = 'module';
+      pageViewsScript.src = '{{ "/assets/js/page-views.js" | relative_url }}';
+      document.head.appendChild(pageViewsScript);
     } catch (error) {
       console.error('Firebase initialization error:', error);
+      // Fallback to localStorage if Firebase fails
+      if (!window.db) {
+        console.warn('Firebase initialization failed, falling back to localStorage');
+        window.db = {
+          fallback: true,
+          error: error
+        };
+      }
     }
   </script>
   
