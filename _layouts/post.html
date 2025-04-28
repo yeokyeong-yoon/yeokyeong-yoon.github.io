@@ -344,69 +344,23 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<!-- Firebase initialization -->
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-  
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "{{ site.firebase_api_key }}",
-    authDomain: "{{ site.firebase_auth_domain }}",
-    projectId: "{{ site.firebase_project_id }}",
-    storageBucket: "{{ site.firebase_storage_bucket }}",
-    messagingSenderId: "{{ site.firebase_messaging_sender_id }}",
-    appId: "{{ site.firebase_app_id }}",
-    measurementId: "{{ site.firebase_measurement_id }}"
-  };
-
-  try {
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    
-    // Enable offline persistence
-    enableIndexedDbPersistence(db).catch((err) => {
-      if (err.code === 'failed-precondition') {
-        // Multiple tabs open, persistence can only be enabled in one tab at a time
-        console.warn('Firebase persistence failed: Multiple tabs open');
-      } else if (err.code === 'unimplemented') {
-        // The current browser doesn't support persistence
-        console.warn('Firebase persistence not supported in this browser');
-      }
-    });
-    
-    // Make db available globally
-    window.db = db;
-    
-    // Load the counter script after Firebase is initialized
-    const counterScript = document.createElement('script');
-    counterScript.type = 'module';
-    counterScript.src = '{{ "/assets/js/initialize-counter.js" | relative_url }}';
-    document.head.appendChild(counterScript);
-    
-    // Load the page views script
-    const pageViewsScript = document.createElement('script');
-    pageViewsScript.type = 'module';
-    pageViewsScript.src = '{{ "/assets/js/page-views.js" | relative_url }}';
-    document.head.appendChild(pageViewsScript);
-  } catch (error) {
-    console.error('Firebase initialization error:', error);
-    // Fallback to localStorage if Firebase fails
-    if (!window.db) {
-      console.warn('Firebase initialization failed, falling back to localStorage');
-      window.db = {
-        fallback: true,
-        error: error
-      };
-      
-      // Load the simple counter as fallback
+<!-- Load page view counter scripts -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Check if Firebase is already initialized by default.html
+    if (window.db) {
+      // Firebase is initialized, load the page views counter
+      const pageViewsScript = document.createElement('script');
+      pageViewsScript.type = 'module';
+      pageViewsScript.src = '{{ "/assets/js/page-views.js" | relative_url }}';
+      document.head.appendChild(pageViewsScript);
+    } else {
+      // Firebase not initialized, use simple counter as fallback
       const simpleCounterScript = document.createElement('script');
       simpleCounterScript.src = '{{ "/assets/js/simple-counter.js" | relative_url }}';
       document.head.appendChild(simpleCounterScript);
     }
-  }
+  });
 </script>
 
 {% if page.mermaid %}
