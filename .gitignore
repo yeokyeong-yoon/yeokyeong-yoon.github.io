@@ -38,6 +38,7 @@ ui-debug.log
 .runtimeconfig.json
 # Uncomment the following line if you want to hide your Firebase service account key
 # serviceAccountKey.json
+assets/js/firebase-config.js
 
 # Local environment files
 .env

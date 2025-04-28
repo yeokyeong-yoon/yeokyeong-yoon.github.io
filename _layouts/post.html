@@ -344,17 +344,30 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<!-- Include the counter script -->
+<!-- Include the Firebase configuration script -->
 <script>
-  // Load the simple counter directly
-  function loadScript(src) {
+  // Check if firebase-config.js exists, if not use the simple counter
+  function loadScript(src, fallback) {
     var script = document.createElement('script');
     script.src = src;
+    script.onerror = fallback;
+    script.onload = function() {
+      if (src.includes('firebase-config.js')) {
+        // Load the page views script after firebase config is loaded
+        loadScript("{{ '/assets/js/page-views.js' | relative_url }}", function() {
+          console.warn("Failed to load page-views.js, using simple counter instead");
+          loadScript("{{ '/assets/js/simple-counter.js' | relative_url }}", null);
+        });
+      }
+    };
     document.head.appendChild(script);
   }
 
-  // Load the simple counter
-  loadScript("{{ '/assets/js/simple-counter.js' | relative_url }}");
+  // Try to load firebase-config.js, fall back to simple-counter.js if it fails
+  loadScript("{{ '/assets/js/firebase-config.js' | relative_url }}", function() {
+    console.warn("Firebase config not found, using simple counter instead");
+    loadScript("{{ '/assets/js/simple-counter.js' | relative_url }}", null);
+  });
 </script>
 
 {% if page.mermaid %}
