@@ -132,7 +132,8 @@
             sizeBytes: 40 * 1024 * 1024 // 40 MB cache size
           }
         };
-        db.settings(settings);
+        // Initialize Firestore with settings
+        const db = getFirestore(app, settings);
         console.log('Firestore offline persistence enabled');
       } catch (err) {
         console.warn('Firebase persistence error:', err);
