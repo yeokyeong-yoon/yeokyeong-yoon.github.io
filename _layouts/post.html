@@ -294,9 +294,6 @@ layout: default
       </div>
       {% endif %}
     </div>
-    <div class="post-stats" style="margin-top: 15px; font-size: 12px; color: rgba(0, 0, 0, 0.4); text-align: right;">
-      <span class="views">Views: <span id="page-views">0</span></span>
-    </div>
   </footer>
 
   <div class="pagination" style="display: flex; justify-content: space-between; margin-top: 60px; padding-top: 20px; border-top: 1px solid rgba(0, 0, 0, 0.05);">
@@ -342,25 +339,6 @@ document.addEventListener('DOMContentLoaded', function() {
     container.appendChild(diagram);
   });
 });
-</script>
-
-<!-- Load page view counter scripts -->
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Check if Firebase is already initialized by default.html
-    if (window.db) {
-      // Firebase is initialized, load the page views counter
-      const pageViewsScript = document.createElement('script');
-      pageViewsScript.type = 'module';
-      pageViewsScript.src = '{{ "/assets/js/page-views.js" | relative_url }}';
-      document.head.appendChild(pageViewsScript);
-    } else {
-      // Firebase not initialized, use simple counter as fallback
-      const simpleCounterScript = document.createElement('script');
-      simpleCounterScript.src = '{{ "/assets/js/simple-counter.js" | relative_url }}';
-      document.head.appendChild(simpleCounterScript);
-    }
-  });
 </script>
 
 {% if page.mermaid %}
