@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "파트너사 확장에 따른 데이터 수집 파이프라인 설계 사례"
+title: "파트너사 데이터 수집(Ingestion) 파이프라인 구축기"
 date: 2025-05-03 10:00:00 +0900
 categories: Data Engineering
 tags: [Data Engineering, Data Pipeline, Databricks, Workflow, Ingestion, Distributed Processing]
@@ -60,6 +60,33 @@ graph LR
 Databricks Workflow를 기반으로 전체 배치를 Task 단위로 분리하였습니다.
 각 Task는 독립적으로 실행될 수 있도록 구성하였으며, 병렬 처리를 적용하여 전체 처리 속도를 개선하였습니다.
 
+예시로, Workflow 정의는 다음과 같습니다:
+
+```python
+# databricks/workflow/ingestion_workflow.py
+from databricks.sdk import Workflow
+from databricks.sdk.service import jobs
+
+workflow = Workflow(
+    name="partner_ingestion",
+    tasks=[
+        jobs.Task(
+            task_key="pre_set_date",
+            notebook_task=jobs.NotebookTask(
+                notebook_path="/Workflows/pre_set_date"
+            )
+        ),
+        jobs.Task(
+            task_key="batch_extract",
+            depends_on=["pre_set_date"],
+            notebook_task=jobs.NotebookTask(
+                notebook_path="/Workflows/batch_extract"
+            )
+        )
+    ]
+)
+```
+
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
 graph TD
@@ -79,6 +106,30 @@ graph TD
 1. **파일 처리**
    - `.tar.gz` 압축 해제: Python의 tarfile 활용
    - S3 경로: 파트너사명 및 날짜 기반 디렉토리 구조
+
+예시로, 압축 해제 및 S3 업로드 코드는 다음과 같습니다:
+
+```python
+# databricks/notebooks/batch_extract.py
+import tarfile
+import boto3
+from datetime import datetime
+
+def extract_and_upload(partner_id: str, tar_path: str):
+    s3 = boto3.client('s3')
+    date_str = datetime.now().strftime('%Y%m%d')
+    
+    with tarfile.open(tar_path, 'r:gz') as tar:
+        for member in tar.getmembers():
+            if member.name.endswith('.csv'):
+                # 파트너사별 S3 경로 구성
+                s3_key = f"{partner_id}/{date_str}/{member.name}"
+                s3.upload_fileobj(
+                    tar.extractfile(member),
+                    'data-bucket',
+                    s3_key
+                )
+```
 
 2. **병합 처리**
    - JSON 기반 스키마 정보 참조
