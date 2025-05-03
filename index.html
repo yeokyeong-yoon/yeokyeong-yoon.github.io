@@ -3,56 +3,6 @@ layout: default
 title: Home
 ---
 
-<!-- Firebase initialization -->
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-  
-  console.log('Starting Firebase initialization...');
-  
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyC4XvOHbMnPNyjR3IbU0fZkNWKExMI6dEE",
-    authDomain: "yeokyeongyy.firebaseapp.com",
-    projectId: "yeokyeongyy",
-    storageBucket: "yeokyeongyy.firebasestorage.app",
-    messagingSenderId: "113030891564",
-    appId: "1:113030891564:web:a08ea569a7fb93a5c46989",
-    measurementId: "G-TP6F1R7FD3"
-  };
-
-  try {
-    console.log('Attempting to initialize Firebase app...');
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    console.log('Firebase app initialized successfully');
-    
-    console.log('Attempting to initialize Firestore...');
-    const db = getFirestore(app);
-    console.log('Firestore initialized successfully');
-    
-    // Make db available globally
-    window.db = db;
-    console.log('Firebase db object made available globally');
-    
-    // Load the counter script after Firebase is initialized
-    console.log('Loading initialize-counter.js...');
-    const script = document.createElement('script');
-    script.type = 'module';
-    script.src = '/assets/js/initialize-counter.js';
-    document.head.appendChild(script);
-    console.log('initialize-counter.js script tag added to document head');
-  } catch (error) {
-    console.error('Firebase initialization error:', error);
-    console.error('Error details:', {
-      name: error.name,
-      message: error.message,
-      stack: error.stack
-    });
-  }
-</script>
-
 <!-- Counter Debug Tool -->
 <script type="module" src="/assets/js/counter-debug.js"></script>
 
