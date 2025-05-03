@@ -62,30 +62,78 @@ Databricks Workflow를 기반으로 전체 배치를 Task 단위로 분리하였
 
 예시로, Workflow 정의는 다음과 같습니다:
 
-```python
-# databricks/workflow/ingestion_workflow.py
-from databricks.sdk import Workflow
-from databricks.sdk.service import jobs
+```yaml
+# databricks/workflow/ingestion_workflow.yml
+name: partner_ingestion
+tasks:
+  - task_key: pre_set_date
+    notebook_task:
+      notebook_path: /Workflows/pre_set_date
+    max_retries: 3
+    timeout_seconds: 3600
 
-workflow = Workflow(
-    name="partner_ingestion",
-    tasks=[
-        jobs.Task(
-            task_key="pre_set_date",
-            notebook_task=jobs.NotebookTask(
-                notebook_path="/Workflows/pre_set_date"
-            )
-        ),
-        jobs.Task(
-            task_key="batch_extract",
-            depends_on=["pre_set_date"],
-            notebook_task=jobs.NotebookTask(
-                notebook_path="/Workflows/batch_extract"
-            )
-        )
-    ]
-)
+  - task_key: batch_extract
+    depends_on:
+      - pre_set_date
+    notebook_task:
+      notebook_path: /Workflows/batch_extract
+    max_retries: 3
+    timeout_seconds: 7200
+
+  - task_key: merge_table_1
+    depends_on:
+      - batch_extract
+    notebook_task:
+      notebook_path: /Workflows/merge_table_1
+    max_retries: 3
+    timeout_seconds: 3600
+
+  - task_key: merge_table_2
+    depends_on:
+      - batch_extract
+    notebook_task:
+      notebook_path: /Workflows/merge_table_2
+    max_retries: 3
+    timeout_seconds: 3600
+
+  - task_key: merge_table_3
+    depends_on:
+      - batch_extract
+    notebook_task:
+      notebook_path: /Workflows/merge_table_3
+    max_retries: 3
+    timeout_seconds: 3600
+
+  - task_key: merge_summary
+    depends_on:
+      - merge_table_1
+      - merge_table_2
+      - merge_table_3
+    notebook_task:
+      notebook_path: /Workflows/merge_summary
+    max_retries: 3
+    timeout_seconds: 3600
+
+  - task_key: post_merge_check
+    depends_on:
+      - merge_summary
+    notebook_task:
+      notebook_path: /Workflows/post_merge_check
+    max_retries: 3
+    timeout_seconds: 3600
 ```
+
+각 Task는 다음과 같은 설정을 포함하고 있습니다:
+
+- `max_retries`: Task 실패 시 최대 재시도 횟수 (3회)
+- `timeout_seconds`: Task 실행 최대 허용 시간
+  - 일반 Task: 1시간 (3600초)
+  - 데이터 추출 Task: 2시간 (7200초)
+
+이러한 설정을 통해:
+1. 일시적인 네트워크 오류나 리소스 부족으로 인한 실패를 자동으로 복구
+2. 무한정 실행되는 Task를 방지하여 리소스 낭비 예방
+3. 각 Task의 특성에 맞는 적절한 타임아웃 설정으로 효율적인 리소스 관리
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
