@@ -33,7 +33,7 @@ graph LR
 
 ### 1.2 기존 시스템의 문제점
 
-초기 데이터 파이프라인은 정제되지 않은 파일을 병합하고 일정한 형식으로 저장하는 단순한 구조였습니다. 하지만 데이터 소스가 증가하고, 처리 주기가 다양해지면서 기존 방식으로는 확장성과 안정성을 확보하기 어려웠습니다. 특히 단일 처리 스크립트 구조는 에러 발생 시 전체 흐름에 영향을 주는 병목 요인이 되었습니다.
+초기 데이터 파이프라인은 정제되지 않은 파일을 병합하고 일정한 형식으로 저장하는 단순한 구조였습니다. 하지만 데이터 소스가 증가하고, 처리 주기가 다양해지면서 기존 방식으로는 확장성과 안정성을 확보하기 어려웠습니다. 특히 단일 처리 스크립트 구조는 에러 발생 시 전반적인 흐름에 영향을 주는 병목 요인이 되었습니다.
 
 주요 문제점:
 1. **스키마 종속성**: 레거시 시스템 전용 스키마로 타 파트너사 데이터 재활용 불가
@@ -94,6 +94,31 @@ Task 분리 후, 더 나은 관리와 자동화를 위해 Databricks Workflow로
   - 각 테이블별 `merge_*` task: 독립적인 병합 작업
   - `merge_summary`: 병합 완료 후 summary.txt 생성
   - `post_merge_check`: 최종 결과 검증
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
+graph TD
+    subgraph "Databricks Workflow"
+        A[pre_set_date] --> B[wait_for_all_sources]
+        B --> C[batch_extract]
+        C --> D[merge_table1]
+        C --> E[merge_table2]
+        C --> F[merge_table3]
+        D --> G[merge_summary]
+        E --> G
+        F --> G
+        G --> H[post_merge_check]
+    end
+
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style C fill:#bfb,stroke:#333,stroke-width:2px
+    style D fill:#fbb,stroke:#333,stroke-width:2px
+    style E fill:#fbb,stroke:#333,stroke-width:2px
+    style F fill:#fbb,stroke:#333,stroke-width:2px
+    style G fill:#ff9,stroke:#333,stroke-width:2px
+    style H fill:#9ff,stroke:#333,stroke-width:2px
+```
 
 ## 4. 적용 후 성과 및 잔여 이슈
 
