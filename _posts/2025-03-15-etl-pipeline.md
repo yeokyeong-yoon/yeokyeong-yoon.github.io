@@ -12,19 +12,19 @@ mermaid: true
 ## 1. 배경
 
 기존에는 Airflow 기반의 전용 데이터 수집 파이프라인을 운영하고 있었습니다.  
-해당 파이프라인은 특정 파트너사의 `.tar.gz` 압축 파일을 수신하여 내부의 `.csv` 테이블 데이터를 정제 및 병합한 후 저장하는 구조였습니다.  
+해당 파이프라인은 특정 파트너사의 `.tar.gz` 압축 파일을 수신하여 내부의 숙박 예약 트랜잭션 데이터를 정제 및 병합한 후 저장하는 구조였습니다.  
 파일 구조와 테이블 스키마가 고정되어 있었기 때문에 안정적으로 운영할 수 있었습니다.
 
-그러나 파트너사 수가 증가하면서 다양한 포맷의 데이터가 유입되었고, 기존 구조로는 확장에 한계가 발생하였습니다.  
+그러나 파트너사 수가 증가하면서 다양한 포맷의 숙박 예약 데이터가 유입되었고, 기존 구조로는 확장에 한계가 발생하였습니다.  
 이에 따라 Databricks 기반의 공용 데이터 수집 파이프라인을 신규로 설계 및 구축하는 과제를 수행하게 되었습니다.
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
 graph TD
     A[Airflow 기반 전용 파이프라인] --> B[파트너사 A]
-    A --> C[데이터 저장소 A]
+    A --> C[숙박 예약 데이터 저장소 A]
     D[Databricks 공용 파이프라인] --> E[파트너사 A~N]
-    D --> F[파트너사별 저장소 구조]
+    D --> F[파트너사별 숙박 데이터 저장소]
     A -. 유지 -.-> D
 ```
 
@@ -33,11 +33,11 @@ graph TD
 공용 파이프라인을 설계하기 위해 다음과 같은 요구사항을 정리하였습니다:
 
 1. **데이터 분리**
-   - 파트너사 간 데이터 분리가 반드시 보장되어야 함
+   - 파트너사 간 숙박 예약 데이터 분리가 반드시 보장되어야 함
    - 보안 및 운영상 논리적 분리 필요
 
 2. **스키마 통일**
-   - 파트너사별 상이한 스키마를 통합된 형태로 변환
+   - 파트너사별 상이한 숙박 예약 스키마를 통합된 형태로 변환
    - 데이터 품질 및 일관성 확보
 
 3. **처리 흐름**
@@ -80,35 +80,35 @@ tasks:
     max_retries: 3
     timeout_seconds: 7200
 
-  - task_key: merge_table_1
+  - task_key: merge_reservation
     depends_on:
       - batch_extract
     notebook_task:
-      notebook_path: /Workflows/merge_table_1
+      notebook_path: /Workflows/merge_reservation
     max_retries: 3
     timeout_seconds: 3600
 
-  - task_key: merge_table_2
+  - task_key: merge_room
     depends_on:
       - batch_extract
     notebook_task:
-      notebook_path: /Workflows/merge_table_2
+      notebook_path: /Workflows/merge_room
     max_retries: 3
     timeout_seconds: 3600
 
-  - task_key: merge_table_3
+  - task_key: merge_guest
     depends_on:
       - batch_extract
     notebook_task:
-      notebook_path: /Workflows/merge_table_3
+      notebook_path: /Workflows/merge_guest
     max_retries: 3
     timeout_seconds: 3600
 
   - task_key: merge_summary
     depends_on:
-      - merge_table_1
-      - merge_table_2
-      - merge_table_3
+      - merge_reservation
+      - merge_room
+      - merge_guest
     notebook_task:
       notebook_path: /Workflows/merge_summary
     max_retries: 3
@@ -140,9 +140,9 @@ tasks:
 graph TD
     A[pre_set_date] --> B[wait_for_all_sources]
     B --> C[batch_extract]
-    C --> D[merge_table_1]
-    C --> E[merge_table_2]
-    C --> F[merge_table_3]
+    C --> D[merge_reservation]
+    C --> E[merge_room]
+    C --> F[merge_guest]
     D --> G[merge_summary]
     E --> G
     F --> G
@@ -159,7 +159,7 @@ graph TD
    - 파일 검증: 크기, 포맷, 무결성 검사
 
 2. **데이터 추출**
-   - 파트너사별 원본 데이터 로딩
+   - 파트너사별 숙박 예약 데이터 로딩
    - 데이터 포맷 변환 (CSV, JSON 등)
    - 기본적인 데이터 정제
 
@@ -170,32 +170,51 @@ graph TD
    # databricks/notebooks/schema_mapping.py
    from pyspark.sql.types import *
    
-   # 통합 스키마 정의
+   # 통합 숙박 예약 스키마 정의 (예시)
    unified_schema = StructType([
-       StructField("id", StringType(), False),
-       StructField("name", StringType(), True),
-       StructField("value", DecimalType(10,2), True),
-       StructField("timestamp", TimestampType(), False),
+       StructField("reservation_id", StringType(), False),
+       StructField("hotel_id", StringType(), False),
+       StructField("check_in_date", DateType(), False),
+       StructField("check_out_date", DateType(), False),
+       StructField("total_amount", DecimalType(10,2), True),
        StructField("partner_id", StringType(), False)
    ])
-   
-   # 파트너사별 매핑 규칙
-   partner_mappings = {
-       "partner_a": {
-           "id": "id",
-           "name": "product_name",
-           "value": "price",
-           "timestamp": "created_at",
-           "partner_id": "partner_code"
-       },
-       "partner_b": {
-           "id": "item_id",
-           "name": "item_name",
-           "value": "amount",
-           "timestamp": "record_time",
-           "partner_id": "source_id"
-       }
-   }
+   ```
+
+   또는 Databricks SQL을 사용한 구현 (예시):
+   ```sql
+   -- 통합 숙박 예약 테이블 생성 (예시)
+   CREATE TABLE IF NOT EXISTS unified_reservations (
+     reservation_id STRING NOT NULL,
+     hotel_id STRING NOT NULL,
+     check_in_date DATE NOT NULL,
+     check_out_date DATE NOT NULL,
+     total_amount DECIMAL(10,2),
+     partner_id STRING NOT NULL
+   )
+   USING DELTA
+   PARTITIONED BY (check_in_date, partner_id);
+
+   -- 파트너사 A 데이터 변환 (예시)
+   CREATE OR REPLACE VIEW partner_a_transformed AS
+   SELECT
+     booking_id AS reservation_id,
+     property_id AS hotel_id,
+     CAST(arrival_date AS DATE) AS check_in_date,
+     CAST(departure_date AS DATE) AS check_out_date,
+     CAST(booking_amount AS DECIMAL(10,2)) AS total_amount,
+     source_id AS partner_id
+   FROM partner_a_raw;
+
+   -- 통합 테이블에 데이터 병합 (예시)
+   MERGE INTO unified_reservations target
+   USING partner_a_transformed source
+   ON target.reservation_id = source.reservation_id
+     AND target.partner_id = source.partner_id
+   WHEN MATCHED THEN
+     UPDATE SET *
+   WHEN NOT MATCHED THEN
+     INSERT *;
    ```
 
    구현 특징:
@@ -215,7 +234,7 @@ graph TD
 1. **데이터 저장**
    - Delta Lake를 활용한 ACID 트랜잭션 지원
    - 파트너사별 테이블 분리
-   - 파티셔닝 전략: 날짜, 파트너사 기준
+   - 파티셔닝 전략: 체크인 날짜, 파트너사 기준
 
 2. **메타데이터 관리**
    - 처리 이력 추적
@@ -224,7 +243,7 @@ graph TD
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
-graph TD
+graph LR
     subgraph "데이터 수집 계층"
         A[파일 처리]
         B[데이터 추출]
