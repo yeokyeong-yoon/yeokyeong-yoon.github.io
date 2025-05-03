@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "파트너사 데이터 수집(Ingestion) 파이프라인 구축기"
+title: "Databricks 기반 공용 파이프라인 구축기: 파트너사 확장에 대응하기 위한 설계와 구현"
 date: 2025-05-03 10:00:00 +0900
 categories: Data Engineering
 tags: [Data Engineering, Data Pipeline, Databricks, Workflow, Ingestion, Distributed Processing]
@@ -36,9 +36,9 @@ graph TD
    - 파트너사 간 데이터 분리가 반드시 보장되어야 함
    - 보안 및 운영상 논리적 분리 필요
 
-2. **스키마 다양성**
-   - 파트너사마다 상이한 테이블 스키마
-   - 동적 컬럼 수 및 순서 변경 가능성
+2. **스키마 통일**
+   - 파트너사별 상이한 스키마를 통합된 형태로 변환
+   - 데이터 품질 및 일관성 확보
 
 3. **처리 흐름**
    - 병렬성과 유연성 확보
@@ -48,7 +48,7 @@ graph TD
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
 graph LR
     A[요구사항 도출] --> B[데이터 분리]
-    A --> C[스키마 다양성 대응]
+    A --> C[스키마 통일]
     A --> D[작업 병렬 처리]
     A --> E[Task 재실행 가능성 확보]
 ```
@@ -151,51 +151,93 @@ graph TD
 
 ### 3.2 기술 구성 요소
 
+#### 3.2.1 데이터 수집 계층
+
 1. **파일 처리**
    - `.tar.gz` 압축 해제: Python의 tarfile 활용
    - S3 경로: 파트너사명 및 날짜 기반 디렉토리 구조
+   - 파일 검증: 크기, 포맷, 무결성 검사
 
-예시로, 압축 해제 및 S3 업로드 코드는 다음과 같습니다:
+2. **데이터 추출**
+   - 파트너사별 원본 데이터 로딩
+   - 데이터 포맷 변환 (CSV, JSON 등)
+   - 기본적인 데이터 정제
 
-```python
-# databricks/notebooks/batch_extract.py
-import tarfile
-import boto3
-from datetime import datetime
+#### 3.2.2 데이터 변환 계층
 
-def extract_and_upload(partner_id: str, tar_path: str):
-    s3 = boto3.client('s3')
-    date_str = datetime.now().strftime('%Y%m%d')
-    
-    with tarfile.open(tar_path, 'r:gz') as tar:
-        for member in tar.getmembers():
-            if member.name.endswith('.csv'):
-                # 파트너사별 S3 경로 구성
-                s3_key = f"{partner_id}/{date_str}/{member.name}"
-                s3.upload_fileobj(
-                    tar.extractfile(member),
-                    'data-bucket',
-                    s3_key
-                )
-```
+1. **스키마 관리**
+   ```python
+   # databricks/notebooks/schema_mapping.py
+   from pyspark.sql.types import *
+   
+   # 통합 스키마 정의
+   unified_schema = StructType([
+       StructField("id", StringType(), False),
+       StructField("name", StringType(), True),
+       StructField("value", DecimalType(10,2), True),
+       StructField("timestamp", TimestampType(), False),
+       StructField("partner_id", StringType(), False)
+   ])
+   
+   # 파트너사별 매핑 규칙
+   partner_mappings = {
+       "partner_a": {
+           "id": "id",
+           "name": "product_name",
+           "value": "price",
+           "timestamp": "created_at",
+           "partner_id": "partner_code"
+       },
+       "partner_b": {
+           "id": "item_id",
+           "name": "item_name",
+           "value": "amount",
+           "timestamp": "record_time",
+           "partner_id": "source_id"
+       }
+   }
+   ```
 
-2. **병합 처리**
-   - JSON 기반 스키마 정보 참조
-   - Databricks Workflow를 통한 의존성 관리
-   - Task 단위 재시도 지원
+   구현 특징:
+   - PySpark의 StructType을 사용한 강력한 타입 시스템
+   - 파트너사별 매핑 규칙을 통한 유연한 스키마 변환
+   - 필수/선택 필드 구분으로 데이터 품질 보장
+   - 데이터 타입의 정확한 정의
+
+2. **데이터 변환**
+   - 파트너사별 원본 데이터를 통합 스키마로 변환
+   - 데이터 타입 및 포맷 표준화
+   - 누락된 필드에 대한 기본값 처리
+   - 데이터 품질 검증
+
+#### 3.2.3 데이터 저장 계층
+
+1. **데이터 저장**
+   - Delta Lake를 활용한 ACID 트랜잭션 지원
+   - 파트너사별 테이블 분리
+   - 파티셔닝 전략: 날짜, 파트너사 기준
+
+2. **메타데이터 관리**
+   - 처리 이력 추적
+   - 데이터 품질 메트릭 저장
+   - 파트너사별 처리 상태 관리
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
-graph LR
-    subgraph "파일 처리"
-        A[압축 해제]
-        B[S3 업로드]
+graph TD
+    subgraph "데이터 수집 계층"
+        A[파일 처리]
+        B[데이터 추출]
     end
-    subgraph "병합 처리"
-        C[스키마 로딩]
-        D[병합 수행]
+    subgraph "데이터 변환 계층"
+        C[스키마 관리]
+        D[데이터 변환]
     end
-    A --> B --> C --> D
+    subgraph "데이터 저장 계층"
+        E[데이터 저장]
+        F[메타데이터 관리]
+    end
+    A --> B --> C --> D --> E --> F
 ```
 
 ## 4. 결과 및 회고
@@ -210,12 +252,17 @@ graph LR
    - 신규 파트너사 추가 시 구조 재사용 가능
    - 로그 및 알림 체계 개선으로 가시성 향상
 
+3. **데이터 품질**
+   - 통합된 스키마로 인한 데이터 일관성 확보
+   - 파트너사 간 데이터 비교 분석 용이
+
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
 graph TD
     A[처리 시간] -->|↓ 60%| B[병렬화]
     C[복구 속도] -->|↑| D[Task 단위 재실행]
     E[구조 재사용] -->|↑| F[파트너사 추가 대응]
+    G[데이터 품질] -->|↑| H[스키마 통일]
 ```
 
 ### 4.2 회고
