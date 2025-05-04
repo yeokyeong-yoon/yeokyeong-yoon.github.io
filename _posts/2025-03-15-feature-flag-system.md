@@ -630,12 +630,12 @@ graph TD
 ### 6.5 FeatureFlagManager의 동작 방식
 
 ```mermaid
-classDiagram
-    Manager : +init()
-    Manager : +get()
-    Meta : +get()
-    Meta : +set()
-    Manager --> Meta
+graph LR
+    M[Manager] -->|manages| F[Meta]
+    M -->|init()| M
+    M -->|get()| M
+    F -->|get()| F
+    F -->|set()| F
 ```
 
 *FeatureFlagManager와 FlagMeta 클래스의 관계*
