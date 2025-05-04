@@ -9,10 +9,15 @@ mermaid: true
 
 ## 목차
 1. [SDK 개요](#1-sdk-개요)
+   - [SDK의 주요 기능](#11-sdk의-주요-기능)
 2. [시스템 구조](#2-시스템-구조)
    - [관리 시스템](#21-관리-시스템)
    - [서비스 시스템](#22-서비스-시스템)
    - [데이터 흐름](#23-데이터-흐름)
+     - [플래그 등록 과정](#231-플래그-등록-과정)
+     - [폴링 주기 결정의 근거](#232-폴링-주기-결정의-근거)
+     - [플래그 값 조회 과정](#233-플래그-값-조회-과정)
+     - [플래그 값 변경 과정](#234-플래그-값-변경-과정)
    - [아키텍처 선택 배경](#24-아키텍처-선택-배경)
    - [대안적 접근 방식](#25-대안적-접근-방식-검토)
 3. [핵심 설계 원칙과 기술적 구현](#3-핵심-설계-원칙과-기술적-구현)
@@ -25,9 +30,23 @@ mermaid: true
    - [인프라](#42-인프라-kubernetes-on-aws-eks)
    - [배포](#43-배포-jib--jenkins)
    - [데이터 저장소](#44-데이터-저장소-aws-dynamodb)
+     - [Flag 로딩 및 캐싱 메커니즘](#441-flag-로딩-및-캐싱-메커니즘)
+     - [성능 최적화 전략](#442-성능-최적화-전략)
 5. [시스템 활용](#5-시스템-활용)
+   - [엔드포인트 목록](#51-엔드포인트-목록)
+   - [성능 최적화](#52-성능-최적화)
 6. [Feature Flag 시스템의 내부 동작 원리](#6-feature-flag-시스템의-내부-동작-원리)
+   - [시스템 구성 및 목적](#61-시스템-구성-및-목적)
+   - [선언 방식 예시](#62-선언-방식-예시)
+   - [Primitive 타입 선택 이유](#63-primitive-타입-선택-이유)
+   - [전체 동작 흐름](#64-전체-동작-흐름)
+   - [FeatureFlagManager의 동작 방식](#65-featureflagmanager의-동작-방식)
+   - [핵심 기술 요소 설명](#66-핵심-기술-요소-설명)
+   - [시스템의 장점](#67-시스템의-장점)
+   - [요약](#68-요약)
 7. [트러블슈팅: ClassLoader 문제](#7-트러블슈팅-classloader-문제)
+   - [문제 상황](#71-문제-상황)
+   - [해결 과정](#72-해결-과정)
 8. [향후 발전 방향](#8-향후-발전-방향)
 9. [부록: 용어 정리](#9-부록-용어-정리)
 
@@ -228,6 +247,30 @@ flowchart TD
 
 #### 2.3.3 플래그 값 조회 과정
 
+```mermaid
+sequenceDiagram
+    participant App as 애플리케이션
+    participant Manager as FeatureFlagManager
+    participant Cache as ConcurrentHashMap
+    participant API as Flag API Server
+    participant DB as DynamoDB
+
+    App->>Manager: 플래그 값 조회 요청
+    Manager->>Cache: 캐시 확인
+    alt 캐시 적중
+        Cache-->>Manager: 캐시된 값 반환
+        Manager-->>App: 플래그 값 반환
+    else 캐시 미스
+        Manager->>API: 최신 값 요청
+        API->>DB: 값 조회
+        DB-->>API: 값 반환
+        API-->>Manager: 값 반환
+        Manager->>Cache: 캐시 업데이트
+        Manager-->>App: 플래그 값 반환
+    end
+```
+
+*플래그 값 조회 과정을 보여주는 시퀀스 다이어그램*
 
 #### 2.3.4 플래그 값 변경 과정
 
@@ -571,6 +614,26 @@ Feature Flag 시스템의 로딩 및 캐싱 전략은 다음과 같이 구성되
    - 초당 수천 건의 읽기 처리 가능
    - 메모리 사용량 최적화를 위한 Flag 메타데이터 압축
 
+### 4.4.2 성능 최적화 전략
+
+Feature Flag 시스템의 성능 최적화를 위해 다음과 같은 전략을 구현했습니다:
+
+```mermaid
+graph TD
+    subgraph 최적화 전략
+        A[메모리 최적화] --> A1[Primitive 타입 사용]
+        A --> A2[메타데이터 압축]
+        B[캐시 전략] --> B1[ConcurrentHashMap]
+        B --> B2[10초 TTL]
+        C[네트워크 최적화] --> C1[배치 처리]
+        C --> C2[폴링 간격 최적화]
+        D[데이터베이스 최적화] --> D1[ConsistentRead=True]
+        D --> D2[Auto Scaling]
+    end
+```
+
+*성능 최적화 전략을 보여주는 그래프*
+
 ## 5. 시스템 활용
 
 ### 5.1 엔드포인트 목록
@@ -614,13 +677,13 @@ Feature Flag 시스템의 핵심 동작 원리를 JVM 메모리 관리 관점에
 ### 6.2 선언 방식 예시
 
 ```java
-@FeatureFlag(flagName = "new-search-algorithm")
+@FeatureFlag(flagName="new-search-algorithm")
 public static boolean useNewSearchAlgorithm = false;
 
-@FeatureFlag(flagName = "max-search-results")
+@FeatureFlag(flagName="max-search-results")
 public static int maxSearchResults = 100;
 
-@FeatureFlag(flagName = "search-boost-factor")
+@FeatureFlag(flagName="search-boost-factor")
 public static double boostFactor = 1.5;
 ```
 
@@ -644,35 +707,32 @@ flowchart TD
     Code --static primitive 필드 어노테이션 값--> FFManager
     FFManager --플래그 정보 저장--> FFManager
 ```
+
 *서비스 시작 시점의 전체 동작 흐름을 보여주는 플로우차트*
 
 ### 6.5 FeatureFlagManager의 동작 방식
 
-```java
-public class FeatureFlagManager {
-    private static final ConcurrentHashMap<String, FlagMeta> flags = new ConcurrentHashMap<>();
-
-    public static void initializeFlags(Class<?>... classesToScan) {
-        for (Class<?> clazz : classesToScan) {
-            for (Field field : clazz.getDeclaredFields()) {
-                if (field.isAnnotationPresent(FeatureFlag.class)) {
-                    FeatureFlag annotation = field.getAnnotation(FeatureFlag.class);
-                    String flagName = annotation.flagName();
-
-                    field.setAccessible(true);
-                    try {
-                        Object value = field.get(null);  // static 필드
-                        flags.put(flagName, new FlagMeta(field, value, annotation));
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }
+```mermaid
+classDiagram
+    class FeatureFlagManager {
+        -ConcurrentHashMap<String, FlagMeta> flags
+        +initializeFlags(Class<?>... classesToScan)
+        +getFlagValue(String flagName)
+        +updateFlagValue(String flagName, Object value)
     }
-    ...
-}
+    
+    class FlagMeta {
+        -Field field
+        -Object value
+        -FeatureFlag annotation
+        +getValue()
+        +setValue(Object value)
+    }
+    
+    FeatureFlagManager "1" *-- "*" FlagMeta : contains
 ```
+
+*FeatureFlagManager와 FlagMeta 클래스의 관계를 보여주는 클래스 다이어그램*
 
 ### 6.6 핵심 기술 요소 설명
 
@@ -707,7 +767,7 @@ public class FeatureFlagManager {
 
 ## 7. 트러블슈팅: ClassLoader 문제
 
-Feature Flag 시스템을 개발하면서 Spring Boot의 fat jar 구조에서 발생한 ClassLoader 문제를 경험했습니다. Spring Boot는 의존성 JAR 파일들을 내부에 포함하는 구조를 사용하며, 이로 인해 클래스 이름이 변환되는 특성이 있습니다. 이 문제를 해결하면서 JVM의 내부 동작을 더 깊게 이해할 수 있었습니다.
+Feature Flag 시스템을 개발하면서 Spring Boot의 fat jar 구조에서 발생한 ClassLoader 문제를 경험했습니다. Spring Boot는 의존성 JAR 파일들을 내부에 포함하는 구조를 사용하며, 이로 인해 클래스 이름이 변환되는 특성이 있습니다. 이 문제를 해결하면서 많은 것을 배울 수 있었다.
 
 ### 7.1 문제 상황
 
@@ -715,37 +775,52 @@ SDK 개발 완료 후 첫 번째 사용자 팀으로부터 "Feature Flag를 인�
 
 ### 7.2 해결 과정
 
-문제를 해결하기 위해 다음과 같은 접근법을 사용했습니다:
+```mermaid
+flowchart TD
+    subgraph 문제 해결 과정
+        A[ClassLoader 문제 발견] --> B[Spring Boot 구조 분석]
+        B --> C[접두어 처리 로직 추가]
+        C --> D[다중 ClassLoader 지원]
+        D --> E[문제 해결]
+    end
+    
+    subgraph ClassLoader 계층
+        F[Application ClassLoader]
+        G[Extension ClassLoader]
+        H[Bootstrap ClassLoader]
+        H --> G
+        G --> F
+    end
+```
 
-1. **ClassLoader 이해**: Spring Boot의 특수한 ClassLoader 구조를 이해하고, 클래스 이름 변환 규칙을 파악했습니다.
-
-2. **접두어 처리**: Spring Boot의 클래스 이름 접두어(`BOOT-INF.classes.`)를 처리하는 로직을 추가했습니다.
-
-3. **다양한 ClassLoader 지원**: 단일 ClassLoader에 의존하지 않고, 접근 가능한 여러 ClassLoader를 조합하여 사용하는 방식으로 코드를 개선했습니다.
-
-이러한 경험을 통해 Java 플랫폼에 대한 이해를 높일 수 있었고, 다양한 배포 환경에서 안정적으로 작동하는 시스템을 구축할 수 있었다.
+*ClassLoader 문제 해결 과정과 ClassLoader 계층 구조를 보여주는 플로우차트*
 
 ---
 
 ## 8. 향후 발전 방향
 
-Feature Flag 시스템의 주요 발전 방향은 다음과 같습니다:
+```mermaid
+mindmap
+    root((Feature Flag<br/>발전 방향))
+        (사용자 세그먼테이션)
+            (국가별 기능)
+            (디바이스별 기능)
+            (사용자 그룹 테스트)
+        (점진적 활성화)
+            (사용자 비율 기반)
+            (자동화된 확대)
+            (자동화된 축소)
+        (실시간 업데이트)
+            (Pub/Sub 기반)
+            (네트워크 최적화)
+            (장애 복구)
+        (모니터링 강화)
+            (상태 변경 추적)
+            (성능 메트릭)
+            (알림 시스템)
+```
 
-1. **사용자 세그먼테이션**
-   - 사용자 속성(국가, 디바이스 등) 기반 기능 활성화
-   - 특정 사용자 그룹에 대한 기능 테스트 지원
-
-2. **점진적 활성화**
-   - 사용자 비율 기반 단계적 기능 활성화
-   - 자동화된 비활성화/확대 메커니즘
-
-3. **실시간 업데이트**
-   - Pub/Sub 기반 실시간 값 변경 전파
-   - 네트워크 부하 최적화
-
-4. **모니터링 강화**
-   - Flag 상태 변경 추적
-   - 성능 메트릭 수집 및 분석
+*향후 발전 방향을 보여주는 마인드맵*
 
 ---
 
