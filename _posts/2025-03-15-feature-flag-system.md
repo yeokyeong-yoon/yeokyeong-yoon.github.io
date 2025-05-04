@@ -536,7 +536,7 @@ graph LR
     A --> C[Network]
     A --> D[DB]
     B --> E[ConcurrentHashMap]
-    C --> F[Batch]
+    C --> F[Polling]
     D --> G[AutoScale]
 ```
 
