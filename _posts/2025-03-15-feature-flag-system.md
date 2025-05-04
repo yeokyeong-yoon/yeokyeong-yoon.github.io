@@ -575,7 +575,7 @@ Feature Flag 시스템의 핵심 동작 원리를 JVM 메모리 관리 관점에
 |---------|------|
 | `@FeatureFlag` | static primitive 필드에 부착되어, 해당 필드가 기능 플래그임을 선언 |
 | `FeatureFlagManager` | 애플리케이션 시작 시, reflection을 통해 모든 플래그 수집 및 초기화 |
-| `ConcurrentHashMap<String, FlagMeta>` | 모든 플래그 상태 및 메타데이터를 저장하는 중앙 저장소 |
+| `ConcurrentHashMap<String, Object>` | 모든 플래그 상태를 저장하는 중앙 저장소 |
 | `public static boolean useNewSearchAlgorithm` | JVM Method Area에 저장되며, 런타임에 값 변경 가능 |
 
 ### 6.2 선언 방식 예시
@@ -616,15 +616,41 @@ graph TD
 ### 6.5 FeatureFlagManager의 동작 방식
 
 ```mermaid
-graph LR
-    M[Manager] -->|manages| F[Meta]
-    M -->|init| M
-    M -->|get| M
-    F -->|get| F
-    F -->|set| F
+graph TD
+    A[Application Start] --> B[FeatureFlagManager]
+    B --> C[Scan Classes]
+    C --> D[Find @FeatureFlag]
+    D --> E[Register Flags]
+    E --> F[ConcurrentHashMap]
+    
+    G[Get Flag Value] --> B
+    B --> H[Check Cache]
+    H -->|Cache Hit| I[Return Value]
+    H -->|Cache Miss| J[Fetch from DB]
+    J --> K[Update Cache]
+    K --> I
+    
+    L[Update Flag] --> B
+    B --> M[Update Cache]
+    M --> N[Update DB]
 ```
 
-*FeatureFlagManager와 FlagMeta 클래스의 관계*
+*FeatureFlagManager의 주요 동작 흐름*
+
+1. **초기화 과정**
+   - 애플리케이션 시작 시 FeatureFlagManager가 초기화됨
+   - 모든 클래스를 스캔하여 @FeatureFlag 어노테이션이 붙은 필드를 찾음
+   - 찾은 플래그들을 ConcurrentHashMap에 등록
+
+2. **플래그 값 조회**
+   - 애플리케이션이 플래그 값을 요청
+   - 캐시에서 먼저 값을 확인
+   - 캐시에 없으면 DB에서 가져와 캐시 업데이트 후 반환
+
+3. **플래그 값 업데이트**
+   - 관리자가 플래그 값을 변경
+   - 캐시와 DB를 모두 업데이트
+   - 변경사항이 즉시 반영됨
 
 ### 6.6 핵심 기술 요소 설명
 
