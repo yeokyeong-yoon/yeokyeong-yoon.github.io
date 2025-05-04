@@ -385,7 +385,7 @@ Java Reflection API를 활용하여 코드에 있는 Feature Flag 변수를 자�
    - 장점: 기존 스프링 애플리케이션과 통합 용이
    - 단점: 스프링 의존성 발생, 비스프링 환경 지원 어려움
 
-Reflection 기반 접근법은 이러한 대안들과 비교했을 때 가장 균형 잡힌 선택이었습니다. 런타임에 약간의 오버헤드가 있지만, 개발자 경험을 최우선으로 고려했을 때 코드에 어노테이션만 추가하면 되는 간편함이 큰 장점이었습니다.
+Reflection 기반 접근법은 이러한 대안들과 비교했을 때 가장 균형 잡힌 선택이었습니다. 런타임에 약간의 오버헤드가 있지만, 개발자 경험을 최우선으로 고려했을 때 코드에 어노테이션만 추가하면 되는 간편함이었습니다.
 
 중요한 제약사항으로, Feature Flag 필드는 반드시 `static`으로 선언해야 합니다. 이는 Reflection API의 특성 때문인데, 인스턴스 필드의 경우 해당 클래스의 인스턴스가 필요하지만, 스캔 시점에는 이 인스턴스를 생성할 방법이 없기 때문입니다. 반면 `static` 필드는 클래스 로딩 시점에 메모리에 할당되므로 인스턴스 없이도 접근 및 수정이 가능합니다.
 
@@ -620,16 +620,24 @@ Feature Flag 시스템의 성능 최적화를 위해 다음과 같은 전략을 
 
 ```mermaid
 graph TD
-    subgraph 최적화 전략
-        A[메모리 최적화] --> A1[Primitive 타입 사용]
-        A --> A2[메타데이터 압축]
-        B[캐시 전략] --> B1[ConcurrentHashMap]
-        B --> B2[10초 TTL]
-        C[네트워크 최적화] --> C1[배치 처리]
-        C --> C2[폴링 간격 최적화]
-        D[데이터베이스 최적화] --> D1[ConsistentRead=True]
-        D --> D2[Auto Scaling]
-    end
+    A[메모리 최적화]
+    B[캐시 전략]
+    C[네트워크 최적화]
+    D[데이터베이스 최적화]
+    
+    A --> A1[Primitive 타입 사용]
+    A --> A2[메타데이터 압축]
+    B --> B1[ConcurrentHashMap]
+    B --> B2[10초 TTL]
+    C --> C1[배치 처리]
+    C --> C2[폴링 간격 최적화]
+    D --> D1[ConsistentRead]
+    D --> D2[Auto Scaling]
+
+    style A fill:#f5f9ff,stroke:#4a6da7
+    style B fill:#f5f9ff,stroke:#4a6da7
+    style C fill:#f5f9ff,stroke:#4a6da7
+    style D fill:#f5f9ff,stroke:#4a6da7
 ```
 
 *성능 최적화 전략을 보여주는 그래프*
@@ -698,14 +706,19 @@ Feature Flag 시스템은 성능 최적화를 위해 primitive 타입을 사용�
 ### 6.4 전체 동작 흐름
 
 ```mermaid
-flowchart TD
-    App[Application] --클래스 로딩--> Loader[JVM ClassLoader]
-    Loader --클래스 및 필드 Annotation 저장--> JVM[JVM Method Area]
-    App --애플리케이션 초기화--> FFManager[FeatureFlagManager]
-    FFManager --모든 클래스 탐색--> JVM
-    FFManager --FeatureFlag 필드 탐색 reflection--> Code[클래스 with FeatureFlag]
-    Code --static primitive 필드 어노테이션 값--> FFManager
-    FFManager --플래그 정보 저장--> FFManager
+graph TD
+    App[애플리케이션] --> Loader[JVM ClassLoader]
+    Loader --> JVM[JVM Method Area]
+    App --> FFManager[FeatureFlagManager]
+    FFManager --> JVM
+    FFManager --> Code[Feature Flag 클래스]
+    Code --> FFManager
+    
+    style App fill:#f5f9ff,stroke:#4a6da7
+    style Loader fill:#f5f9ff,stroke:#4a6da7
+    style JVM fill:#f5f9ff,stroke:#4a6da7
+    style FFManager fill:#f5f9ff,stroke:#4a6da7
+    style Code fill:#f5f9ff,stroke:#4a6da7
 ```
 
 *서비스 시작 시점의 전체 동작 흐름을 보여주는 플로우차트*
@@ -715,21 +728,21 @@ flowchart TD
 ```mermaid
 classDiagram
     class FeatureFlagManager {
-        -ConcurrentHashMap<String, FlagMeta> flags
-        +initializeFlags(Class<?>... classesToScan)
-        +getFlagValue(String flagName)
-        +updateFlagValue(String flagName, Object value)
+        -flags: ConcurrentHashMap
+        +initializeFlags()
+        +getFlagValue(flagName)
+        +updateFlagValue(flagName, value)
     }
     
     class FlagMeta {
-        -Field field
-        -Object value
-        -FeatureFlag annotation
+        -field: Field
+        -value: Object
+        -annotation: FeatureFlag
         +getValue()
-        +setValue(Object value)
+        +setValue(value)
     }
     
-    FeatureFlagManager "1" *-- "*" FlagMeta : contains
+    FeatureFlagManager "1" --> "*" FlagMeta
 ```
 
 *FeatureFlagManager와 FlagMeta 클래스의 관계를 보여주는 클래스 다이어그램*
@@ -776,21 +789,23 @@ SDK 개발 완료 후 첫 번째 사용자 팀으로부터 "Feature Flag를 인�
 ### 7.2 해결 과정
 
 ```mermaid
-flowchart TD
-    subgraph 문제 해결 과정
-        A[ClassLoader 문제 발견] --> B[Spring Boot 구조 분석]
-        B --> C[접두어 처리 로직 추가]
-        C --> D[다중 ClassLoader 지원]
-        D --> E[문제 해결]
-    end
+graph TD
+    A[문제 발견] --> B[구조 분석]
+    B --> C[로직 추가]
+    C --> D[지원 확장]
+    D --> E[해결 완료]
     
-    subgraph ClassLoader 계층
-        F[Application ClassLoader]
-        G[Extension ClassLoader]
-        H[Bootstrap ClassLoader]
-        H --> G
-        G --> F
-    end
+    F[App ClassLoader] --> G[Ext ClassLoader]
+    G --> H[Boot ClassLoader]
+    
+    style A fill:#f5f9ff,stroke:#4a6da7
+    style B fill:#f5f9ff,stroke:#4a6da7
+    style C fill:#f5f9ff,stroke:#4a6da7
+    style D fill:#f5f9ff,stroke:#4a6da7
+    style E fill:#f5f9ff,stroke:#4a6da7
+    style F fill:#f5f9ff,stroke:#4a6da7
+    style G fill:#f5f9ff,stroke:#4a6da7
+    style H fill:#f5f9ff,stroke:#4a6da7
 ```
 
 *ClassLoader 문제 해결 과정과 ClassLoader 계층 구조를 보여주는 플로우차트*
@@ -801,23 +816,23 @@ flowchart TD
 
 ```mermaid
 mindmap
-    root((Feature Flag<br/>발전 방향))
-        (사용자 세그먼테이션)
-            (국가별 기능)
-            (디바이스별 기능)
-            (사용자 그룹 테스트)
-        (점진적 활성화)
-            (사용자 비율 기반)
-            (자동화된 확대)
-            (자동화된 축소)
-        (실시간 업데이트)
-            (Pub/Sub 기반)
-            (네트워크 최적화)
-            (장애 복구)
-        (모니터링 강화)
-            (상태 변경 추적)
-            (성능 메트릭)
-            (알림 시스템)
+  root(Feature Flag)
+    세그먼테이션
+      국가별
+      디바이스별
+      그룹별
+    점진적활성화
+      비율기반
+      자동확대
+      자동축소
+    실시간업데이트
+      PubSub
+      네트워크
+      장애복구
+    모니터링
+      변경추적
+      성능측정
+      알림기능
 ```
 
 *향후 발전 방향을 보여주는 마인드맵*
