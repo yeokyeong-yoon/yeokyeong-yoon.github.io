@@ -620,24 +620,14 @@ Feature Flag 시스템의 성능 최적화를 위해 다음과 같은 전략을 
 
 ```mermaid
 graph TD
-    A[메모리 최적화]
-    B[캐시 전략]
-    C[네트워크 최적화]
-    D[데이터베이스 최적화]
-    
-    A --> A1[Primitive 타입 사용]
+    A[메모리 최적화] --> A1[Primitive 타입]
     A --> A2[메타데이터 압축]
-    B --> B1[ConcurrentHashMap]
+    B[캐시 전략] --> B1[ConcurrentHashMap]
     B --> B2[10초 TTL]
-    C --> C1[배치 처리]
-    C --> C2[폴링 간격 최적화]
-    D --> D1[ConsistentRead]
+    C[네트워크 최적화] --> C1[배치 처리]
+    C --> C2[폴링 최적화]
+    D[DB 최적화] --> D1[ConsistentRead]
     D --> D2[Auto Scaling]
-
-    style A fill:#f5f9ff,stroke:#4a6da7
-    style B fill:#f5f9ff,stroke:#4a6da7
-    style C fill:#f5f9ff,stroke:#4a6da7
-    style D fill:#f5f9ff,stroke:#4a6da7
 ```
 
 *성능 최적화 전략을 보여주는 그래프*
@@ -707,18 +697,12 @@ Feature Flag 시스템은 성능 최적화를 위해 primitive 타입을 사용�
 
 ```mermaid
 graph TD
-    App[애플리케이션] --> Loader[JVM ClassLoader]
-    Loader --> JVM[JVM Method Area]
-    App --> FFManager[FeatureFlagManager]
-    FFManager --> JVM
-    FFManager --> Code[Feature Flag 클래스]
-    Code --> FFManager
-    
-    style App fill:#f5f9ff,stroke:#4a6da7
-    style Loader fill:#f5f9ff,stroke:#4a6da7
-    style JVM fill:#f5f9ff,stroke:#4a6da7
-    style FFManager fill:#f5f9ff,stroke:#4a6da7
-    style Code fill:#f5f9ff,stroke:#4a6da7
+    App --> Loader
+    Loader --> JVM
+    App --> Manager
+    Manager --> JVM
+    Manager --> Code
+    Code --> Manager
 ```
 
 *서비스 시작 시점의 전체 동작 흐름을 보여주는 플로우차트*
@@ -727,22 +711,22 @@ graph TD
 
 ```mermaid
 classDiagram
-    class FeatureFlagManager {
-        -flags: ConcurrentHashMap
-        +initializeFlags()
-        +getFlagValue(flagName)
-        +updateFlagValue(flagName, value)
-    }
-    
-    class FlagMeta {
-        -field: Field
-        -value: Object
-        -annotation: FeatureFlag
+    class Manager {
+        -flags
+        +initialize()
         +getValue()
-        +setValue(value)
+        +updateValue()
     }
     
-    FeatureFlagManager "1" --> "*" FlagMeta
+    class Meta {
+        -field
+        -value
+        -annotation
+        +getValue()
+        +setValue()
+    }
+    
+    Manager --> Meta
 ```
 
 *FeatureFlagManager와 FlagMeta 클래스의 관계를 보여주는 클래스 다이어그램*
@@ -790,22 +774,13 @@ SDK 개발 완료 후 첫 번째 사용자 팀으로부터 "Feature Flag를 인�
 
 ```mermaid
 graph TD
-    A[문제 발견] --> B[구조 분석]
+    A[문제 발견] --> B[분석]
     B --> C[로직 추가]
     C --> D[지원 확장]
-    D --> E[해결 완료]
+    D --> E[해결]
     
-    F[App ClassLoader] --> G[Ext ClassLoader]
-    G --> H[Boot ClassLoader]
-    
-    style A fill:#f5f9ff,stroke:#4a6da7
-    style B fill:#f5f9ff,stroke:#4a6da7
-    style C fill:#f5f9ff,stroke:#4a6da7
-    style D fill:#f5f9ff,stroke:#4a6da7
-    style E fill:#f5f9ff,stroke:#4a6da7
-    style F fill:#f5f9ff,stroke:#4a6da7
-    style G fill:#f5f9ff,stroke:#4a6da7
-    style H fill:#f5f9ff,stroke:#4a6da7
+    F[App] --> G[Ext]
+    G --> H[Boot]
 ```
 
 *ClassLoader 문제 해결 과정과 ClassLoader 계층 구조를 보여주는 플로우차트*
