@@ -618,10 +618,10 @@ graph TD
 ```mermaid
 graph LR
     M[Manager] -->|manages| F[Meta]
-    M -->|init()| M
-    M -->|get()| M
-    F -->|get()| F
-    F -->|set()| F
+    M -->|init| M
+    M -->|get| M
+    F -->|get| F
+    F -->|set| F
 ```
 
 *FeatureFlagManager와 FlagMeta 클래스의 관계*
