@@ -54,12 +54,11 @@ mermaid: true
 
 <style>
 .mermaid {
-  width: 60% !important;
-  max-width: 60% !important;
-  margin: 20px auto !important;
-  font-size: 10px !important;
+  width: 100% !important;
+  max-width: 600px !important;
+  margin: 10px auto !important;
+  font-size: 12px !important;
   font-family: 'Arial', sans-serif !important;
-  overflow: hidden !important;
 }
 
 .mermaid .node rect, 
@@ -67,58 +66,23 @@ mermaid: true
 .mermaid .node ellipse, 
 .mermaid .node polygon, 
 .mermaid .node path {
-  fill: #f5f9ff !important;
-  stroke: #4a6da7 !important;
-  stroke-width: 1.5px !important;
+  fill: #f5f9ff;
+  stroke: #4a6da7;
+  stroke-width: 1px;
 }
 
 .mermaid .node text {
-  font-size: 8px !important;
+  font-size: 10px;
 }
 
 .mermaid .edgeLabel {
-  font-size: 6px !important;
-}
-
-.mermaid .cluster rect {
-  fill: #f0f8ff !important;
-  stroke: #4a6da7 !important;
-  stroke-width: 1px !important;
-  rx: 8px !important;
-  ry: 8px !important;
-}
-
-.mermaid .label {
-  font-size: 10px !important;
-}
-
-.mermaid .timeline-event {
-  font-size: 12px !important;
-}
-
-.mermaid .journey-section {
-  font-size: 12px !important;
-  font-weight: bold !important;
+  font-size: 8px;
 }
 
 @media screen and (max-width: 768px) {
   .mermaid {
-    font-size: 12px !important;
-    margin: 15px 0 !important;
-  }
-  .mermaid .node text {
-    font-size: 10px !important;
-  }
-  .mermaid .edgeLabel {
-    font-size: 8px !important;
-    padding: 1px 2px !important;
-  }
-  .mermaid .label {
-    font-size: 12px !important;
-  }
-  .mermaid .timeline-event,
-  .mermaid .journey-section {
-    font-size: 10px !important;
+    max-width: 100% !important;
+    margin: 5px 0 !important;
   }
 }
 </style>
@@ -139,51 +103,18 @@ Feature Flag는 코드 변경 없이 기능을 켜고 끌 수 있게 해주는 �
 ### 1.1 SDK의 주요 기능
 
 ```mermaid
-flowchart TD
-
-  subgraph MainEKSCluster[메인 EKS 클러스터]
-    AdminUI[Admin UI]
-    FlagAPIServer[Flag API Server]
-    DynamoDB[(DynamoDB)]
-
-    AdminUI -->|Update Flag State| FlagAPIServer
-    FlagAPIServer -->|persist| DynamoDB
-  end
-
-  subgraph ServiceEKSCluster[서비스 EKS 클러스터]
-  
-    subgraph PodA
-      AppA[Application A]
-      AppA -->|load on startup| ManagerA[FeatureFlagManager A]
-      
-      ManagerA -->|Reflection scan<br/>@FeatureFlag| FlagMapA[ConcurrentHashMap<br/>flagName → defaultValue]
-      ManagerA -->|poll every 10s| FlagAPIServer
-      FlagAPIServer -->|flag states| ManagerA
-      ManagerA -->|override values| FlagMapA
+graph TD
+    Admin[Admin UI] --> API[Flag API]
+    API --> DB[(DynamoDB)]
+    
+    subgraph Service
+        App[Application] --> Manager[FeatureFlagManager]
+        Manager --> Cache[ConcurrentHashMap]
+        Manager --> API
     end
-
-    subgraph PodB
-      AppB[Application B]
-      AppB --> ManagerB[FeatureFlagManager B]
-      ManagerB -->|Reflection scan| FlagMapB[ConcurrentHashMap]
-      ManagerB -->|poll| FlagAPIServer
-      FlagAPIServer --> ManagerB
-      ManagerB -->|override values| FlagMapB
-    end
-
-    subgraph PodC
-      AppC[Application C]
-      AppC --> ManagerC[FeatureFlagManager C]
-      ManagerC -->|Reflection scan| FlagMapC[ConcurrentHashMap]
-      ManagerC -->|poll| FlagAPIServer
-      FlagAPIServer --> ManagerC
-      ManagerC -->|override values| FlagMapC
-    end
-
-  end
 ```
 
-*Feature Flag 시스템의 전체 아키텍처를 보여주는 상세한 플로우차트*
+*Feature Flag 시스템의 전체 아키텍처*
 
 ---
 
@@ -249,28 +180,21 @@ flowchart TD
 
 ```mermaid
 sequenceDiagram
-    participant App as 애플리케이션
-    participant Manager as FeatureFlagManager
-    participant Cache as ConcurrentHashMap
-    participant API as Flag API Server
-    participant DB as DynamoDB
-
-    App->>Manager: 플래그 값 조회 요청
-    Manager->>Cache: 캐시 확인
-    alt 캐시 적중
-        Cache-->>Manager: 캐시된 값 반환
-        Manager-->>App: 플래그 값 반환
-    else 캐시 미스
-        Manager->>API: 최신 값 요청
-        API->>DB: 값 조회
-        DB-->>API: 값 반환
-        API-->>Manager: 값 반환
-        Manager->>Cache: 캐시 업데이트
-        Manager-->>App: 플래그 값 반환
+    App->>Manager: getFlag()
+    Manager->>Cache: check cache
+    alt cache hit
+        Cache-->>Manager: return value
+    else cache miss
+        Manager->>API: fetch value
+        API->>DB: query
+        DB-->>API: return value
+        API-->>Manager: return value
+        Manager->>Cache: update
     end
+    Manager-->>App: return value
 ```
 
-*플래그 값 조회 과정을 보여주는 시퀀스 다이어그램*
+*플래그 값 조회 과정*
 
 #### 2.3.4 플래그 값 변경 과정
 
@@ -616,21 +540,17 @@ Feature Flag 시스템의 로딩 및 캐싱 전략은 다음과 같이 구성되
 
 ### 4.4.2 성능 최적화 전략
 
-Feature Flag 시스템의 성능 최적화를 위해 다음과 같은 전략을 구현했습니다:
-
 ```mermaid
-graph TD
-    A[메모리 최적화] --> A1[Primitive 타입]
-    A --> A2[메타데이터 압축]
-    B[캐시 전략] --> B1[ConcurrentHashMap]
-    B --> B2[10초 TTL]
-    C[네트워크 최적화] --> C1[배치 처리]
-    C --> C2[폴링 최적화]
-    D[DB 최적화] --> D1[ConsistentRead]
-    D --> D2[Auto Scaling]
+graph LR
+    A[Memory] --> B[Cache]
+    A --> C[Network]
+    A --> D[DB]
+    B --> E[ConcurrentHashMap]
+    C --> F[Batch]
+    D --> G[AutoScale]
 ```
 
-*성능 최적화 전략을 보여주는 그래프*
+*성능 최적화 전략*
 
 ## 5. 시스템 활용
 
@@ -697,39 +617,32 @@ Feature Flag 시스템은 성능 최적화를 위해 primitive 타입을 사용�
 
 ```mermaid
 graph TD
-    App --> Loader
-    Loader --> JVM
-    App --> Manager
-    Manager --> JVM
-    Manager --> Code
-    Code --> Manager
+    A[App] --> B[Loader]
+    B --> C[JVM]
+    A --> D[Manager]
+    D --> C
+    D --> E[Code]
+    E --> D
 ```
 
-*서비스 시작 시점의 전체 동작 흐름을 보여주는 플로우차트*
+*서비스 시작 시점의 전체 동작 흐름*
 
 ### 6.5 FeatureFlagManager의 동작 방식
 
 ```mermaid
 classDiagram
+    Manager --> Meta
     class Manager {
-        -flags
         +initialize()
         +getValue()
-        +updateValue()
     }
-    
     class Meta {
-        -field
-        -value
-        -annotation
         +getValue()
         +setValue()
     }
-    
-    Manager --> Meta
 ```
 
-*FeatureFlagManager와 FlagMeta 클래스의 관계를 보여주는 클래스 다이어그램*
+*FeatureFlagManager와 FlagMeta 클래스의 관계*
 
 ### 6.6 핵심 기술 요소 설명
 
@@ -774,16 +687,13 @@ SDK 개발 완료 후 첫 번째 사용자 팀으로부터 "Feature Flag를 인�
 
 ```mermaid
 graph TD
-    A[문제 발견] --> B[분석]
-    B --> C[로직 추가]
-    C --> D[지원 확장]
-    D --> E[해결]
-    
-    F[App] --> G[Ext]
-    G --> H[Boot]
+    A[Problem] --> B[Analyze]
+    B --> C[Fix]
+    C --> D[Test]
+    D --> E[Deploy]
 ```
 
-*ClassLoader 문제 해결 과정과 ClassLoader 계층 구조를 보여주는 플로우차트*
+*ClassLoader 문제 해결 과정*
 
 ---
 
@@ -791,26 +701,14 @@ graph TD
 
 ```mermaid
 mindmap
-  root(Feature Flag)
-    세그먼테이션
-      국가별
-      디바이스별
-      그룹별
-    점진적활성화
-      비율기반
-      자동확대
-      자동축소
-    실시간업데이트
-      PubSub
-      네트워크
-      장애복구
-    모니터링
-      변경추적
-      성능측정
-      알림기능
+    root((Feature Flag))
+        A[Segmentation]
+        B[Gradual]
+        C[Real-time]
+        D[Monitoring]
 ```
 
-*향후 발전 방향을 보여주는 마인드맵*
+*향후 발전 방향*
 
 ---
 
