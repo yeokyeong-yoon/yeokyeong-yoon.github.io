@@ -631,15 +631,11 @@ graph TD
 
 ```mermaid
 classDiagram
+    Manager : +init()
+    Manager : +get()
+    Meta : +get()
+    Meta : +set()
     Manager --> Meta
-    class Manager {
-        +initialize()
-        +getValue()
-    }
-    class Meta {
-        +getValue()
-        +setValue()
-    }
 ```
 
 *FeatureFlagManager와 FlagMeta 클래스의 관계*
