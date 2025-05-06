@@ -89,7 +89,7 @@ ELT 파이프라인의 각 단계는 다음과 같이 구성되었습니다:
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '16px'}}}%%
-graph TD
+graph LR
     subgraph "Extract & Load"
         A[파트너사 데이터 소스] --> B[데이터 추출]
         B --> C[Raw Layer]
